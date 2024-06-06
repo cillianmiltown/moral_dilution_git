@@ -1,0 +1,1896 @@
+---
+title             : "Study S3"
+shorttitle        : "Moral Dilution"
+author:
+  - name          : "Blinded"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Blinded"
+    email         : "Blinded"
+  - name          : "Blinded"
+    affiliation   : "2"
+  - name          : "Blinded"
+    affiliation   : "1"
+  - name          : "Blinded"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "Blinded"
+  - id            : "2"
+    institution   : "Blinded"
+author_note: >
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+abstract: >
+  Six studies etc.
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa.csl"
+figsintext        : true
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+toc               : false
+lang              : "en-US"
+documentclass     : "apa7"
+output:
+  papaja::apa6_pdf
+header-includes:
+- \raggedbottom
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r S5setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+```{r S5load_libraries_cogload}
+rm(list = ls())
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+#install.packages("devtools")
+#devtools::install_github("cillianmiltown/R_desnum")
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#devtools::install_github("crsh/papaja")
+#devtools::install_github("crsh/citr")
+library(papaja)
+#library("dplyr")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("BiocManager")
+#BiocManager::install("multtest")
+#install.packages("multtest")
+#install.packages("metap")
+library(metap)
+library(pwr)
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+library(VGAM)
+library(nnet)
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+library("powerMediation")
+library("ggpubr")
+
+
+# library(rstatix)
+
+
+#source("load_all_data.R")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+#setwd("manuscript_prep")
+getwd()
+```
+
+
+
+```{r S5LoadData}
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/read_and_sort_raw_data.R")
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
+rm(list = ls())
+
+df3 <- read.csv("../data/study_S3_data_long.csv")
+df1 <- df3
+x <- read.csv("../data/study_S3_data_long_clean.csv")
+
+MPS <- x %>% 
+  select(R1,R2,R3,R4)
+
+alpha1 <- ltm::cronbach.alpha(MPS)
+
+alpha1
+```
+
+# Study S3 - Good and Bad Characters
+The aim of Study S3 was to test for the moral dilution effect in both good and bad characters, while attempting to eliminate the confounding influence of the presence of other descriptions by adopting a between-subjects design.
+
+
+
+## Study S3: Method
+### Study S3: Participants and design
+Study S3 was a 2 $\times$ 2 between-subjects factorial design. As in Study 3, the first independent variable was condition with two levels, diagnostic and non-diagnostic. The second independent variable was valence of character description, with two levels morally good and morally bad. We used the same two dependent variables as in previous studies (MPS-4, $\alpha$ = `r round(alpha1$alpha,digits=2)`, and MM-1).
+
+A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="1",na.rm=T)` female, `r sum(df1$gender=="2", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T))` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from MTurk and paid $0.10 for their participation. 
+
+```{r}
+df1 <- read.csv("../data/study_S3_data_long.csv")
+df3 <- read.csv("../data/study_S3_data_long_clean.csv")
+df_long_clean <- df3
+x <- df3
+table(df3$gender)
+length(df1$gender)
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)
+table(x$ResponseId)
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+```{r}
+x$valence
+
+good <- x[which(x$valence=="good"),]
+bad <- x[which(x$valence=="bad"),]
+
+good$R_tot_recoded <- 7 - good$R_tot
+bad$R_tot_recoded <- bad$R_tot
+
+good$M1_recoded <- 100 - good$M1
+bad$M1_recoded <- bad$M1
+
+df_recoded <- rbind(good,bad)
+
+x <- df_recoded
+```
+
+
+```{r}
+df_long_clean <- df3
+
+x <- df3
+x$attn_chk_1Q
+x$attn_chk_2_Q
+x <- x[which(x$attn_chk_2_Q==2|x$attn_chk_2_Q==5),]
+x <- x[which(x$attn_chk_1Q==7),]
+df_long_extra_clean <- x
+
+x <- df3
+
+
+
+x <- df_long_extra_clean
+
+good <- x[which(x$valence=="good"),]
+bad <- x[which(x$valence=="bad"),]
+
+good$R_tot_recoded <- 7 - good$R_tot
+bad$R_tot_recoded <- bad$R_tot
+
+good$M1_recoded <- 100 - good$M1
+bad$M1_recoded <- bad$M1
+
+df_recoded_extra_clean <- rbind(good,bad)
+
+x <- df_recoded_extra_clean
+# 
+# df3 <- x
+# att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)` participants (`r sum(df3$gender=="1",na.rm=T)` female, `r sum(df3$gender=="2", na.rm=T)` male, `r sum(df3$gender=="4", na.rm=T)` other, `r sum(df3$gender=="4", na.rm=T)` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
+
+
+### Study S3: Procedure and materials
+The materials for Study S3 were the same as those used in Study 3. Participants were randomly presented with a single character description: *Sam*, *Robin* (*good* characters), *Francis* and *Alex* (*bad* characters), and were randomly assigned to the diagnostic condition (containing diagnostic information only), or the non-diagnostic condition (where the character description additionally included non-diagnostic information). Study S3 was not pre-registered however our predictions were the same as those for Study 3.
+
+
+## Study S3: Results
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+tapply(x$R_tot, x$scenario, descriptives)
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+x$valence
+#x <- bad
+
+aov1 <- aov(R_tot~scenario,data=x)
+aov1$df.residual
+
+test <- summary(aov1)
+test[[1]][["Df"]][1]
+test[[1]][["Df"]][2]
+
+test[[1]][["F value"]][1]
+test[[1]][["Pr(>F)"]][1]
+p_report(test[[1]][["Pr(>F)"]][1])
+
+aov1$effects
+effectsize::eta_squared(aov1)
+eta1 <- effectsize::eta_squared(aov1)
+eta1$Eta2
+(aov1)
+aov1$model
+
+tuk <- TukeyHSD(aov(R_tot~scenario,data=x))
+round(tuk$scenario[19], digits = 3)
+
+
+```
+
+
+
+
+The means and standard deviations for MPS-4 for each scenario are as follows: 
+*Sam* (good),
+*M*~MPS-4~ = `r mean(sam$R_tot)`, *SD*~MPS-4~ = `r sd(sam$R_tot)`,
+*Francis* (bad),
+*M*~MPS-4~ = `r mean(francis$R_tot)`, *SD*~MPS-4~ = `r sd(francis$R_tot)`,
+*Alex* (bad),
+*M*~MPS-4~ = `r mean(alex$R_tot)`, *SD*~MPS-4~ = `r sd(alex$R_tot)`,
+*Robin* (good),
+*M*~MPS-4~ = `r mean(robin$R_tot)`, *SD*~MPS-4~ = `r sd(robin$R_tot)`. There was significant variation depending on the description, *F*(`r test[[1]][["Df"]][1]`,`r test[[1]][["Df"]][2]`) = `r test[[1]][["F value"]][1]`, *p* `r paste(p_report(test[[1]][["Pr(>F)"]][1]))`, partial $\eta$^2^ = `r eta1$Eta2`. Both the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than both the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(tuk$scenario[24]))`) or between *Alex* and *Francis* (*bad*; *p* > .999). 
+
+
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+aov1 <- aov(M1~scenario,data=x)
+aov1$df.residual
+
+test <- summary(aov1)
+test[[1]][["Df"]][1]
+test[[1]][["Df"]][2]
+
+test[[1]][["F value"]][1]
+test[[1]][["Pr(>F)"]][1]
+p_report(test[[1]][["Pr(>F)"]][1])
+
+aov1$effects
+effectsize::eta_squared(aov1)
+eta1 <- effectsize::eta_squared(aov1)
+eta1$Eta2
+(aov1)
+aov1$model
+
+tuk <- TukeyHSD(aov(M1~scenario,data=x))
+round(tuk$scenario[19], digits = 3)
+```
+
+The means and standard deviations for MM-1 for each scenario are as follows: 
+*Sam* (good),
+*M*~MM-1~ = `r mean(sam$M1)`, *SD*~MM-1~ = `r sd(sam$M1)`;
+*Francis* (bad),
+*M*~MM-1~ = `r mean(francis$M1)`, *SD*~MM-1~ = `r sd(francis$M1)`;
+*Alex* (bad),
+*M*~MM-1~ = `r mean(alex$M1)`, *SD*~MM-1~ = `r sd(alex$M1)`;
+*Robin* (good),
+*M*~MM-1~ = `r mean(robin$M1)`, *SD*~MM-1~ = `r sd(robin$M1)`. There was significant variation depending on the description, *F*(`r test[[1]][["Df"]][1]`,`r test[[1]][["Df"]][2]`) = `r test[[1]][["F value"]][1]`, *p* `r paste(p_report(test[[1]][["Pr(>F)"]][1]))`, partial $\eta$^2^ = `r eta1$Eta2`. Both the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than both the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(tuk$scenario[24]))`) or between *Alex* and *Francis* (*bad*; (*p* `r paste(p_report(tuk$scenario[19]))`)). 
+
+
+```{r}
+
+table(sam$condition)
+table(sam$valence)
+
+table(robin$condition)
+table(robin$valence)
+
+table(francis$condition)
+table(francis$valence)
+
+table(alex$condition)
+table(alex$valence)
+
+
+y <- sam
+
+
+y$scenario[1]
+
+freq_table <- function(x){
+  y <- x
+  `colnames<-`(
+  rbind.data.frame(
+  c(y$valence[1], y$scenario[1],sum(y$condition=="non-diagnostic"),sum(y$condition=="diagnostic"),length(y$ResponseId)),
+  c("","","","","")
+  ),
+  c("valence","scenario","non-diagnostic","diagnostic","total")
+  )[1,]
+  
+}
+
+
+freq_table(sam)
+`colnames<-`(freq_table(sam),c("valence","scenario","non-diagnostic","diagnostic"))
+
+rbind(freq_table(sam)
+      ,freq_table(robin)
+      ,c("good","total"
+         ,sum(sam$condition=="non-diagnostic")+sum(robin$condition=="non-diagnostic")
+         ,sum(sam$condition=="diagnostic")+sum(robin$condition=="diagnostic")
+         ,sum(df3$valence=="good"))
+      ,freq_table(francis)
+      ,freq_table(alex)
+      ,c("bad","total"
+         ,sum(francis$condition=="non-diagnostic")+sum(alex$condition=="non-diagnostic")
+         ,sum(francis$condition=="diagnostic")+sum(alex$condition=="diagnostic")
+         ,sum(df3$valence=="bad"))
+      )
+
+```
+
+
+```{r}
+x <- df_recoded
+#x <- df_recoded_extra_clean
+
+
+aov_raw <- aov(R_tot_recoded ~ condition*valence,data=x)
+results_anova <- summary(aov_raw)
+aov1 <- as.data.frame(results_anova[[1]])
+aov1$Df
+aov1
+
+lsr::etaSquared(aov_raw)
+
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+
+```
+
+We conducted a 2 $\times$ 2 between subjects ANOVA to test for an interaction between valence and condition in predicting MPS-4.
+Condition significantly influenced responses to the MPS-4,
+*F*(`r aov1$Df[1]`, `r round(aov1$Df[4])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$Df[2]`, `r round(aov1$Df[4])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$Df[3]`, `r round(aov1$Df[4])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+
+
+```{r}
+aov_raw <- aov(M1_recoded ~ condition*valence,data=x)
+results_anova <- summary(aov_raw)
+aov1 <- as.data.frame(results_anova[[1]])
+aov1$Df
+aov1
+
+lsr::etaSquared(aov_raw)
+
+
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+
+```
+
+We conducted a 2 $\times$ 2 between subjects ANOVA to test for an interaction between valence and condition in predicting responses to MM-1.
+Condition significantly influenced responses to MM-1,
+*F*(`r aov1$Df[1]`, `r round(aov1$Df[4])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$Df[2]`, `r round(aov1$Df[4])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$Df[3]`, `r round(aov1$Df[4])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+
+```{r}
+
+
+x$M1R_tot_recoded <- scale(scale(x$R_tot_recoded)+scale(x$M1_recoded))
+
+
+
+aov_raw <- aov(M1_recoded ~ condition*valence,data=x)
+results_anova <- summary(aov_raw)
+aov1 <- as.data.frame(results_anova[[1]])
+aov1$Df
+aov1
+
+lsr::etaSquared(aov_raw)
+
+
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+
+```
+
+We conducted a 2 $\times$ 2 between subjects ANOVA to test for an interaction between valence and condition in predicting responses to the combined measure.
+Condition significantly influenced responses to the combined measure,
+*F*(`r aov1$Df[1]`, `r round(aov1$Df[4])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$Df[2]`, `r round(aov1$Df[4])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$Df[3]`, `r round(aov1$Df[4])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+As in previous studied we conducted separate analyses for the good and bad descriptions.
+
+
+
+```{r}
+x <- df3
+
+x$Valence <- dplyr::recode(x$valence
+              , "good" = "Good"
+              , "bad" = "Bad")
+
+```
+
+
+```{r StudyS3Rtotconditionplot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="R_tot", groupvars=c("condition", "Valence"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=R_tot-se
+                                        , ymax=R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("MPS-4")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,7)
+                     , breaks = seq(0,7, by = 1)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mps4plot <- g
+
+# mps4plot <- 
+# ggplot(x,aes(x=condition,y=R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MPS-4") +
+#   facet_grid(cols = vars(Valence)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+```{r StudyS3M1conditionplot, fig.cap="Study 3: Differences in MM1 depending on condition", include=FALSE, out.width = "50%"}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1", groupvars=c("condition", "Valence"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1-se
+                                        , ymax=M1+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("MM-1")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,100)
+                     , breaks = seq(0,100, by = 10)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+g
+
+M1plot <- g
+
+# M1plot <- 
+#   ggplot(x,aes(x=condition,y=M1))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+#   #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+#   # violin plot with jittered points
+#   # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MM-1")+
+#   facet_grid(cols = vars(Valence)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         legend.text=element_text(#family="Times",
+#           size=8
+#         ),
+#         legend.title=element_text(#family="Times",
+#           size=10
+#         ),
+#         axis.text=element_text(#family="Times",
+#           colour = "black",
+#           size=8
+#         ),
+#         axis.ticks.x = element_blank(),
+#         axis.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         strip.text=element_text(#family = "Times",
+#           size = 12
+#         ),
+#         # strip.background = element_rect(fill = "white"),
+#         legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1R_tot", groupvars=c("condition", "Valence"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  geom_point(data=x_error_bars, inherit.aes = FALSE
+             , aes(x=condition, y=M1R_tot)
+             , size=.5
+    )+
+  # stat_summary(
+  #   aes(color=factor(Condition
+  #                                         #,labels=c("Gratitude","No Gratitude")
+  #   )
+  #   ),
+  #   geom = "point",
+  #   fun = "mean",
+  #   col = "black",
+  #   size = 1,
+  #   shape = 16, #24,
+  #   position = position_dodge(width=.2)
+  #  # , justification = -.2
+  #   , fill = "black"
+  #   ,show_guide = FALSE
+  # )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1R_tot-se
+                                        , ymax=M1R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Combined")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-2.5,1.2)
+                     , breaks = seq(-2.5,1.2, by = .5)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mBothPlot <- g
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    #, widths = c(0.485, 0.5)
+                    )
+figure
+```
+
+
+```{r StudyS3bothconditionplot, fig.cap="Study S3: Differences in moral perception depending on condition", include=TRUE, fig.height=8, out.width = "\\textwidth", fig.pos = "!h"}
+
+suppressWarnings(print(figure))
+
+```
+
+
+
+## Differences in the *Bad* Descriptions
+
+
+
+```{r}
+x <- df3
+# x <- df_recoded_extra_clean
+# x <- df_long_extra_clean
+
+x <- x[which(x$valence=="bad"),]
+
+x <- x[order(x$ResponseId),]
+
+#x <- x[which(x$valence=="good"),]
+
+
+
+d1 <- lsr::cohensD(R_tot~condition,x,method="pooled")
+t1 <- t.test(R_tot~condition,x)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# temp <- reshape(x, idvar = "ResponseId", timevar = "scenario_abb", direction = "wide")
+# t1 <- t.test(temp$R_tot.Charlie,temp$R_tot.Jackie, paired=T)
+# rm(temp)
+# d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *bad* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$R_tot)`, *SD* = `r sd(dg1$R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$R_tot)`, *SD* = `r sd(dg2$R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+
+```{r}
+x <- df3
+x <- df_long_extra_clean
+x <- x[which(x$valence=="bad"),]
+
+#x <- x[which(x$valence=="good"),]
+
+d1 <- lsr::cohensD(M1~condition,x,method="pooled")
+t1 <- t.test(M1~condition,x)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *bad* characters, there was no significant difference in responses to MM-1 between the diagnostic condition (*M* = `r mean(dg1$M1)`, *SD* = `r sd(dg1$M1)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1)`, *SD* = `r sd(dg2$M1)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+## Differences in the *Good* Descriptions
+
+
+```{r}
+x <- df3
+
+#x <- x[which(x$valence=="bad"),]
+
+x <- x[which(x$valence=="good"),]
+
+d1 <- lsr::cohensD(R_tot~condition,x,method="pooled")
+t1 <- t.test(R_tot~condition,x)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *good* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$R_tot)`, *SD* = `r sd(dg1$R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$R_tot)`, *SD* = `r sd(dg2$R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+
+```{r}
+x <- df3
+
+#x <- x[which(x$valence=="bad"),]
+
+x <- x[which(x$valence=="good"),]
+
+d1 <- lsr::cohensD(M1~condition,x,method="pooled")
+t1 <- t.test(M1~condition,x)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *good* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$M1)`, *SD* = `r sd(dg1$M1)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1)`, *SD* = `r sd(dg2$M1)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+```{r}
+x <- df3
+
+x$Valence <- dplyr::recode(x$valence
+              , "good" = "Good"
+              , "bad" = "Bad")
+
+```
+
+
+```{r S5Rtotconditionplot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+# mps4plot <- 
+# ggplot(x,aes(x=condition,y=R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MPS-4") +
+#   facet_grid(cols = vars(Valence)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+```{r S5M1conditionplot, fig.cap="Study 3: Differences in MM1 depending on condition", include=FALSE, out.width = "50%"}
+
+# M1plot <- 
+#   ggplot(x,aes(x=condition,y=M1))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+#   #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+#   # violin plot with jittered points
+#   # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MM-1")+
+#   facet_grid(cols = vars(Valence)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         legend.text=element_text(#family="Times",
+#           size=8
+#         ),
+#         legend.title=element_text(#family="Times",
+#           size=10
+#         ),
+#         axis.text=element_text(#family="Times",
+#           colour = "black",
+#           size=8
+#         ),
+#         axis.ticks.x = element_blank(),
+#         axis.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         strip.text=element_text(#family = "Times",
+#           size = 12
+#         ),
+#         # strip.background = element_rect(fill = "white"),
+#         legend.position="right")
+
+
+
+
+```
+
+```{r}
+# figure <- ggarrange(mps4plot
+#                     , M1plot
+#                     #,labels = c("A")
+#                     , ncol = 1
+#                     , nrow = 2
+#                     #, widths = c(0.485, 0.5)
+#                     )
+# figure
+```
+
+## Study S3: Differences between the descriptions
+
+Again, we conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:StudyS3allscenariosPlot).
+
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r StudyS3allscenariosMPS4plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="R_tot", groupvars=c("condition", "Scenario"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=R_tot-se
+                                        , ymax=R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("MPS-4")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,7)
+                     , breaks = seq(0,7, by = 1)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+   # , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  # facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  facet_grid(cols = vars(Scenario)) +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+mps4plot <- g
+
+# mps4plot <- 
+# ggplot(x,aes(x=condition,y=R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MPS-4") +
+#   theme_bw() +
+#   facet_grid(cols = vars(Scenario)) +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+
+
+```{r StudyS3allscenariosM1plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1", groupvars=c("condition", "Scenario"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1-se
+                                        , ymax=M1+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("MM-1")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,100)
+                     , breaks = seq(0,100, by = 10)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  # facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+
+M1plot <- g
+
+# M1plot <- 
+# ggplot(x,aes(x=condition,y=M1))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MM-1") +
+#   facet_grid(cols = vars(Scenario)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+
+```{r StudyS3allscenariosBothplot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+
+#x <- na.omit(x) 
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1R_tot", groupvars=c("condition", "Scenario"))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 1, 
+    width = .55, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  geom_point(data=x_error_bars, inherit.aes = FALSE
+             , aes(x=condition, y=M1R_tot)
+             , size=.5
+    )+
+  # stat_summary(
+  #   aes(color=factor(Condition
+  #                                         #,labels=c("Gratitude","No Gratitude")
+  #   )
+  #   ),
+  #   geom = "point",
+  #   fun = "mean",
+  #   col = "black",
+  #   size = 1,
+  #   shape = 16, #24,
+  #   position = position_dodge(width=.2)
+  #  # , justification = -.2
+  #   , fill = "black"
+  #   ,show_guide = FALSE
+  # )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1R_tot-se
+                                        , ymax=M1R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Combined")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-2,2)
+                     , breaks = seq(-2,2, by = .5)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+
+mBothPlot <- g
+
+# mBothPlot <- 
+# ggplot(x,aes(x=condition,y=M1R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("Combined") +
+#   facet_grid(cols = vars(Scenario)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+```{r StudyS3allscenariosPlot, fig.cap="Study S3: Differences in moral perception for each description", include=TRUE, fig.height=8, out.width = "\\textwidth", fig.pos = "!h"}
+
+suppressWarnings(print(figure))
+
+```
+
+
+
+```{r}
+
+x <- sam
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+
+For *Sam*, MPS-4 scores were significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; Similarly, MM-1 ratings were significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also lower in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), and in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+

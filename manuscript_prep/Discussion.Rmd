@@ -1,0 +1,352 @@
+---
+title             : "Discussion"
+shorttitle        : "Moral Dilution"
+
+author:
+  - name          : "Cillian McHugh"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "University of Limerick, Limerick, Ireland, V94 T9PX"
+    email         : "cillian.mchugh@ul.ie"
+  - name          : "Eric R. Igou"
+    affiliation   : "1"
+
+affiliation:
+  - id            : "1"
+    institution   : "University of Limerick"
+
+author_note: >
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+
+abstract: >
+  Six studies etc.
+keywords          : "keywords"
+wordcount         : "TBC"
+
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa6.csl"
+
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+toc               : no
+
+lang              : "en-US"
+documentclass     : "apa7"
+output:
+  papaja::apa6_pdf
+
+---
+
+```{r Discussionsetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+```{r}
+library("papaja")
+library(metap)
+#library("wordcountaddin")
+#wordcountaddin::word_count("Introduction.Rmd")
+getwd()
+#devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+```
+
+# Aggregate Results
+
+```{r}
+#### Overall dilution effect ####
+
+all_ps <-
+  c(# MPS-4  MM-1
+     .0001, .0001  # Study 1
+    ,.624 , .267   # Study 2
+    ,.060 , .008   # Study 3 Bad
+    ,.009 , .0001  # Study 3 Good
+    ,.095 , .029   # Study 4
+    ,.221 , .140   # Study 5 Bad
+    ,.002 , .0001  # Study 5 Good
+)
+
+all_ps_mm1 <-
+  c(# MPS-4  MM-1
+    # .0001
+             .0001  # Study 1
+    #,.624 
+            , .267   # Study 2
+    #,.060 
+            , .008   # Study 3 Bad
+    #,.009 
+            , .0001  # Study 3 Good
+    #,.095 
+            , .029   # Study 4
+    #,.221 
+            , .140   # Study 5 Bad
+    #,.002 
+            , .0001  # Study 5 Good
+)
+
+
+
+all_ps_m4 <-
+  c(# MPS-4  MM-1
+     .0001#, .0001  # Study 1
+    ,.624 #, .267   # Study 2
+    ,.060 #, .008   # Study 3 Bad
+    ,.009 #, .0001  # Study 3 Good
+    ,.095 #, .029   # Study 4
+    ,.221 #, .140   # Study 5 Bad
+    ,.002 #, .0001  # Study 5 Good
+)
+
+all_ns <- 
+  c(
+    # MPS-4  MM-1
+     801 #, 801   # Study 1
+    ,820 #, 820   # Study 2
+    ,874 #, 874   # Study 3 Bad
+    ,874 #, 874   # Study 3 Good
+    ,856 #, 856   # Study 4
+    ,860 #, 860   # Study 5 Bad
+    ,890 #, 890   # Study 5 Good
+  )
+
+meta3 <- sumlog(all_ps)
+meta3
+
+all_ps_mm1
+meta3 <- sumlog(all_ps_mm1)
+meta3
+
+all_ps_m4
+meta3 <- sumlog(all_ps_m4)
+meta3
+
+
+
+psch5 <- all_ps
+wtsch5 <- sqrt(all_ns)
+
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+psch5 <- all_ps_mm1
+wtsch5 <- sqrt(all_ns)
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+psch5 <- all_ps_m4
+wtsch5 <- sqrt(all_ns)
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+```
+
+A mini meta-analysis and found a significant dilution effect across both good and bad character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+
+
+
+```{r}
+#### Bad dilution effect ####
+
+all_ps <-
+  c(# MPS-4  MM-1
+     .0001, .0001  # Study 1
+  # ,.624 , .267   # Study 2
+    ,.060 , .008   # Study 3 Bad
+  # ,.009 , .0001  # Study 3 Good
+  # ,.095 , .029   # Study 4
+    ,.221 , .140   # Study 5 Bad
+  # ,.002 , .0001  # Study 5 Good
+)
+
+
+
+
+all_ps_mm1 <-
+  c(# MPS-4  MM-1
+   # .0001
+             .0001  # Study 1
+  ##,.624 
+          #, .267   # Study 2
+   #,.060 
+          , .008   # Study 3 Bad
+  ##,.009 
+          #, .0001  # Study 3 Good
+  ##,.095 
+          #, .029   # Study 4
+   #,.221 
+           , .140   # Study 5 Bad
+  ##,.002 
+          #, .0001  # Study 5 Good
+)
+
+
+
+all_ps_m4 <-
+  c(# MPS-4  MM-1
+     .0001#, .0001  # Study 1
+  # ,.624 #, .267   # Study 2
+    ,.060 #, .008   # Study 3 Bad
+  # ,.009 #, .0001  # Study 3 Good
+  # ,.095 #, .029   # Study 4
+    ,.221 #, .140   # Study 5 Bad
+  # ,.002 #, .0001  # Study 5 Good
+)
+
+
+all_ns <- 
+  c(
+    # MPS-4  MM-1
+     801 #, 801   # Study 1
+  # ,820 #, 820   # Study 2
+    ,874 #, 874   # Study 3 Bad
+  # ,874 #, 874   # Study 3 Good
+  # ,856 #, 856   # Study 4
+    ,860 #, 860   # Study 5 Bad
+  # ,890 #, 890   # Study 5 Good
+  )
+
+
+all_ps_m4
+
+meta3 <- sumlog(all_ps)
+meta3
+
+meta3 <- sumlog(all_ps_mm1)
+meta3
+
+meta3 <- sumlog(all_ps_m4)
+meta3
+
+
+psch5 <- all_ps
+wtsch5 <- sqrt(all_ns)
+
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+
+psch5 <- all_ps_mm1
+wtsch5 <- sqrt(all_ns)
+
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+
+psch5 <- all_ps_m4
+wtsch5 <- sqrt(all_ns)
+
+meta4 <- sumz(psch5,wtsch5)
+meta4
+```
+
+A mini meta-analysis and found a significant dilution effect for bad character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+
+
+```{r}
+#### Good dilution effect ####
+
+all_ps <-
+  c(# MPS-4  MM-1
+  #  .0001, .0001  # Study 1
+     .624 , .267   # Study 2
+  # ,.060 , .008   # Study 3 Bad
+    ,.009 , .0001  # Study 3 Good
+    ,.095 , .029   # Study 4
+  # ,.221 , .140   # Study 5 Bad
+    ,.002 , .0001  # Study 5 Good
+)
+
+
+all_ps_mm1 <-
+  c(# MPS-4  MM-1
+  # # .0001
+          #, .0001  # Study 1
+    # .624 
+           .267   # Study 2
+  # #,.060 
+          #, .008   # Study 3 Bad
+    #,.009 
+          , .0001  # Study 3 Good
+    #,.095 
+          , .029   # Study 4
+  # #,.221 
+          #, .140   # Study 5 Bad
+    #,.002 
+          , .0001  # Study 5 Good
+)
+
+all_ps_m4 <-
+  c(# MPS-4  MM-1
+  #  .0001#, .0001  # Study 1
+     .624 #, .267   # Study 2
+  # ,.060 #, .008   # Study 3 Bad
+    ,.009 #, .0001  # Study 3 Good
+    ,.095 #, .029   # Study 4
+  # ,.221 #, .140   # Study 5 Bad
+    ,.002 #, .0001  # Study 5 Good
+)
+
+
+all_ns <- 
+  c(
+    # MPS-4  MM-1
+  #  801 #, 801   # Study 1
+     820 #, 820   # Study 2
+  # ,874 #, 874   # Study 3 Bad
+    ,874 #, 874   # Study 3 Good
+    ,856 #, 856   # Study 4
+  # ,860 #, 860   # Study 5 Bad
+    ,890 #, 890   # Study 5 Good
+  )
+
+#meta3 <- sumlog(c(.023,.021,.039,.359,.215,.000002925))
+meta3 <- sumlog(all_ps)
+meta3
+
+meta3 <- sumlog(all_ps_mm1)
+meta3
+
+meta3 <- sumlog(all_ps_m4)
+meta3
+
+psch5 <- all_ps
+wtsch5 <- sqrt(all_ns)
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+psch5 <- all_ps_mm1
+wtsch5 <- sqrt(all_ns)
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+psch5 <- all_ps_m4
+wtsch5 <- sqrt(all_ns)
+meta4 <- sumz(psch5,wtsch5)
+meta4
+
+```
+
+A mini meta-analysis and found a significant dilution effect for good character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+
+
+
+# Discussion
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+---
+title             : "Supplement: Moral Dilution"
+shorttitle        : "Moral Dilution - Supplementary"
+author:
+    
+  - name          : "Cillian McHugh"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "University of Limerick, Limerick, Ireland, V94 T9PX"
+    email         : "cillian.mchugh@ul.ie"
+  - name          : "Eric R. Igou"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "University of Limerick"
+authornote: |
+  Department of Psychology, University of Limerick.
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+abstract: |
+  
+  Supplementary analysis to accompany the manuscript The Moral Dilution Effect: Irrelevant Information Influences Judgments of Moral Character.
+keywords          : "keywords"
+wordcount         : "X"
+bibliography      : "../resources/bib/My Library.bib"
+floatsintext      : yes
+linenumbers       : yes
+draft             : no
+mask              : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+toc               : yes
+toc-depth         : 1
+classoption       : "man"
+output            : 
+  papaja::apa6_pdf:
+    extra_dependencies: ["float"]
+header-includes:
+  - \raggedbottom
+  - \usepackage{float}
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+```{r}
+knitr::opts_chunk$set(fig.pos = "!p", out.extra = "")
+```
+
+
+\pagebreak
+
+```{r child = 'Supplementary_materials.Rmd'}
+```
+
+
+\pagebreak
+
+# Study 1 (bad): Supplementary Analyses
+
+```{r child = 'Study_1_supp.Rmd'}
+```
+
+
+
+\pagebreak
+
+# Study 2 (good): Supplementary Analyses
+
+```{r child = 'Study_2_supp.Rmd'}
+```
+
+
+
+\pagebreak
+
+# Study 3 (bad and good): Supplementary Analyses
+
+```{r child = 'Study_3_supp.Rmd'}
+```
+
+
+
+\pagebreak
+
+```{r child = 'pilot_1.Rmd'}
+```
+
+
+
+\pagebreak
+
+```{r child = 'pilot_2.Rmd'}
+```
+
+
+\pagebreak
+
+
+```{r child = 'Study_S_1.Rmd'}
+```
+
+\pagebreak
+
+
+
+```{r child = 'Study_S_2.Rmd'}
+```
+
+
+\pagebreak
+
+```{r child = 'Study_S_3.Rmd'}
+```
+
+
+
+\pagebreak
+
+# References
+

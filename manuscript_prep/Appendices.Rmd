@@ -1,0 +1,20 @@
+# Appendices
+
+# Appendix A: Moral Scenarios
+```{r child = 'AppendixA.Rmd'}
+```
+
+\newpage
+# Appendix B: Sample Statements to Challenge Judgements
+```{r child = 'AppendixB.Rmd'}
+```
+
+
+\newpage
+# Appendix C: Post Discussion Duestionnaire
+```{r child = 'AppendixC.Rmd'}
+```
+
+\newpage
+```{r child = 'Extras.Rmd'}
+```
