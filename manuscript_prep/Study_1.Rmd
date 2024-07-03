@@ -125,10 +125,11 @@ The aim of Study 1 is to test if the dilution effect exists in the moral domain.
 ### Study 1: Participants and design
 Study 1 was a within-subjects design. The independent variable was condition with two levels, diagnostic information only (diagnostic), and non-diagnostic information additionally included (non-diagnostic). We used the same two dependent variables as in Pilot Study 1, the four item moral perception scale (MPS-4) which showed good reliability, $\alpha$ = `r round(alpha1$alpha,digits=2)`, and the single item moral perception measure MM-1.
 
-A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df3$gender=="1",na.rm=T)` female, `r sum(df3$gender=="2", na.rm=T)` male, `r round(sum(df3$gender=="3", na.rm=T))` non-binary, `r round(sum(df3$gender=="4", na.rm=T))` other; `r sum(df3$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from the student population at University of [BLINDED].
+A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df3$gender=="2",na.rm=T)` female, `r sum(df3$gender=="1", na.rm=T)` male, `r round(sum(df3$gender=="3", na.rm=T))` non-binary, `r round(sum(df3$gender=="4", na.rm=T))` other; `r sum(df3$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from the student population at University of [BLINDED].
 
 ```{r}
 df1 <- read.csv("../data/study1_data_long.csv")
+df2 <- read.csv("../data/study1_data_wide.csv")
 df3 <- read.csv("../data/study1_data_long_clean.csv")
 
 table(df3$gender)
@@ -136,7 +137,7 @@ length(df1$gender)/6
 length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
 length(df3$gender)/4
 
-att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+att_both <- length(levels(as.factor(df2$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
 ```
 
 ```{r}
@@ -152,12 +153,16 @@ df_long_extra_clean <- x
 x <- df3
 # 
 # df3 <- x
-# att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(levels(as.factor(df_long_clean$ResponseId)))
+
+length(levels(as.factor(df_long_extra_clean$ResponseId)))
+
+att_both <- length(levels(as.factor(df_long_clean$ResponseId)))-length(levels(as.factor(df_long_extra_clean$ResponseId)))
 
 ```
 
 
-Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)/4` participants (`r sum(df3$gender=="1",na.rm=T)/4` female, `r sum(df3$gender=="2", na.rm=T)/4` male, `r round(sum(df3$gender=="3", na.rm=T)/4)` non-binary, `r sum(df3$gender=="4", na.rm=T)/4` other, `r sum(df3$gender=="5", na.rm=T)/4` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
+Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)/4` participants (`r sum(df3$gender=="2",na.rm=T)/4` female, `r sum(df3$gender=="1", na.rm=T)/4` male, `r round(sum(df3$gender=="3", na.rm=T)/4)` non-binary, `r sum(df3$gender=="4", na.rm=T)/4` other, `r sum(df3$gender=="5", na.rm=T)/4` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
 
 ### Study 1: Procedure and materials
 As in the pilot study, data were collected using an online questionnaire presented with Qualtrics (www.qualtrics.com). Participants were presented with four descriptions of characters (*Sam*, *Alex*, *Francis*, *Robin* from Pilot Study 1). All descriptions included diagnostic information relating to three moral foundations, e.g., *Imagine a person named Robin. Throughout their life they have been known to physically hurt others, treat some people differently to others, and show lack of loyalty*. We programmed our survey to randomly present non-diagnostic information along with two of the descriptions participants read (this was done through blocking, for details on the blocks see full materials at \color{blue}[https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67](https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67)\color{black}. This meant that all participants read two descriptions containing diagnostic information only, and two descriptions that additionally included non-diagnostic information. We hypothesized that the descriptions including non-diagnostic information would be rated as less severe than the diagnostic-only descriptions. Study 1 was pre-registered at \color{blue}[https://aspredicted.org/DVY_QN3](https://aspredicted.org/DVY_QN3)\color{black}

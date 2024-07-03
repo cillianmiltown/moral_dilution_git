@@ -103,9 +103,9 @@ getwd()
 #source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
 rm(list = ls())
 
-df3 <- read.csv("../data/study4_data_long.csv")
-df1 <- read.csv("../data/study4_data_wide.csv")
-x <- read.csv("../data/study4_data_long_clean.csv")
+df3 <- read.csv("../data/study2_data_long.csv")
+df1 <- read.csv("../data/study2_data_wide.csv")
+x <- read.csv("../data/study2_data_long_clean.csv")
 
 MPS <- x %>% 
   select(R1,R2,R3,R4)
@@ -123,11 +123,11 @@ The aim of Study 2 is to test if the dilution effect exists in the moral domain 
 ### Study 2: Participants and design
 Study 2 was a within-subjects design. The independent variable was condition with two levels, diagnostic and non-diagnostic. We used the same two dependent variables as in previous studies, the four item moral perception scale (MPS-4, $\alpha$ = `r round(alpha1$alpha,digits=2)`), and the single item moral perception measure MM-1.
 
-A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="1",na.rm=T)` female, `r sum(df1$gender=="2", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T)/1)` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from the student population at University of [BLINDED].
+A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="2",na.rm=T)` female, `r sum(df1$gender=="1", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T)/1)` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from the student population at University of [BLINDED].
 
 ```{r}
-df1 <- read.csv("../data/study4_data_long.csv")
-df3 <- read.csv("../data/study4_data_long_clean.csv")
+df1 <- read.csv("../data/study2_data_long.csv")
+df3 <- read.csv("../data/study2_data_long_clean.csv")
 df_long_clean <- df3
 table(df3$gender)
 length(df1$gender)/6
@@ -171,7 +171,7 @@ x <- df3
 ```
 
 
-Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)/4` participants (`r sum(df3$gender=="1",na.rm=T)/4` female, `r sum(df3$gender=="2", na.rm=T)/4` male, `r sum(df3$gender=="4", na.rm=T)/4` other, `r sum(df3$gender=="4", na.rm=T)/4` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
+Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)/4` participants (`r sum(df3$gender=="2",na.rm=T)/4` female, `r sum(df3$gender=="1", na.rm=T)/4` male, `r sum(df3$gender=="4", na.rm=T)/4` other, `r sum(df3$gender=="4", na.rm=T)/4` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
 
 
 ### Study 2: Procedure and materials

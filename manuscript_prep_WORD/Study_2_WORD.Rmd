@@ -1,0 +1,799 @@
+---
+title             : "Study 2"
+shorttitle        : "Moral Dilution"
+author:
+  - name          : "Blinded"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Blinded"
+    email         : "Blinded"
+  - name          : "Blinded"
+    affiliation   : "2"
+  - name          : "Blinded"
+    affiliation   : "1"
+  - name          : "Blinded"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "Blinded"
+  - id            : "2"
+    institution   : "Blinded"
+author_note: >
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+abstract: >
+  Six studies etc.
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa6.csl"
+figsintext        : true
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+toc               : false
+documentclass     : "apa7"
+output:
+  papaja::apa6_pdf
+header-includes:
+- \raggedbottom
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+```{r S2setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+```{r S2load_libraries_cogload}
+rm(list = ls())
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#devtools::install_github("crsh/papaja")
+library(papaja)
+#library("dplyr")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("metap")
+library(metap)
+library(pwr)
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+library(VGAM)
+library(nnet)
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+library("powerMediation")
+library("ggpubr")
+
+
+# library(rstatix)
+
+
+#source("load_all_data.R")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+#setwd("manuscript_prep")
+getwd()
+```
+
+
+
+```{r S2LoadData}
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/read_and_sort_raw_data.R")
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
+rm(list = ls())
+
+df3 <- read.csv("../data/study2_data_long.csv")
+df1 <- read.csv("../data/study2_data_wide.csv")
+x <- read.csv("../data/study2_data_long_clean.csv")
+
+MPS <- x %>% 
+  select(R1,R2,R3,R4)
+
+alpha1 <- ltm::cronbach.alpha(MPS)
+
+alpha1
+```
+
+# Study 2 - Good Characters
+The aim of Study 2 is to test if the dilution effect exists in the moral domain for judgments of morally *good* characters. Participants were presented with descriptions of four characters, two descriptions contain diagnostic information only (morally relevant information) and two will additionally contain non-diagnostic information (non morally relevant information) along with the diagnostic information. We hypothesize that moral perceptions of the diagnostic only descriptions will be more extreme (more moral) than for the descriptions that also contain non-diagnostic information.
+
+## Study 2: Method
+
+### Study 2: Participants and design
+Study 2 was a within-subjects design. The independent variable was condition with two levels, diagnostic and non-diagnostic. We used the same two dependent variables as in previous studies, the four item moral perception scale (MPS-4, $\alpha$ = `r round(alpha1$alpha,digits=2)`), and the single item moral perception measure MM-1.
+
+A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="2",na.rm=T)` female, `r sum(df1$gender=="1", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T)/1)` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from the student population at University of [BLINDED].
+
+```{r}
+df1 <- read.csv("../data/study2_data_long.csv")
+df3 <- read.csv("../data/study2_data_long_clean.csv")
+df_long_clean <- df3
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+```{r}
+x <- df_long_clean
+x <- x[which(x$Sample=="student"),]
+```
+
+The majority of participants were from the student body: *n* = `r length(x$gender)/4`, (female = `r sum(x$gender=="2")/4`, male = `r sum(x$gender=="1")/4`, non-binary/other = `r sum(x$gender=="3")/4 + sum(x$gender=="5")/4`, prefer not to say `r sum(x$gender=="5")/4`, *M~age~* = `r round(mean(x$age),digits=1)`, *SD* = `r round(sd(x$age),digits=1)`).
+
+```{r}
+x <- df_long_clean
+x <- x[which(x$Sample=="MTurk"),]
+```
+
+In order to reach our pre-registered target sample size we recruited additional participants from MTurk: *n* = `r length(x$gender)/4`, (female = `r sum(x$gender=="2")/4`, male = `r sum(x$gender=="1")/4`, non-binary/other = `r sum(x$gender=="3")/4 + sum(x$gender=="5")/4`, prefer not to say `r sum(x$gender=="5")/4`, *M~age~* = `r round(mean(x$age),digits=1)`, *SD* = `r round(sd(x$age),digits=1)`). Participants from MTurk were paid $0.40 for their participation.
+
+
+```{r}
+df_long_clean <- df3
+
+x <- df3
+x$attn_chk_1Q
+x$attn_chk_2_Q
+x <- x[which(x$attn_chk_2_Q==2|x$attn_chk_2_Q==5),]
+x <- x[which(x$attn_chk_1Q==7),]
+df_long_extra_clean <- x
+
+x <- df3
+# 
+# df3 <- x
+# att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)/4` participants (`r sum(df3$gender=="2",na.rm=T)/4` female, `r sum(df3$gender=="1", na.rm=T)/4` male, `r sum(df3$gender=="4", na.rm=T)/4` other, `r sum(df3$gender=="4", na.rm=T)/4` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
+
+
+### Study 2: Procedure and materials
+Again, data were collected using an online questionnaire presented with Qualtrics (www.qualtrics.com). Participants were presented with four descriptions of characters (*Sam*, *Alex*, *Francis*, *Robin* from Pilot Study 2). All descriptions included diagnostic information relating to three moral foundations, e.g., *Imagine a person named Alex. Throughout their life they have been known to protect and provide shelter to the weak and vulnerable, uphold the rights of others, and show respect for authority*. For each participant, two descriptions additionally included non-diagnostic information (this was randomized through blocking, see \color{blue}[https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67](https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67)\color{black}. Study 1 was pre-registered at \color{blue}[https://aspredicted.org/NX2_HN6](https://aspredicted.org/NX2_HN6)\color{black}
+
+
+## Study 2: Results
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+
+
+The means and standard deviations for MPS-4 for each scenario are as follows: 
+*Sam*,
+*M*~MPS-4~ = `r mean(sam$R_tot)`, *SD*~MPS-4~ = `r sd(sam$R_tot)`,
+*Francis*,
+*M*~MPS-4~ = `r mean(francis$R_tot)`, *SD*~MPS-4~ = `r sd(francis$R_tot)`,
+*Alex*,
+*M*~MPS-4~ = `r mean(alex$R_tot)`, *SD*~MPS-4~ = `r sd(alex$R_tot)`,
+*Robin*,
+*M*~MPS-4~ = `r mean(robin$R_tot)`, *SD*~MPS-4~ = `r sd(robin$R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. *Francis* appeared to be rated as less moral than each of the other characters (all *p*s < .001). 
+
+
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    M1 ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+lapply(pwc$p.adj, p_report)
+paste(pwc$p.adj[2])
+pwc$p[2]
+# d1 <- lsr::cohensD(M1~condition,x,method="paired")
+# t.test(M1~scenario,x,paired=TRUE)
+# t1 <- t.test(x$M1~x$scenaro,paired=TRUE)
+# d1
+
+```
+
+The means and standard deviations for MM-1 for each scenario are as follows: 
+*Sam* (diagnostic/moral),
+*M*~MM-1~ = `r mean(sam$M1)`, *SD*~MM-1~ = `r sd(sam$M1)`;
+*Francis* (diagnostic/moral),
+*M*~MM-1~ = `r mean(francis$M1)`, *SD*~MM-1~ = `r sd(francis$M1)`;
+*Alex* (diagnostic/moral),
+*M*~MM-1~ = `r mean(alex$M1)`, *SD*~MM-1~ = `r sd(alex$M1)`;
+*Robin* (diagnostic/moral),
+*M*~MM-1~ = `r mean(robin$M1)`, *SD*~MM-1~ = `r sd(robin$M1)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r paste(aov1$ges)`. *Francis* was rated less favorably than all other characters (all *p*s < .001).
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition
+#                   #*scenario
+#                 + (1|ResponseId)
+# #                + (1|ResponseId:condition)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+# 
+# summary(model1)
+
+model1 <- lmerTest::lmer(R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition did not influence responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was not a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r round(results_coef$df[2])`) = `r t1`, *p* `r paste(p_report(p2))`, see Figure\ \@ref(fig:S2bothconditionplot).
+
+```{r S2Rtotconditionplot, fig.cap="Study 2: Differences in MPS-4 depending on condition", include=FALSE}
+
+# mps4plot <- 
+# ggplot(x,aes(x=condition,y=R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("Moral Perception Scale (MPS-4)") +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+```{r S2M1conditionplot, fig.cap="Study 2: Differences in MM1 depending on condition", include=FALSE}
+
+# M1plot <- 
+#   ggplot(x,aes(x=condition,y=M1))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+#   #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+#   # violin plot with jittered points
+#   # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("Moral Perception Measure (MM-1)")+
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         legend.text=element_text(#family="Times",
+#           size=8
+#         ),
+#         legend.title=element_text(#family="Times",
+#           size=10
+#         ),
+#         axis.text=element_text(#family="Times",
+#           colour = "black",
+#           size=8
+#         ),
+#         axis.ticks.x = element_blank(),
+#         axis.title=element_text(#family="Times",
+#           size=12
+#         ),
+#         strip.text=element_text(#family = "Times",
+#           size = 12
+#         ),
+#         # strip.background = element_rect(fill = "white"),
+#         legend.position="right")
+
+
+
+
+```
+
+
+
+```{r}
+
+#install.packages("ggplot2")
+#library(ggplot2)
+
+#table(x$condition,x$Valence)
+
+#x <- na.omit(x) 
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="R_tot", groupvars=c("condition"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 3, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=R_tot-se
+                                        , ymax=R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Moral Perception Scale (MPS-4)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,7)
+                     , breaks = seq(0,7, by = 1)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mps4plot <- g
+
+```
+
+
+
+```{r}
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1", groupvars=c("condition"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = 2, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1-se
+                                        , ymax=M1+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Moral Perception Measure (MM-1)")+
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,100)
+                     , breaks = seq(0,100, by = 10)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color=guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+g
+M1plot <- g
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    #,labels = c("A")
+                    , ncol = 2
+                    , nrow = 1
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+```{r S2bothconditionplot, fig.cap="Study 2: Differences in moral perception depending on condition", include=TRUE}
+
+suppressWarnings(print(figure))
+
+```
+
+
+
+```{r}
+model0 <- lmerTest::lmer(M1 ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+                #, contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1 ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+
+
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+results_coef$`t value`[2]
+t1 <- results_coef$`t value`[2]
+
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition did not influence MM-1 responses *F*(`r round(aov1$NumDF[1])`, `r round(aov1$DenDF[1])`) = `r f3`, *p* `r paste(p_report(p3))`, and was not a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r round(results_coef$df[2])`) = `r t1`, *p* `r paste(p_report(p2))`, see Figure\ \@ref(fig:S2bothconditionplot).
+
+In the supplementary analyses we report the effect of condition on moral perception for each description individually.
+
+
+
+

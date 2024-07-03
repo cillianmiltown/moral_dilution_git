@@ -124,13 +124,13 @@ rm(list = ls())
 #df1 <- read.csv("../data/study6_data_wide.csv")
 #x <- read.csv("../data/study6_data_long_clean.csv")
 
-df_long <- read.csv("../data/study3_rep_data_long.csv")
-df_wide <- read.csv("../data/study3_rep_data_wide.csv")
-df_long_clean <- read.csv("../data/study3_rep_data_long_clean.csv")
+df_long <- read.csv("../data/study3_data_long.csv")
+df_wide <- read.csv("../data/study3_data_wide.csv")
+df_long_clean <- read.csv("../data/study3_data_long_clean.csv")
 
-df3 <- df_long # read.csv("../data/study3_rep_data_long.csv")
-df1 <- read.csv("../data/study3_rep_data_wide.csv")
-x <- read.csv("../data/study3_rep_data_long_clean.csv")
+df3 <- df_long # read.csv("../data/study3_data_long.csv")
+df1 <- read.csv("../data/study3_data_wide.csv")
+x <- read.csv("../data/study3_data_long_clean.csv")
 
 
 MPS <- x %>% 
@@ -146,8 +146,8 @@ alpha1
 # df1 <- read.csv("../data/study6_data_long.csv")
 # df3 <- read.csv("../data/study6_data_long_clean.csv")
 
-df1 <- read.csv("../data/study3_rep_data_long.csv")
-df3 <- read.csv("../data/study3_rep_data_long_clean.csv")
+df1 <- read.csv("../data/study3_data_long.csv")
+df3 <- read.csv("../data/study3_data_long_clean.csv")
 
 df_long_clean <- df3
 table(df3$gender)

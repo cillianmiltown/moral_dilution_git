@@ -130,7 +130,7 @@ The aim of Study S3 was to test for the moral dilution effect in both good and b
 ### Study S3: Participants and design
 Study S3 was a 2 $\times$ 2 between-subjects factorial design. As in Study 3, the first independent variable was condition with two levels, diagnostic and non-diagnostic. The second independent variable was valence of character description, with two levels morally good and morally bad. We used the same two dependent variables as in previous studies (MPS-4, $\alpha$ = `r round(alpha1$alpha,digits=2)`, and MM-1).
 
-A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="1",na.rm=T)` female, `r sum(df1$gender=="2", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T))` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from MTurk and paid $0.10 for their participation. 
+A total sample of `r length(levels(as.factor(df3$ResponseId)))` (`r sum(df1$gender=="2",na.rm=T)` female, `r sum(df1$gender=="1", na.rm=T)` male, `r round(sum(df1$gender=="3", na.rm=T))` non-binary, `r round(sum(df1$gender=="4", na.rm=T))` other; `r sum(df1$gender=="5", na.rm=T)` prefer not to say, *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) started the survey.  Participants were recruited from MTurk and paid $0.10 for their participation. 
 
 ```{r}
 df1 <- read.csv("../data/study_S3_data_long.csv")
@@ -199,7 +199,7 @@ x <- df_recoded_extra_clean
 ```
 
 
-Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)` participants (`r sum(df3$gender=="1",na.rm=T)` female, `r sum(df3$gender=="2", na.rm=T)` male, `r sum(df3$gender=="4", na.rm=T)` other, `r sum(df3$gender=="4", na.rm=T)` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
+Participants who failed both manipulation checks were removed (*n* = `r att_both`), leaving a total sample of `r length(df3$gender)` participants (`r sum(df3$gender=="2",na.rm=T)` female, `r sum(df3$gender=="1", na.rm=T)` male, `r sum(df3$gender=="4", na.rm=T)` other, `r sum(df3$gender=="4", na.rm=T)` prefer not to say; *M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`, min = `r min(df3$age, na.rm=T)`, max = `r max(df3$age, na.rm=T)`, *SD* = `r round(sd(df3$age, na.rm=T),digits=2)`).
 
 
 ### Study S3: Procedure and materials

@@ -1,0 +1,87 @@
+---
+title             : "Introduction"
+shorttitle        : "Moral Dilution"
+author:
+  - name          : "Cillian McHugh"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "University of Limerick, Limerick, Ireland, V94 T9PX"
+    email         : "cillian.mchugh@ul.ie"
+  - name          : "Marek McGann"
+    affiliation   : "2"
+  - name          : "Eric R. Igou"
+    affiliation   : "1"
+  - name          : "Elaine L Kinsella"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "University of Limerick"
+  - id            : "2"
+    institution   : "Mary Immaculate College ~ University of Limerick"
+author_note: >
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+abstract: >
+  Across five studies we investigated the moral dilution effect.
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+cls: "../resources/bib/apa7.cls"
+figsintext        : yes
+figurelist        : yes
+tablelist         : yes
+footnotelist      : no
+lineno            : yes
+toc               : yes
+lang              : "en-US"
+documentclass     : "apa7"
+output:
+  papaja::apa6_word
+editor_options: 
+  chunk_output_type: console
+---
+
+
+Imagine a friend is telling you about a time they were mugged on holiday. Fortunately, a by-stander saw the incident and was very helpful to your friend afterwards. Their description of the experience includes much detail, including non-relevant information regarding both the mugger and their helper, such as, “the mugger was wearing grey shoes”, “they [the helper] lived on the South of the City”. As you listen to the story you will likely form an impression of the moral character of both the mugger and the helper. Conventional wisdom suggests that this non-relevant information should not impact your evaluation of either the mugger or the helper, however research suggests this may not be the case.
+
+The dilution effect occurs when the presence of non-diagnostic information leads to judgments that are less extreme than they would have been in the absence of non-diagnostic information [@nisbett_dilution_1981; @zukier_dilution_1982]. Applied to the above example, the presence of non-diagnostic information (“grey shoes” / “lived on the South of the City”) could lead judgments of the mugger to be less harsh, and judgments of the helper to be less positive. The effect has been observed for a range of judgments, including judging products [@igou_conversational_2005; @meyvis_consumers_2002], probability judgments [@labella_dilution_2004], and predictions relating to people’s behavior [@nisbett_dilution_1981; @zukier_dilution_1982], however, to our knowledge, research has not directly tested if the dilution effect occurs for moral judgments.
+
+In a classic demonstration of the dilution effect participants were presented with descriptions of target students and asked to estimate the grade point average (GPA) of these target students [@zukier_dilution_1982]. Descriptions that included non-diagnostic information (i.e., information that was not correlated with GPA – e.g., “has 1 brother and 2 sisters”), produced less extreme GPA estimates than descriptions that contained only diagnostic information i.e., information that is normally correlated with GPA. This finding held true for descriptions suggesting low GPA (e.g., “He quite often starts things he doesn’t finish”) and for descriptions suggesting high GPA (e.g., “He never arrives late to appointments or meetings”).
+
+The effect has been explained as emerging as a consequence of the representativeness heuristic [@kahneman_subjective_1972; @nisbett_dilution_1981]. According to this view, if all the information a person has about a target is information that is relevant to particular category membership (diagnostic information), the target will be perceived as being similar to what is representative or typical of that category. Crucially, not only is all the available information indicative of category membership, the absence of any non-diagnostic information means there is nothing to suggest any differences between the target and a typical (or stereotypical) member of the category. As such, the target is perceived as highly representative, or typical, of category membership. When information that is not relevant for category membership (non-diagnostic information) is included, this reduces the match between a target and a typical member of the category, thus reducing the perceived representativeness of the target, and this leads to the dilution effect being observed. For example, a person described as having little interest in political or social issues, with hobbies that include home carpentry and mathematical puzzles, is more likely to be categorized as an engineer than as a lawyer [@nisbett_dilution_1981]. In contrast, being Catholic is not representative of membership of the category engineer, and the inclusion of this information in relation to a target would reduce the similarity between the target and a typical engineer, thus reducing the representativeness of the target and resulting in the dilution effect [@nisbett_dilution_1981]. 
+
+# Predicting the Moral Dilution Effect
+
+Research in moral psychology increasingly highlights the need to understand the dynamic and context-sensitive nature of moral judgments [@mchugh_moral_2022]. Examples of known contextual influences on people’s moral judgments include emotions [@cameron_morality_2013; @giner-sorolla_functional_2018], intentionality and evitability [@christensen_moral_2012; @christensen_moral_2014], and how ‘up close and personal’ an action is [@greene_fmri_2001]. We propose the presence or absence of non-diagnostic information presents another possible source of variability in moral judgments, such that the dilution effect may be observed for moral judgments. Indeed, there is a strong theoretical case for predicting that the dilution effect should be observed in the moral domain.
+
+Previous work suggests that typicality is an important consideration when people make judgments about moral issues, that is, some behaviors are more typical (or representative) examples of wrongness or rightness than others [@gray_impure_2015; @mchugh_moral_2022; @schein_theory_2018]. Some authors have attempted to identify the content of what is representative of moral wrongness, arguing that this prototype, or representative essence of moral wrongness involves “an intentional agent causing damage to a vulnerable patient” [@schein_theory_2018], p. 33]. While not directly discussed by proponents of this approach it is plausible that the inclusion of non-diagnostic information may reduce the match between a target and this prototype leading to the dilution effect being observed for moral character judgments [@gray_moral_2012; @schein_theory_2018].
+
+More recently, the theory of moral judgment as categorization [MJAC, @mchugh_moral_2022] presents a more dynamic and context sensitive approach to understanding moral judgments. Two core predictions of MJAC are (i) that moral judgments are sensitive to a range of contextual factors, and (ii) that judgments of both moral rightness and moral wrongness will vary according to typicality. While context effects in moral judgment have been widely shown, @mchugh_moral_2022 note that in the moral domain typicality may be confounded with severity posing a significant challenge to testing this prediction. For instance, murder is likely a highly typical example of a member of the category morally wrong, while stealing stationary is a less typical example, however this variation in typicality cannot be separated from the difference in the severity of the actions. The dilution effect paradigm provides a means to test for this variability in typicality in moral judgments, while avoiding the confound of severity. Applying the same reasoning as described above in relation to the representative heuristic [@kahneman_subjective_1972; @nisbett_dilution_1981], suggests that for moral categorizations, the presence of information that reduces the similarity between a target and an action/actor that is prototypically right or prototypically wrong (i.e., non-diagnostic information), should lead to the target being evaluated as less typical (or less representative), and this should lead to less extreme evaluations of the target. Thus, a moral dilution effect should be observed.
+
+# The Current Research
+
+Informed by recent work that explains moral judgment as occurring through the same cognitive processes as categorization more generally [@mchugh_moral_2022], we predict that the dilution effect should be observed for moral judgments. We present three studies where we test for the dilution effect in judgments of moral character. In Study 1 we investigate descriptions of bad actors. In Study 2, we investigate descriptions of good actors, and in Study 3 we investigate descriptions of both good and bad actors. The contribution of the current work is twofold. First, we are (to our knowledge) the first to test for the dilution effect in the moral domain. Second, we provide an empirical test of a core hypothesis of the recently proposed MJAC theory of moral judgment. 
+
+All three studies 1-3 were pre-registered. A-priori power analyses revealed that in order to detect a small effect (f 2 = .01) for Studies 1-3, a minimum sample of N = 785 was required. As such, for each Study our target minimum sample size was N = 800. In the supplementary materials we report two pilot studies that informed the development of the stimulus materials used.[^1]
+
+[^1]: We also report in the supplementary materials three additional studies with similar designs to Studies 2 (Study S1) and 3 (Study S2), there is also a between-subjects version of Study 3 (Study S3). These Studies S1-S3 were conducted on MTurk and due to irregularities with the quality of the data they are not reported in the main text. Because of this, for the studies reported in the main text our samples are primarily drawn from student populations.
+
+# Ethical Declarations
+
+All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. All studies were approved by the ethics committee of the Faculty of Education and Health Sciences at the University of Limerick (Education and Health Sciences Research Ethics Committee: EHSREC), and the project approval number is 2020_12_06_EHS. Informed consent was obtained from all individual participants included in the study.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
