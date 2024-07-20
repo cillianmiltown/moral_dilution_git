@@ -95,7 +95,9 @@ library(reshape2)
 #install.packages("magick")
 # install.packages("ltm")
 #source("load_all_data.R")
-
+#install.packages("magick")
+#tinytex::reinstall_tinytex()
+# install.packages("ltm")
 
 #devtools::install_github("benmarwick/wordcountaddin")
 #library(wordcountaddin)
