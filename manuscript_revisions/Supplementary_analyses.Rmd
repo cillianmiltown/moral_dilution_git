@@ -1,0 +1,3298 @@
+---
+title             : "Supplementary Materials: Moral Dilution"
+shorttitle        : "Moral Dilution"
+author:
+  - name          : "Blinded"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Blinded"
+    email         : "Blinded"
+  - name          : "Blinded"
+    affiliation   : "2"
+  - name          : "Blinded"
+    affiliation   : "1"
+  - name          : "Blinded"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "Blinded"
+  - id            : "2"
+    institution   : "Blinded"
+author_note: >
+  n/a
+abstract: >
+  n/a
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa.csl"
+figsintext        : yes
+floatsintext      : yes
+figurelist        : yes
+tablelist         : yes
+footnotelist      : no
+lineno            : no
+toc               : false
+lang              : "en-US"
+documentclass     : "apa7"
+output:
+  papaja::apa6_pdf
+header-includes:
+- \raggedbottom
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+```{r S6setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+```{r}
+rm(list = ls())
+```
+
+# Supplementary Analyses
+
+# Pilot Study 1
+
+```{r}
+library(tidyverse)
+library(desnum)
+library(ggpubr)
+```
+
+
+```{r}
+df1 <- read.csv("../data/pilot_data_long.csv")
+df3 <- read.csv("../data/pilot_data_long_clean.csv")
+table(df3$gender)
+att_both <- (length(df1$gender)/6)-(length(df3$gender)/6)
+x <- df3
+```
+
+
+```{r}
+sam <- x[which(x$scenario_abb=="Sam"),]
+francis <- x[which(x$scenario_abb=="Francis"),]
+alex <- x[which(x$scenario_abb=="Alex"),]
+robin <- x[which(x$scenario_abb=="Robin"),]
+jackie <- x[which(x$scenario_abb=="Jackie"),]
+charlie <- x[which(x$scenario_abb=="Charlie"),]
+
+```
+## Pilot: 1: Differences Between Moral Descriptions
+
+We developed a combined moral perception measure by calculating the mean of the combined mean-centered scores for MPS-4 and MM-1, and mean-centering this result. Below we report the analyses for this combined measure.
+
+```{r}
+x <- df3
+bad <- x[which(x$condition=="Diagnostic"),]
+good <- x[which(x$condition=="Non-Diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario_abb)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    M1R_tot ~ scenario_abb, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc$p
+
+
+# d1 <- lsr::cohensD(M1R_tot~scenario_abb,good,method="paired")
+# t.test(M1R_tot~scenario_abb,good,paired=TRUE)
+# t1 <- t.test(good$M1R_tot~good$scenario_abb,paired=TRUE)
+# d1
+
+
+good <- good[order(good$ResponseId),]
+
+d1 <- lsr::cohensD(M1R_tot~scenario_abb,good,method="paired")
+temp <- reshape(good, idvar = "ResponseId", timevar = "scenario_abb", direction = "wide")
+t1 <- t.test(temp$M1R_tot.Charlie,temp$M1R_tot.Jackie, paired=T)
+rm(temp)
+d1
+
+
+```
+
+The standardized means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam* (diagnostic),
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`;
+*Francis* (diagnostic),
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`;
+*Alex* (diagnostic),
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`;
+*Robin* (diagnostic),
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`;
+*Jackie* (non-diagnostic),
+*M* = `r mean(jackie$M1R_tot)`, *SD* = `r sd(jackie$M1R_tot)`;
+*Charlie* (non-diagnostic),
+*M* = `r mean(charlie$M1R_tot)`, *SD* = `r sd(charlie$M1R_tot)`. For the moral descriptions, we observed significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r paste(aov1$ges)`. When correcting for multiple comparisons, pairwise comparisons did not reveal significant differences between descriptions. We note that without correction, *Francis* appeared to be rated as more moral than both *Robin* (*p* `r paste(p_report(pwc$p[4]))`), and *Sam* (*p* `r paste(p_report(pwc$p[5]))`). For the neutral descriptions there was no significant difference in ratings depending on description, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+## Pilot 1: Testing Moral vs Neutral
+```{r}
+
+x <- df3
+
+model0 <- lmerTest::lmer(M1R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot ~
+                  condition
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+
+
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if condition influenced responses on this combined measure. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`, and condition was a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`.
+
+
+
+```{r pilot1cobminedconditionplot, fig.cap="Pilot Study 1: Differences in combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+#install.packages("ggplot2")
+#library(ggplot2)
+
+#table(x$condition,x$Valence)
+
+#x <- na.omit(x) 
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1R_tot", groupvars=c("condition"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1R_tot-se
+                                        , ymax=M1R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Moral Perception (combined)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-2.5,2.5)
+                     , breaks = seq(-2.5,2.5, by = .5)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" #guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+
+
+```
+
+
+```{r pilot1cobminedconditionplotVIOLIN, fig.cap="Pilot Study 1: Differences in combined measure depending on condition", include=FALSE, out.width = "\\textwidth", fig.pos = "!h"}
+
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.8
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Moral Perception (combined)") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+\newpage
+
+```{r}
+rm(list = ls())
+```
+
+# Study 1
+
+Again, we created a combined measure of moral perception from both DVs.
+```{r}
+df1 <- read.csv("../data/study1_data_long.csv")
+df3 <- read.csv("../data/study1_data_long_clean.csv")
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+The means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam*,
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`,
+*Francis*,
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`,
+*Alex*,
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`,
+*Robin*,
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. *Francis* appeared to be rated as the most favorable, followed by *Sam*, then *Alex* and finally *Robin* as the least favorable (all *p*s < .001). 
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(M1R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if condition influenced moral perception. Our outcome measure was the combined moral perception measure, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the non-diagnostic descriptions being rated as more moral than the diagnostic (morally relevant) descriptions of immoral characters Figure\ \@ref(fig:S1combinedconditionplot).
+
+```{r S1combinedconditionplot, fig.cap="Study 1: Differences in combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1R_tot", groupvars=c("condition"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1R_tot-se
+                                        , ymax=M1R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Moral Perception (combined)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-2.5,2.5)
+                     , breaks = seq(-2.5,2.5, by = .5)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" #guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+
+
+```
+
+\newpage
+
+## Study 1: Differences between the Descriptions
+
+We additionally conducted separate analyses for each scenario separately (for each dependent measure MPS-4, MM-1 and the combined measure). The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S1allscenariosPlot).
+
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r S1allscenariosMPS4plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="R_tot", groupvars=c("condition"
+                                                                    , "Scenario"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=R_tot-se
+                                        , ymax=R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("(MPS-4)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,7)
+                     , breaks = seq(0,7, by = 1)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+
+g
+mps4plot <- g
+
+```
+
+
+
+
+```{r S1allscenariosM1plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1", groupvars=c("condition"
+                                                                    , "Scenario"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1-se
+                                        , ymax=M1+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("(MM-1)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-.0,100)
+                     , breaks = seq(0,100, by = 10)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+
+g
+M1plot <- g
+
+
+# M1plot <- 
+# ggplot(x,aes(x=condition,y=M1))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("MM-1") +
+#   facet_grid(cols = vars(Scenario)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+
+```{r S1allscenariosBothplot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="M1R_tot", groupvars=c("condition"
+                                                                    , "Scenario"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = condition, y = M1R_tot
+                , fill=factor(condition
+                              ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(condition
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=M1R_tot-se
+                                        , ymax=M1R_tot+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("(Combined)") +
+  scale_x_discrete(
+    labels=c("Diagnostic","Non-Diagnostic")
+  ) +
+  scale_y_continuous(limits = c(-2.5,2.5)
+                     , breaks = seq(-2.5,2.5, by = .5)  #  c(0:)
+                     #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+
+
+g
+mBothPlot <- g
+
+# mBothPlot <- 
+# ggplot(x,aes(x=condition,y=M1R_tot))+
+#   geom_violin() +
+#   stat_summary(fun=mean, geom="point", shape=23, size=2)+
+#   geom_boxplot(width=0.1)+
+# #  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# # violin plot with jittered points
+# # 0.2 : degree of jitter in x direction
+#   geom_jitter(shape=16
+#               , position=position_jitter(0.15)
+#               , size=.1
+#               , color="dark grey") +
+#   xlab("Condition") +
+#   ylab("Combined") +
+#   facet_grid(cols = vars(Scenario)) +
+#   theme_bw() +
+#   theme(panel.border = element_blank(),
+#         axis.line = element_line(size = .2),
+#         strip.background  = element_blank(),
+#         panel.grid = element_blank(),
+#         plot.title=element_text(#family="Times",
+#                                 size=12
+#                                 ),
+#         legend.text=element_text(#family="Times",
+#                                  size=8
+#                                  ),
+#           legend.title=element_text(#family="Times",
+#                                     size=10
+#                                     ),
+#           axis.text=element_text(#family="Times",
+#                                  colour = "black",
+#                                  size=8
+#                                  ),
+#           axis.ticks.x = element_blank(),
+#           axis.title=element_text(#family="Times",
+#                                   size=12
+#                                   ),
+#           strip.text=element_text(#family = "Times",
+#                                   size = 12
+#                                   ),
+#          # strip.background = element_rect(fill = "white"),
+#           legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+```{r S1allscenariosPlot, fig.cap="Study 1: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+
+suppressWarnings(print(figure))
+
+```
+
+
+```{r}
+
+x <- sam
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Sam*, MPS-4 scores were significantly higher for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were higher in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also higher in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), and in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were significantly higher for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were higher in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also higher in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were significantly higher for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+
+
+\newpage
+
+
+```{r}
+rm(list = ls())
+```
+
+# Pilot Study 2
+
+
+
+```{r}
+df1 <- read.csv("../data/pilot_2_data_long.csv")
+df3 <- read.csv("../data/pilot_2_data_long_clean.csv")
+table(df3$gender)
+att_both <- (length(df1$gender)/6)-(length(df3$gender)/6)
+x <- df3
+```
+
+
+```{r}
+sam <- x[which(x$scenario_abb=="Sam"),]
+francis <- x[which(x$scenario_abb=="Francis"),]
+alex <- x[which(x$scenario_abb=="Alex"),]
+robin <- x[which(x$scenario_abb=="Robin"),]
+jackie <- x[which(x$scenario_abb=="Jackie"),]
+charlie <- x[which(x$scenario_abb=="Charlie"),]
+
+```
+## Pilot: 2: Differences Between Moral Descriptions
+
+As in previous studies, we developed a combined moral perception measure by calculating the mean of the combined mean-centered scores for MPS-4 and MM-1, and mean-centering this result. Below we report the analyses for this combined measure.
+
+```{r}
+x <- df3
+bad <- x[which(x$condition=="Diagnostic"),]
+good <- x[which(x$condition=="Non-Diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario_abb)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    M1R_tot ~ scenario_abb, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+
+
+d1 <- lsr::cohensD(M1R_tot~scenario_abb,good,method="paired")
+t.test(M1R_tot~scenario_abb,good,paired=TRUE)
+t1 <- t.test(good$M1R_tot~good$scenario_abb,paired=TRUE)
+d1
+
+```
+
+The standardized means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam* (moral),
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`;
+*Francis* (moral),
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`;
+*Alex* (moral),
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`;
+*Robin* (moral),
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`;
+*Jackie* (neutral),
+*M* = `r mean(jackie$M1R_tot)`, *SD* = `r sd(jackie$M1R_tot)`;
+*Charlie* (neutral),
+*M* = `r mean(charlie$M1R_tot)`, *SD* = `r sd(charlie$M1R_tot)`. For the moral descriptions, we observed significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r paste(aov1$ges)`*Sam* was viewed significantly more favorably than *Francis* (*p* `r paste(p_report(pwc$p.adj[5]))`). For the neutral descriptions there was no significant difference in ratings depending on description, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+\newpage
+
+## Pilot 2: Testing Moral vs Neutral
+```{r}
+
+x <- df3
+
+model0 <- lmerTest::lmer(M1R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot ~
+                  condition
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+
+
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`, and condition was a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`.
+
+```{r pilot2cobminedconditionplot, fig.cap="Pilot Study 1: Differences in combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.8
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Moral Perception (combined)") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+\newpage
+
+
+```{r}
+rm(list = ls())
+```
+
+
+# Study 2
+
+Below we report the results for the combined measure of moral perception from both DVs. We additionally report the effect of condition on responses to each description individually
+
+```{r}
+df1 <- read.csv("../data/study4_data_long.csv")
+df3 <- read.csv("../data/study4_data_long_clean.csv")
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+The means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam*,
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`,
+*Francis*,
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`,
+*Alex*,
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`,
+*Robin*,
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. *Francis* appeared to be rated as the less favorable than all other characters (all *p*s < .001). 
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(M1R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if condition influenced moral perception. Our outcome measure was the combined moral perception measure, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition did not influence moral perception, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was not a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, see Figure\ \@ref(fig:S3combinedconditionplot).
+
+```{r S3combinedconditionplot, fig.cap="Study 2: Differences in combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.3
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined Moral Perception Measure)") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+```
+
+
+\newpage
+
+## Study 2: Differences between the Descriptions
+
+Below we provide analyses of the effect of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S2allscenariosPlot).
+
+
+
+```{r}
+
+x <- sam
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Sam*, MPS-4 scores were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r S2allscenariosMPS4plot, fig.cap="Study 2: Differences in MPS-4 depending on condition", include=FALSE}
+
+mps4plot <- 
+ggplot(x,aes(x=condition,y=R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MPS-4") +
+  theme_bw() +
+  facet_grid(cols = vars(Scenario)) +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+
+```{r S2allscenariosM1plot, fig.cap="Study 2: Differences in MPS-4 depending on condition", include=FALSE}
+
+M1plot <- 
+ggplot(x,aes(x=condition,y=M1))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MM-1") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+```{r S2allscenariosBothplot, fig.cap="Study 2: Differences in MPS-4 depending on condition", include=FALSE}
+
+mBothPlot <- 
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+\newpage
+
+```{r S2allscenariosPlot, fig.cap="Study 2: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+
+suppressWarnings(print(figure))
+
+```
+
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), and in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+\newpage
+
+
+
+```{r}
+rm(list = ls())
+```
+
+\newpage
+
+# Study 3
+
+
+```{r}
+df1 <- read.csv("../data/study5_data_long.csv")
+df3 <- read.csv("../data/study5_data_long_clean.csv")
+df_long_clean <- df3
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+
+
+x <- df3
+good <- x[which(x$valence=="good"),]
+bad <- x[which(x$valence=="bad"),]
+
+good$R_tot_recoded <- 7 - good$R_tot
+bad$R_tot_recoded <- bad$R_tot
+
+good$M1_recoded <- 100 - good$M1
+bad$M1_recoded <- bad$M1
+
+df_recoded <- rbind(good,bad)
+
+x <- df_recoded
+
+x$M1R_tot_recoded <- scale(scale(x$R_tot_recoded)+scale(x$M1_recoded))
+df_recoded <- x
+
+```
+
+
+Below we report the results for the combined measure of moral perception from both DVs. We additionally report the effect of condition on responses to each description individually
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+The means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam*,
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`,
+*Francis*,
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`,
+*Alex*,
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`,
+*Robin*,
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. Both the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than both the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(pwc$p[6]))`) or between *Alex* and *Francis* (*bad*; (*p* `r paste(p_report(pwc$p[1]))`)). 
+
+```{r}
+x <- df3
+x <- df_recoded
+model0 <- lmerTest::lmer(M1R_tot_recoded ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot_recoded ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+            )
+
+
+
+model1 <- lmerTest::lmer(M1R_tot_recoded ~
+                  condition*valence
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                + (1|ResponseId:valence)
+                , data = x
+                , contrasts = list(condition = contr.sum, valence = contr.sum )#, valence = contr.sum)
+            )
+summary(model1)
+anova(model1)
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+results_coef
+
+aov1 <- anova(model1)
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if our predictors influenced responses on the combined moral perception measure. Our outcome measure was the combined moral perception measure, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. 
+Condition significantly influenced responses to the combined moral perception measure,
+*F*(`r aov1$NumDF[1]`, `r round(aov1$DenDF[1])`) = `r f3a`, *p* `r paste(p_report(p3a))`
+and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`;
+valence significantly predicted responses,
+*F*(`r aov1$NumDF[2]`, `r round(aov1$DenDF[2])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$NumDF[3]`, `r round(aov1$DenDF[3])`) = `r f3c`, *p* `r paste(p_report(p3c))`, see Figure\ \@ref(fig:S3combinedplot).
+
+
+```{r}
+x$Valence <- dplyr::recode(x$valence
+              , "good" = "Good"
+              , "bad" = "Bad")
+
+```
+
+
+```{r S3combinedplot, fig.cap="Study 3: Differences in the combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined Moral Perception Measure") +
+  facet_grid(cols = vars(Valence)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+```{r}
+
+x <- sam
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+\newpage
+
+## Study 3: Differences between the descriptions
+
+Again, we conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S3allscenariosPlot).
+
+
+For *Sam*, MPS-4 scores were significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; Similarly, MM-1 ratings were significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also lower in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+\newpage
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), and in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r S3allscenariosMPS4plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+mps4plot <- 
+ggplot(x,aes(x=condition,y=R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MPS-4") +
+  theme_bw() +
+  facet_grid(cols = vars(Scenario)) +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+
+```{r S3allscenariosM1plot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+M1plot <- 
+ggplot(x,aes(x=condition,y=M1))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MM-1") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+```{r S3allscenariosBothplot, fig.cap="Study 3: Differences in MPS-4 depending on condition", include=FALSE}
+
+mBothPlot <- 
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+```{r S3allscenariosPlot, fig.cap="Study 3: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+
+suppressWarnings(print(figure))
+
+```
+
+\newpage
+
+
+
+
+```{r}
+rm(list = ls())
+```
+
+
+# Study 4
+
+Below we report the results for the combined measure of moral perception from both DVs. We additionally report the effect of condition on responses to each description individually
+
+```{r}
+df1 <- read.csv("../data/study4_rep_data_long.csv")
+df3 <- read.csv("../data/study4_rep_data_long_clean.csv")
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+The means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam*,
+*M* = `r mean(sam$M1R_tot)`, *SD* = `r sd(sam$M1R_tot)`,
+*Francis*,
+*M* = `r mean(francis$M1R_tot)`, *SD* = `r sd(francis$M1R_tot)`,
+*Alex*,
+*M* = `r mean(alex$M1R_tot)`, *SD* = `r sd(alex$M1R_tot)`,
+*Robin*,
+*M* = `r mean(robin$M1R_tot)`, *SD* = `r sd(robin$M1R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. *Francis* appeared to be rated as the less favorable than all other characters (all *p*s < .001). 
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(M1R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(M1R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+```
+
+We conducted a linear-mixed-effects model to test if condition influenced moral perception. Our outcome measure was the combined moral perception measure, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition did not influence moral perception, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was not a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, see Figure\ \@ref(fig:S3combinedconditionplot).
+
+```{r S4combinedconditionplot, fig.cap="Study 4: Differences in combined measure depending on condition", include=TRUE, out.width = "\\textwidth", fig.pos = "!h"}
+
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.3
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined Moral Perception Measure)") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+```
+
+
+\newpage
+
+## Study 4: Differences between the Descriptions
+
+As in previous studies, we additionally conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S4allscenariosPlot).
+
+
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r S4allscenariosMPS4plot, fig.cap="Study 4: Differences in MPS-4 depending on condition", include=FALSE}
+
+mps4plot <- 
+ggplot(x,aes(x=condition,y=R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MPS-4") +
+  theme_bw() +
+  facet_grid(cols = vars(Scenario)) +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+
+```{r S4allscenariosM1plot, fig.cap="Study 4: Differences in MPS-4 depending on condition", include=FALSE}
+
+M1plot <- 
+ggplot(x,aes(x=condition,y=M1))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MM-1") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+```{r S4allscenariosBothplot, fig.cap="Study 4: Differences in MPS-4 depending on condition", include=FALSE}
+
+mBothPlot <- 
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+```{r S4allscenariosPlot, fig.cap="Study 4: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+
+suppressWarnings(print(figure))
+
+```
+
+
+```{r}
+
+x <- sam
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Sam* (good), MPS-4 scores were significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin* (good), MPS-4 scores were significantly lower for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were lower in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also lower in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+\newpage
+
+# Study 5
+
+
+```{r}
+df1 <- read.csv("../data/study6_data_long.csv")
+df3 <- read.csv("../data/study6_data_long_clean.csv")
+df_long_clean <- df3
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+
+x <- df3
+good <- x[which(x$valence=="good"),]
+bad <- x[which(x$valence=="bad"),]
+
+good$R_tot_recoded <- 7 - good$R_tot
+bad$R_tot_recoded <- bad$R_tot
+
+good$M1_recoded <- 100 - good$M1
+bad$M1_recoded <- bad$M1
+
+df_recoded <- rbind(good,bad)
+
+x <- df_recoded
+
+
+x$M1R_tot_recoded <- scale(scale(x$R_tot_recoded)+scale(x$M1_recoded))
+df_recoded <- x
+
+
+```
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+aov1 <- aov(M1R_tot~scenario,data=x)
+aov1$df.residual
+
+test <- summary(aov1)
+test[[1]][["Df"]][1]
+test[[1]][["Df"]][2]
+
+test[[1]][["F value"]][1]
+test[[1]][["Pr(>F)"]][1]
+p_report(test[[1]][["Pr(>F)"]][1])
+
+aov1$effects
+eta1 <- effectsize::eta_squared(aov1)
+eta1$Eta2
+(aov1)
+aov1$model
+
+tuk <- TukeyHSD(aov(M1R_tot~scenario,data=x))
+round(tuk$scenario[19], digits = 3)
+```
+
+The means and standard deviations for the combined measure for each scenario are as follows: 
+*Sam*,
+*M* = `r mean(sam$M1)`, *SD* = `r sd(sam$M1)`;
+*Francis*,
+*M* = `r mean(francis$M1)`, *SD* = `r sd(francis$M1)`;
+*Alex*,
+*M* = `r mean(alex$M1)`, *SD* = `r sd(alex$M1)`;
+*Robin*,
+*M* = `r mean(robin$M1)`, *SD* = `r sd(robin$M1)`. There was significant variation depending on the description, *F*(`r test[[1]][["Df"]][1]`,`r test[[1]][["Df"]][2]`) = `r test[[1]][["F value"]][1]`, *p* `r paste(p_report(test[[1]][["Pr(>F)"]][1]))`, partial $\eta$^2^ = `r eta1$Eta2`. Both the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than both the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(tuk$scenario[24]))`) or between *Alex* and *Francis* (*bad*; (*p* `r paste(p_report(tuk$scenario[19]))`)). 
+
+
+
+
+
+
+```{r}
+#x <- df3
+x <- df_recoded
+
+aov_raw <- aov(M1R_tot_recoded ~ condition*valence,data=x)
+results_anova <- summary(aov_raw)
+aov1 <- as.data.frame(results_anova[[1]])
+aov1$Df
+aov1
+
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+
+```
+
+We conducted a 2 $\times$ 2 between subjects ANOVA to test for an interaction between valence and condition.
+Condition did not influence responses to the combined measure,
+*F*(`r aov1$Df[1]`, `r round(aov1$Df[4])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$Df[2]`, `r round(aov1$Df[4])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$Df[3]`, `r round(aov1$Df[4])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+
+
+
+```{r}
+x <- df3
+
+x <- x[which(x$valence=="bad"),]
+
+#x <- x[which(x$valence=="good"),]
+
+d1 <- lsr::cohensD(M1R_tot~condition,x,method="pooled")
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *bad* characters, there was no significant difference in responses to the combined measure between the diagnostic condition (*M* = `r mean(dg1$M1R_tot)`, *SD* = `r sd(dg1$M1R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1R_tot)`, *SD* = `r sd(dg2$M1R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+
+
+```{r}
+x <- df3
+
+#x <- x[which(x$valence=="bad"),]
+
+x <- x[which(x$valence=="good"),]
+
+d1 <- lsr::cohensD(M1R_tot~condition,x,method="pooled")
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+#t1 <- t.test(x$R_tot~x$condition,paired=FALSE)
+t1
+d1
+
+dg1 <- x[which(x$condition=="diagnostic"),]
+dg2 <- x[which(x$condition=="non-diagnostic"),]
+
+```
+
+For the *good* characters, there was a significant difference in responses to the combined measure between the diagnostic condition (*M* = `r mean(dg1$M1R_tot)`, *SD* = `r sd(dg1$M1R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1R_tot)`, *SD* = `r sd(dg2$M1R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
+
+
+## Study 5: Differences between the Descriptions
+
+Again, we conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S5allscenariosPlot).
+
+```{r}
+x <- df3
+x$Scenario <- dplyr::recode(x$scenario
+              , "francis" = "Francis"
+              , "alex" = "Alex"
+              , "sam" = "Sam"
+              , "robin" = "Robin")
+
+```
+
+
+```{r S5allscenariosMPS4plot, fig.cap="Study 5: Differences in MPS-4 depending on condition", include=FALSE}
+
+mps4plot <- 
+ggplot(x,aes(x=condition,y=R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MPS-4") +
+  theme_bw() +
+  facet_grid(cols = vars(Scenario)) +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+
+```{r S5allscenariosM1plot, fig.cap="Study 5: Differences in MPS-4 depending on condition", include=FALSE}
+
+M1plot <- 
+ggplot(x,aes(x=condition,y=M1))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("MM-1") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+
+```{r S5allscenariosBothplot, fig.cap="Study 5: Differences in MPS-4 depending on condition", include=FALSE}
+
+mBothPlot <- 
+ggplot(x,aes(x=condition,y=M1R_tot))+
+  geom_violin() +
+  stat_summary(fun=mean, geom="point", shape=23, size=2)+
+  geom_boxplot(width=0.1)+
+#  geom_dotplot(binaxis='y', stackdir='center', dotsize=.05)+
+# violin plot with jittered points
+# 0.2 : degree of jitter in x direction
+  geom_jitter(shape=16
+              , position=position_jitter(0.15)
+              , size=.1
+              , color="dark grey") +
+  xlab("Condition") +
+  ylab("Combined") +
+  facet_grid(cols = vars(Scenario)) +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+figure <- ggarrange(mps4plot
+                    , M1plot
+                    , mBothPlot
+                    #,labels = c("A")
+                    , ncol = 1
+                    , nrow = 3
+                    , widths = c(0.485, 0.5))
+figure
+```
+
+
+
+```{r S5allscenariosPlot, fig.cap="Study 5: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+
+suppressWarnings(print(figure))
+
+```
+
+
+
+For *Sam*, MPS-4 scores were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+
+```{r}
+
+x <- robin
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Robin*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), and in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- alex
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Alex*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+
+```{r}
+
+x <- francis
+d1 <- lsr::cohensD(R_tot~condition,x)
+t1 <- t.test(R_tot~condition,x,paired=FALSE)
+t1$parameter
+t1$statistic
+t1$p.value
+
+d2 <- lsr::cohensD(M1~condition,x)
+t2 <- t.test(M1~condition,x,paired=FALSE)
+
+
+d3 <- lsr::cohensD(M1R_tot~condition,x)
+t3 <- t.test(M1R_tot~condition,x,paired=FALSE)
+
+xd <- x[which(x$condition=="diagnostic"),]
+xnond <- x[which(x$condition=="non-diagnostic"),]
+```
+
+For *Francis*, MPS-4 scores were not significantly different for the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; MM-1 ratings were not significantly different in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), than in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings were also similar in the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and in the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
+
+\newpage

@@ -1,0 +1,151 @@
+---
+title             : "The Moral Dilution Effect: Irrelevant Information Influences Judgments of Moral Character"
+shorttitle        : "Moral Dilution"
+author: 
+  - name          : "Cillian McHugh"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "University of Limerick, Limerick, Ireland, V94 T9PX"
+    email         : "cillian.mchugh@.ul.ie"
+  - name          : "Eric R. Igou"
+    affiliation   : "1"
+affiliation:
+    
+  - id            : "1"
+    institution   : "University of Limerick"
+author_note: >
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript. 
+abstract: >
+  Across five studies we investigated the moral dilution effect  
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa.csl"
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+toc               : false
+lang              : "en"
+documentclass     : "apa6"
+replace_ampersands: no
+output:
+  papaja::apa6_pdf
+header-includes:
+- \raggedbottom
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r setup, include=FALSE}
+library("rmdfiltr")
+add_citeproc_filter(args = NULL)
+add_replace_ampersands_filter(add_citeproc_filter(args = NULL))
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+```{r load_libraries_cogload}
+rm(list = ls())
+#devtools::install_github("crsh/citr")
+#install.packages("car")
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+#devtools::install_github("cillianmiltown/R_desnum")
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#install.packages("papaja")
+#devtools::install_github("crsh/papaja", force=T)
+library(papaja)
+#library("dplyr")
+#install.packages("afex")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("metap")
+#install.packages("metap")
+library(metap)
+#install.packages("pwr")
+library(pwr)
+#install.packages("lsr")
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+#install.packages("DescTools")
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+#install.packages("VGAM")
+library(VGAM)
+library(nnet)
+#install.packages("mlogit")
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+#library("powerMediation")
+#install.packages("magick")
+# install.packages("ltm")
+#source("load_all_data.R")
+#install.packages("magick")
+#tinytex::reinstall_tinytex()
+# install.packages("ltm")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+#setwd("manuscript_revisions")
+getwd()
+```
+
+```{r, include=FALSE, echo=FALSE}
+
+# # Stricter Exclusion!!!!!
+
+# - **In the analyses below we adopted a stricter attention check - Participants who failed either attention check were excluded (rather than just those who failed both as per the main analysis and our pre-registration)**
+# - Using the stricter exclusion leads to changes in the results for Study 4, but not for any of the other Studies (I think). I haven't changed the write-up
+
+```
+
+
+```{r child = 'Introduction.Rmd'}
+```
+
+
+```{r child = 'Study_1.Rmd'}
+```
+
+
+
+
+```{r child = 'Study_2.Rmd'}
+```
+
+
+```{r child = 'Study_3.Rmd'}
+```
+
+
+
+
+\newpage
+
+```{r child = 'Discussion.Rmd'}
+```
+
+# Accessibility Statement
+All data and analysis code are publicly available on this project's OSF page at \color{blue}[https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67](https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67)\color{black}.
+
+\newpage
+
+# References
+
+

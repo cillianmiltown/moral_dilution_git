@@ -1,0 +1,2820 @@
+---
+title             : "Supplementary Figures: Cognitive Load and Moral Dumbfounding"
+shorttitle        : "Cognitive Load and Moral Dumbfounding"
+author:
+  - name          : "Blinded"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Blinded"
+    email         : "Blinded"
+  - name          : "Blinded"
+    affiliation   : "2"
+  - name          : "Blinded"
+    affiliation   : "1"
+  - name          : "Blinded"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "Blinded"
+  - id            : "2"
+    institution   : "Blinded"
+author_note: >
+  n/a
+abstract: >
+  n/a
+keywords          : "keywords"
+wordcount         : "TBC"
+bibliography: "../resources/bib/My Library.bib"
+csl: "../resources/bib/apa6.csl"
+figsintext        : yes
+floatsintext      : no
+figurelist        : yes
+tablelist         : yes
+footnotelist      : no
+lineno            : no
+toc               : false
+lang              : "en-US"
+documentclass     : "apa7"
+output:
+  papaja::apa6_pdf
+header-includes:
+- \raggedbottom
+editor_options: 
+  chunk_output_type: console
+---
+
+
+# Supplementary Figures
+
+\newpage
+
+
+```{r figload_libraries_cogload, include=FALSE, echo=FALSE}
+rm(list = ls())
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#devtools::install_github("crsh/papaja")
+library(papaja)
+#library("dplyr")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("metap")
+library(metap)
+library(pwr)
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+library(VGAM)
+library(nnet)
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+library("powerMediation")
+
+
+#source("load_all_data.R")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+#getwd()
+```
+
+
+```{r figsetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+
+```{r figload data set Study 1}
+
+rm(list = ls())
+
+load("../loaded_data/one.RData")
+df3 <- study_1
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+
+
+```
+
+
+```{r figs1change in judgement}
+
+# create variables for reporting t.tests
+t <- t.test(df3$InJu1,df3$InJu2, paired = TRUE)
+
+#chisquare test function
+
+custom_chi <- function(x,y){
+  a <- length(x)
+  b <- length(y)
+  c <- rep(1, a)
+  d <- rep(2, b)
+  e <- c(c,d)
+  f <- c(x, y)
+  
+  g <- data.frame(e,f)
+  h <- table(g$e,g$f)
+  suppressWarnings(chisq.test(h))
+}
+
+c <- suppressWarnings(custom_chi(df3$InJu1,df3$InJu2))
+
+changed_num <- function(x, judgement_1, judgement_2){
+  b <- b <- x[which(x$Ju1_bin==judgement_1 & x$Ju2_bin==judgement_2),]
+  length(b$Ju1_bin)
+  
+}
+
+tot_changed_num <- function(x, query){
+  
+  c <- cbind.data.frame(x$Ju1_bin[which(x$Ju1_bin!=x$Ju2_bin)],x$Ju2_bin[which(x$Ju1_bin!=x$Ju2_bin)])
+  colnames(c) <- c("Initial Judgment","Revised Judgment")
+  
+  c
+  if(query == "table")
+    print(c)
+  if(query == "total") print(length(c$initial_judgement))}
+
+
+tot_changed_table <- function(x){
+  
+  c <- cbind.data.frame(x$Ju1_bin[which(x$Ju1_bin!=x$Ju2_bin)],x$Ju2_bin[which(x$Ju1_bin!=x$Ju2_bin)])
+  colnames(c) <- c("Initial Judgment","Revised Judgment")
+  
+  c
+  }
+
+change_table <- tot_changed_table(df3)
+change_table <- table(change_table)
+change_table <- as.data.frame(change_table)
+change_table <- change_table[which(change_table$Freq!=0),]
+change_table <- change_table[order(change_table$Initial.Judgment, change_table$Revised.Judgment), ]
+colnames(change_table) <- c("Initial Judgment","Revised Judgment", "Total Changed")
+#order(change_table$Initial.Judgment)
+```
+
+
+
+```{r figS1change,results = 'asis', include=FALSE}
+
+
+apa_table(
+   change_table
+   , align = c("c", "c")
+   , caption = "Study 1 – Changes in Jugment"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+
+c <- chisq.test(table(df3$InCS,df3$condition))
+w <- sqrt(c[]$statistic/length(df3$gender))
+pw <- pwr.chisq.test(w=w,N=length(df3$InCS),df=(3-1),sig.level = .05)
+
+```
+
+
+```{r figprepS1fig2}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+y <- table(df3$condition,df3$Dumb_incl_string)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  #levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,a$condition))
+  by <- as.data.frame(table(b$InCS,b$condition))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+rm(y)
+```
+
+
+```{r figS1fig2criticalcondition, fig.cap="Study 1: Responses to critical slide and for the experimental group (*N* = 33) and the control group (*N* = 33)", include=FALSE}
+
+
+
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+            size=4.2,
+            aes( label = scales::percent(perc),
+                 y= perc ),
+            stat= "identity",
+            vjust = -.5,
+            position = position_dodge(.9),
+            fontface='plain'
+            )+
+  geom_text(#family = "Times",
+            size=4.2,
+            aes(label = format(Freq),
+                y= -3*(..count../100)/(..count..)),
+            stat= "count",
+            position = position_dodge(0.9),
+            #vjust = -.05,
+            fontface='plain'
+            ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Nothing Wrong", "Dumbfounded","Reasons")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+          strip.background = element_rect(fill = "white"),
+          legend.position="right")
+
+
+
+
+
+```
+
+
+```{r figpreptableS1}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Nothing Wrong","Dumbfounded","Reasons",
+        "Nothing Wrong","Dumbfounded","Reasons",
+        "Nothing Wrong","Dumbfounded","Reasons"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+```{r figS1tab1dumb,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 1 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r figch5cognitive load manipulationS1, include=FALSE}
+
+
+df_a <- df3[which(df3$cog_right=="right"&df3$cog_M_ch_bin=="easy"),]
+table(df_a$InCS)
+numbers2words(sum(df_a$InCS=="There is nothing wrong."))
+numbers2words(sum(df_a$InCS=="It's wrong but I can't think of a reason."))
+numbers2words(sum(df_a$InCS=="It's wrong and I can provide a valid reason."))
+
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+c <- chisq.test(table(df3$InCS,df3$condition))
+#table(df3$InCS,df3$condition)
+
+descriptives(df4$cog_number_right)
+table(df4$cog_number_right)
+table(df4$cog_M_ch_bin)
+table(df4$cog_M_ch_bin,df4$cog_number_right)
+numbers2words(min(df4$cog_number_right))
+
+cbind(
+  df4$cog_right,
+  df4$cog_number_right
+)
+sum(df4$cog_number_right==0)
+
+#c
+```
+
+
+```{r figch5cognitive load and engagement with the taskS1, include=FALSE}
+
+#tapply(df3$InCf1, df3$condition, descriptives)
+#t.test(df3$InCf1~df3$condition)
+t <- t.test(InJu1~condition, data=df3)
+t1 <- t.test(InCf1~condition, data=df3)
+
+d <- cohensD(InJu1~condition, data=df3)
+d1 <- cohensD(InCf1~condition, data=df3)
+```
+
+
+
+```{r figlogit1b}
+
+#df3$InCS <- relevel(df3$InCS, ref = 2)
+
+df3a <- mlogit.data(df3, choice = "InCS", shape = "wide")
+InCSModel<-mlogit(InCS ~ 1 | condition+NFC, data = df3a, reflevel = "It's wrong and I can provide a valid reason."
+                  )
+
+summary_InCS_model <- summary(InCSModel)
+summary_InCS_model$lratio$parameter
+summary_InCS_model$lratio$statistic
+summary_InCS_model$lratio$p.value
+
+InCSModel$coefficients[3]
+InCSModel$coefficients[4]
+
+cox <- PseudoR2(multinom(InCS~condition+NFC,df3), "all")
+
+cox[3]
+cox[4]
+#PseudoR2(x, "all")
+#summary_InCS_model
+
+
+wald1 <- 
+  summary_InCS_model$CoefTable[3]^2 /
+  summary_InCS_model$CoefTable[7]^2
+
+wald2 <- 
+  summary_InCS_model$CoefTable[4]^2 /
+  summary_InCS_model$CoefTable[8]^2
+
+
+summary_InCS_model
+summary_InCS_model$coefficients[3]
+data.frame(exp(InCSModel$coefficients))
+
+exp(InCSModel$coefficients)[3]
+
+
+a <- exp(confint(InCSModel))
+c(a[3],a[7])
+
+residuals(InCSModel)
+fitted(InCSModel, outcome = F)
+
+c <- summary_InCS_model$lratio$statistic
+w <- sqrt(c/length(df3$gender))
+pw <- pwr.chisq.test(w=w,N=length(df3$InCS),df=(2),sig.level = .05)
+
+pw$power
+
+revised_PseudoR2s <- function(LogModel) {
+  dev <- LogModel$deviance
+  nullDev <- LogModel$null.deviance
+  modelN <- length(LogModel$fitted.values)
+  R.l <- 1 - dev / nullDev
+  R.cs <- 1- exp ( -(nullDev - dev) / modelN)
+  R.n <- R.cs / ( 1 - ( exp (-(nullDev / modelN))))
+  
+  all <- list(hosmer_and_lemeshow = as.numeric(R.l), mcfadden = NA, cox_and_snell = as.numeric(R.cs), nagelkerke = as.numeric(R.n))
+  all
+}
+
+logits_rsquared <- glm(InCS~NFC,df3, family = binomial(link = "logit"))
+cox <- revised_PseudoR2s(logits_rsquared)
+
+```
+
+```{r figlogit1}
+
+#df3$InCS <- relevel(df3$InCS, ref = 2)
+
+df3a <- mlogit.data(df3, choice = "InCS", shape = "wide")
+InCSModel<-mlogit(InCS ~ 1 | NFC, data = df3a, reflevel = "It's wrong and I can provide a valid reason.")
+
+summary_InCS_model <- summary(InCSModel)
+summary_InCS_model$lratio$parameter
+summary_InCS_model$lratio$statistic
+summary_InCS_model$lratio$p.value
+
+InCSModel$coefficients[3]
+InCSModel$coefficients[4]
+
+cox <- PseudoR2(multinom(InCS~NFC,df3), "all")
+
+cox[3]
+cox[4]
+#PseudoR2(x, "all")
+#summary_InCS_model
+
+
+wald1 <- 
+  summary_InCS_model$CoefTable[3]^2 /
+  summary_InCS_model$CoefTable[7]^2
+
+wald2 <- 
+  summary_InCS_model$CoefTable[4]^2 /
+  summary_InCS_model$CoefTable[8]^2
+
+
+summary_InCS_model
+summary_InCS_model$coefficients[3]
+data.frame(exp(InCSModel$coefficients))
+
+exp(InCSModel$coefficients)[3]
+
+
+a <- exp(confint(InCSModel))
+c(a[3],a[7])
+
+residuals(InCSModel)
+fitted(InCSModel, outcome = F)
+
+c <- summary_InCS_model$lratio$statistic
+w <- sqrt(c/length(df3$gender))
+pw <- pwr.chisq.test(w=w,N=length(df3$InCS),df=(2),sig.level = .05)
+
+pw$power
+
+revised_PseudoR2s <- function(LogModel) {
+  dev <- LogModel$deviance
+  nullDev <- LogModel$null.deviance
+  modelN <- length(LogModel$fitted.values)
+  R.l <- 1 - dev / nullDev
+  R.cs <- 1- exp ( -(nullDev - dev) / modelN)
+  R.n <- R.cs / ( 1 - ( exp (-(nullDev / modelN))))
+  
+  all <- list(hosmer_and_lemeshow = as.numeric(R.l), mcfadden = NA, cox_and_snell = as.numeric(R.cs), nagelkerke = as.numeric(R.n))
+  all
+}
+
+logits_rsquared <- glm(InCS~NFC,df3, family = binomial(link = "logit"))
+cox <- revised_PseudoR2s(logits_rsquared)
+
+```
+
+```{r figfullcombinedtestlogit, include=FALSE}
+# taken from https://stats.idre.ucla.edu/r/dae/multinomial-logistic-regression/
+#ml$prog2 <- relevel(ml$prog, ref = "academic")
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+#df3$InCS <- relevel(df3$InCS, ref = 3)
+
+test <- multinom(InCS ~ condition + NFC, data = df3)
+summary(test)
+z <- summary(test)$coefficients/summary(test)$standard.errors
+z
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+p
+
+exp(coef(test))
+head(pp <- fitted(test))
+
+## different order from here, be careful
+
+dses <- data.frame(condition = c("cog_load", "control" ), NFC = mean(df3$NFC))
+predict(test, newdata = dses, "probs")
+
+dwrite <- data.frame(condition = rep(c("cog_load", "control" ), each = 41), NFC = rep(c(30:70),
+    2))
+
+## store the predicted probabilities for each value of ses and write
+pp.write <- cbind(dwrite, predict(test, newdata = dwrite, type = "probs", se = TRUE))
+
+## calculate the mean probabilities within each level of ses
+by(pp.write[, 3:5], pp.write$condition, colMeans)
+
+lpp <- melt(pp.write, id.vars = c("condition", "NFC"), value.name = "probability")
+head(lpp)
+
+ggplot(lpp, aes(x = NFC, y = probability, colour = variable)) + geom_line() + facet_grid(. ~ condition, scales = "free")
+
+```
+
+
+
+```{r figprepplottinglogit1}
+
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+
+x <- df3$NFC
+y <- as.numeric(df3$InCS)
+
+m1 <- multinom(y ~ x)
+# summary(m1)
+newdata <- data.frame(x = seq(min(x), max(x), length.out = 100))
+p1 <- predict(m1, newdata, type = "class")
+p2 <- predict(m1, newdata, type = "probs")
+
+
+logit_plot <- cbind.data.frame(newdata,p2)
+
+logit_plot <- `colnames<-`(logit_plot, c("x","one_l","two_l","three_l"))
+logit_plot <- melt(logit_plot, id="x")
+
+```
+
+
+```{r figggplotlogit1, fig.cap="Study 1: Probability of selecting each response to the critical slide depending on Need for Cognition", include=TRUE}
+
+
+ggplot(logit_plot,
+       aes(x=x, y=value,
+           #color=factor(variable,labels=c("dumb","reason","nothing"))
+           linetype=factor(variable,labels=c("Reasons","Dumbfounded","Nothing Wrong"))
+           )) +
+  geom_line()+
+  xlab("Need for Cognition") + ylab("Predicted Probability") +
+  scale_y_continuous(limits = c(0, 1)) + 
+  #scale_color_discrete(name="Response to \nCritical Slide", labels=c("Dumbfounded","Nothing Wrong","Reasons"))+
+  scale_linetype_discrete(name="Response to \nCritical Slide", 
+                          #labels=c("Dumbfounded","Nothing Wrong","Reasons")
+                          )+
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+```
+
+
+
+
+```{r figS2prepplottinglogit1}
+
+
+
+load("../loaded_data/two.RData")
+
+df3 <- study_2
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+
+x <- df3$NFC
+y <- as.numeric(df3$InCS)
+
+m1 <- multinom(y ~ x)
+# summary(m1)
+newdata <- data.frame(x = seq(min(x), max(x), length.out = 100))
+p1 <- predict(m1, newdata, type = "class")
+p2 <- predict(m1, newdata, type = "probs")
+
+
+logit_plot <- cbind.data.frame(newdata,p2)
+
+logit_plot <- `colnames<-`(logit_plot, c("x","one_l","two_l","three_l"))
+logit_plot <- melt(logit_plot, id="x")
+
+```
+
+
+```{r figS2ggplotlogit1, fig.cap="Study 2: Probability of selecting each response to the critical slide depending on Need for Cognition", include=TRUE}
+
+
+ggplot(logit_plot,
+       aes(x=x, y=value,
+           #color=factor(variable,labels=c("dumb","reason","nothing"))
+           linetype=factor(variable,labels=c("Reasons","Dumbfounded","Nothing Wrong"))
+           )) +
+  geom_line()+
+  xlab("Need for Cognition") + ylab("Predicted Probability") +
+  scale_y_continuous(limits = c(0, 1)) + 
+  #scale_color_discrete(name="Response to \nCritical Slide", labels=c("Dumbfounded","Nothing Wrong","Reasons"))+
+  scale_linetype_discrete(name="Response to \nCritical Slide", 
+                          #labels=c("Dumbfounded","Nothing Wrong","Reasons")
+                          )+
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+```
+
+
+
+
+```{r figS3prepplottinglogit1}
+
+
+
+load("../loaded_data/three.RData")
+
+df3 <- study_3
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+
+x <- df3$NFC
+y <- as.numeric(df3$InCS)
+
+m1 <- multinom(y ~ x)
+# summary(m1)
+newdata <- data.frame(x = seq(min(x), max(x), length.out = 100))
+p1 <- predict(m1, newdata, type = "class")
+p2 <- predict(m1, newdata, type = "probs")
+
+
+logit_plot <- cbind.data.frame(newdata,p2)
+
+logit_plot <- `colnames<-`(logit_plot, c("x","one_l","two_l","three_l"))
+logit_plot <- melt(logit_plot, id="x")
+
+```
+
+
+```{r figS3ggplotlogit1, fig.cap="Study 3: Probability of selecting each response to the critical slide depending on Need for Cognition", include=TRUE}
+
+
+ggplot(logit_plot,
+       aes(x=x, y=value,
+           #color=factor(variable,labels=c("dumb","reason","nothing"))
+           linetype=factor(variable,labels=c("Reasons","Dumbfounded","Nothing Wrong"))
+           )) +
+  geom_line()+
+  xlab("Need for Cognition") + ylab("Predicted Probability") +
+  scale_y_continuous(limits = c(0, 1)) + 
+  #scale_color_discrete(name="Response to \nCritical Slide", labels=c("Dumbfounded","Nothing Wrong","Reasons"))+
+  scale_linetype_discrete(name="Response to \nCritical Slide", 
+                          #labels=c("Dumbfounded","Nothing Wrong","Reasons")
+                          )+
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+```
+
+
+
+
+```{r figS4prepplottinglogit1}
+
+
+
+load("../loaded_data/four.RData")
+
+df3 <- study_4
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+
+x <- df3$NFC
+y <- as.numeric(df3$InCS)
+
+m1 <- multinom(y ~ x)
+# summary(m1)
+newdata <- data.frame(x = seq(min(x), max(x), length.out = 100))
+p1 <- predict(m1, newdata, type = "class")
+p2 <- predict(m1, newdata, type = "probs")
+
+
+logit_plot <- cbind.data.frame(newdata,p2)
+
+logit_plot <- `colnames<-`(logit_plot, c("x","one_l","two_l","three_l"))
+logit_plot <- melt(logit_plot, id="x")
+
+```
+
+
+```{r figS4ggplotlogit1, fig.cap="Study 4: Probability of selecting each response to the critical slide depending on Need for Cognition", include=TRUE}
+
+
+ggplot(logit_plot,
+       aes(x=x, y=value,
+           #color=factor(variable,labels=c("dumb","reason","nothing"))
+           linetype=factor(variable,labels=c("Reasons","Dumbfounded","Nothing Wrong"))
+           )) +
+  geom_line()+
+  xlab("Need for Cognition") + ylab("Predicted Probability") +
+  scale_y_continuous(limits = c(0, 1)) + 
+  #scale_color_discrete(name="Response to \nCritical Slide", labels=c("Dumbfounded","Nothing Wrong","Reasons"))+
+  scale_linetype_discrete(name="Response to \nCritical Slide", 
+                          #labels=c("Dumbfounded","Nothing Wrong","Reasons")
+                          )+
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+```
+
+
+
+
+
+```{r figS5prepplottinglogit1}
+
+
+
+load("../loaded_data/five.RData")
+
+df3 <- study_5
+df3 <- df3[which(is.na(df3$NFC)==FALSE),]
+
+x <- df3$NFC
+y <- as.numeric(df3$InCS)
+
+m1 <- multinom(y ~ x)
+# summary(m1)
+newdata <- data.frame(x = seq(min(x), max(x), length.out = 100))
+p1 <- predict(m1, newdata, type = "class")
+p2 <- predict(m1, newdata, type = "probs")
+
+
+logit_plot <- cbind.data.frame(newdata,p2)
+
+logit_plot <- `colnames<-`(logit_plot, c("x","one_l","two_l","three_l"))
+logit_plot <- melt(logit_plot, id="x")
+
+```
+
+
+```{r figS5ggplotlogit1, fig.cap="Study 5: Probability of selecting each response to the critical slide depending on Need for Cognition", include=TRUE}
+
+
+ggplot(logit_plot,
+       aes(x=x, y=value,
+           #color=factor(variable,labels=c("dumb","reason","nothing"))
+           linetype=factor(variable,labels=c("Reasons","Dumbfounded","Nothing Wrong"))
+           )) +
+  geom_line()+
+  xlab("Need for Cognition") + ylab("Predicted Probability") +
+  scale_y_continuous(limits = c(0, 1)) + 
+  #scale_color_discrete(name="Response to \nCritical Slide", labels=c("Dumbfounded","Nothing Wrong","Reasons"))+
+  scale_linetype_discrete(name="Response to \nCritical Slide", 
+                          #labels=c("Dumbfounded","Nothing Wrong","Reasons")
+                          )+
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+```
+
+
+
+
+```{r figS6setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+
+```{r figS6load_libraries_cogload}
+
+##### Study 6 #####
+rm(list = ls())
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#devtools::install_github("crsh/papaja")
+library(papaja)
+#library("dplyr")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("metap")
+library(metap)
+library(pwr)
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+library(VGAM)
+library(nnet)
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+library("powerMediation")
+
+
+#source("load_all_data.R")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+getwd()
+```
+
+
+
+
+```{r figS6loaddatasetStudy6}
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/read_and_sort_raw_data.R")
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
+rm(list = ls())
+
+load("../loaded_data/six.RData")
+df3 <- study_6
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+#df3$InCS <- df3$CS
+
+```
+
+
+
+
+```{r}
+
+x <- study_6
+x$attention_check1
+x$attention_check2
+sum(x$attention_check1!=8)#/4
+
+x$attention_check2!=2|x$attention_check2!=5
+
+sum((x$attention_check2==1|x$attention_check2==4)==FALSE)#/4
+
+x$attention_check1[which((x$attention_check2==1|x$attention_check2==4)==FALSE)]
+
+x$attention_check1[which((x$attention_check2==1|x$attention_check2==4)==FALSE&x$attention_check1!=8)]
+
+
+att1 <- sum(x$attention_check1!=8,na.rm = T)#/4
+att2 <- sum((x$attention_check2==1|x$attention_check2==8)==FALSE,na.rm = T)#/4
+att_both <- sum((x$attention_check2==1|x$attention_check2==4)==FALSE&x$attention_check1!=8,na.rm = T)#/4
+
+
+```
+
+
+```{r}
+x <- study_6
+
+x <- x[which(((x$attention_check2==1|x$attention_check2==5)==FALSE&x$attention_check1!=8)==FALSE),]
+
+
+table(x$condition)
+table(x$InJu1)
+sum(is.na(x$InJu1))
+table(x$InJu2)
+sum(is.na(x$InJu2))
+table(x$condition)
+
+x <- x[which(x$InJu1!="null"),]
+x <- x[which(is.na(x$InJu1)==FALSE),]
+x <- x[which(x$InJu2!="null"),]
+x <- x[which(is.na(x$InJu2)==FALSE),]
+x <- x[which(is.na(x$InCS)==FALSE),]
+x <- x[which(x$InCS!="null"),]
+
+
+
+study_6_clean <- x
+df3 <- study_6_clean
+```
+
+
+```{r figS6checkingchanges6a, include=FALSE}
+
+length(df3$gender)
+table(df3$condition)
+table(df3$country)
+table(df3$condition,df3$scenario)
+
+
+```
+
+
+
+
+
+
+```{r figS6change in judgement}
+
+# create variables for reporting t.tests
+#t <- t.test(df3$InJu1,df3$InJu2, paired = TRUE)
+
+#chisquare test function
+
+custom_chi <- function(x,y){
+  a <- length(x)
+  b <- length(y)
+  c <- rep(1, a)
+  d <- rep(2, b)
+  e <- c(c,d)
+  f <- c(x, y)
+  
+  g <- data.frame(e,f)
+  h <- table(g$e,g$f)
+  suppressWarnings(chisq.test(h))
+}
+
+c <- suppressWarnings(custom_chi(df3$InJu1,df3$InJu2))
+
+changed_num <- function(x, judgement_1, judgement_2){
+  b <- b <- x[which(x$Ju1_bin==judgement_1 & x$Ju2_bin==judgement_2),]
+  length(b$Ju1_bin)
+  
+}
+
+tot_changed_num <- function(x, query){
+  
+  c <- cbind.data.frame(x$Ju1_bin[which(x$Ju1_bin!=x$Ju2_bin)],x$Ju2_bin[which(x$Ju1_bin!=x$Ju2_bin)])
+  colnames(c) <- c("initial_judgement","revised_judgement")
+  
+  c
+  if(query == "table") print(c)
+  if(query == "total") print(length(c$initial_judgement))}
+
+
+
+tot_changed_table <- function(x){
+  
+  c <- cbind.data.frame(x$Ju1_bin[which(x$Ju1_bin!=x$Ju2_bin)],x$Ju2_bin[which(x$Ju1_bin!=x$Ju2_bin)])
+  colnames(c) <- c("Initial Judgment","Revised Judgment")
+  
+  c
+  }
+
+
+change_table <- tot_changed_table(df3)
+change_table <- table(change_table)
+change_table <- as.data.frame(change_table)
+change_table <- change_table[which(change_table$Freq!=0),]
+change_table <- change_table[order(change_table$Initial.Judgment, change_table$Revised.Judgment), ]
+change_table <- `rownames<-`(change_table,NULL)
+colnames(change_table) <- c("Initial Judgment","Revised Judgment", "Total Changed")
+change_table
+
+```
+
+
+
+
+```{r figS6change,results = 'asis', include=FALSE}
+
+
+apa_table(
+   change_table
+   , align = c("l","l", "c")
+   , caption = "Study 6 – Changes in Jugment (full sample)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r figS6checkingchanges6, include=FALSE}
+chisq.test(table(df3$InCS,df3$condition),correct = TRUE)
+```
+
+
+```{r}
+
+test <- as.data.frame.matrix((table(df3$InCS,df3$condition)))
+`rownames<-`(test, c("nothing wrong","no reason","reasons"))
+test <- as.matrix((test))
+test1 <- cbind(test[,1],test[,2])
+test2 <- `colnames<-`(test1, c("cognitive load","control"))
+
+tb_count_perc <- function(x){
+  tc <- table(x$InCS,x$condition)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$condition=="cog_load")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$condition=="control")*100),"%"))
+  }
+  
+tb_count_perc_eng <- function(x){
+  tc <- table(x$InCS,x$engaged)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$engaged=="engaged")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$engaged=="not engaged")*100),"%"))
+  }
+  
+test <- tb_count_perc(df3)
+test <- as.data.frame(test)
+colnames(test) <- c("N","\\%","N","\\%")
+  
+makespanners <- function(){
+  cog_load <- c(2,3)
+  control <- c(4,5)
+  spans <- list(cog_load,control)
+  names(spans) <- c("Cognitive Load","Control")
+  spans
+}
+
+#test <- tb_count_perc(df3)
+#tb_count_perc(df3a)
+
+
+
+```
+
+
+```{r figS6tab1dumb1all,results = 'asis', include=FALSE}
+
+
+apa_table(
+   test
+   , align = c("l", "c", "c", "c", "c")
+   , caption = "Study 6 – Response to the critical slide depending on cognitive load (full sample)"
+   #, added_stub_head = "Response to critical slide"
+   , col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+
+```{r}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+
+
+rm(y)
+```
+
+
+```{r figS6ch5S6fig1criticalconditionb, fig.cap="Study 6: Responses to critical slide depending on cognitive load", include=FALSE}
+
+#g <- 
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+            size=4.2,
+            aes( label = scales::percent(perc, accuracy = 1),
+                 y= perc ),
+            stat= "identity",
+            vjust = -.5,
+            position = position_dodge(.9),
+            fontface='plain'
+            )+
+  geom_text(#family = "Times", 
+            size=4.2,
+            aes(label = format(Freq),
+                y= -3*(..count../100)/(..count..)),
+            stat= "count",
+            position = position_dodge(0.9),
+            #vjust = -.05,
+            fontface='plain'
+            ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+        legend.title=element_text(#family="Times",
+                                    size=10
+                                 ),
+        axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+        strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+
+```
+
+
+```{r}
+#suppressWarnings(print(g))
+```
+
+
+```{r}
+
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Incest"),]
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+incest <- test
+
+
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Jennifer"),]
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+cannibal <- test
+
+
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Trolley"),]
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+trolley <- test
+
+
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Heinz"),]
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+heinz <- test
+
+test <- rbind.data.frame(incest, cannibal, trolley, heinz)
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+df3 <- study_6_clean
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Incest"),]
+test1 <- ab_graph()
+test1$scenario <- rep("Julie and Mark",length(test1$InCS))
+incest <- test1
+
+df3 <- study_6_clean
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Jennifer"),]
+test1 <- ab_graph()
+test1$scenario <- rep("Jennifer",length(test1$InCS))
+cannibal <- test1
+
+df3 <- study_6_clean
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Trolley"),]
+test1 <- ab_graph()
+test1$scenario <- rep("Trolley",length(test1$InCS))
+trolley <- test1
+
+df3 <- study_6_clean
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+df3 <- df3[which(df3$scenario=="Heinz"),]
+test1 <- ab_graph()
+test1$scenario <- rep("Heinz",length(test1$InCS))
+heinz <- test1
+
+df3 <- study_6_clean
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+test <- rbind.data.frame(incest, cannibal, trolley, heinz)
+
+
+rm(y)
+```
+
+
+
+
+```{r figS6ch5S6fig2criticalconditionb, fig.cap="Study 6: Responses to critical slide and for the experimental group and the control group for each scenario", include=FALSE}
+
+#g <- 
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition
+                                             ,labels=c("Cognitive load","Control")
+                                             ))) +
+  facet_wrap(~scenario,scales='free')+
+  scale_y_continuous(limits = c(-.05,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+            size=2.5,
+            aes( label = scales::percent(perc,accuracy = 1),
+                 y= perc-.005
+                 #, color=factor(scenario)
+                 ),
+            stat= "identity",
+            vjust = -.5,
+            position = position_dodge(.9),
+            fontface='plain'
+            )+
+  geom_text(#family = "Times", 
+            size=2.5,
+            aes(label = format(Freq),
+                y= -4.5*(..count../100)/(..count..)
+                #, color=factor(scenario)
+                ),
+            stat= "count",
+            position = position_dodge(0.9),
+            #vjust = -.05,
+            fontface='plain'
+            ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  # 
+  # geom_text(#family = "Times", 
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=8
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=6
+                                 ),
+        legend.title=element_text(#family="Times",
+                                    size=8
+                                    ),
+        axis.text=element_text(#family="Times",
+                               colour = "black",
+                               size=6
+                               ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+                                size=8
+                                ),
+        strip.text=element_text(#family = "Times",
+                                  size = 8
+                                  ),
+        #  strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+
+```
+
+```{r}
+#suppressWarnings(print(g))
+```
+
+
+```{r figS6preptableS6}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+
+
+```{r figS6tab1dumb,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load (full sample)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+```{r}
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+df3 <- df3[which(df3$scenario=="Incest"),]
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+
+```
+
+```{r figS6checkingchanges6aIncest, include=FALSE}
+
+length(df3$gender)
+table(df3$condition)
+#table(df3$condition,df3$scenario)
+
+```
+
+
+```{r figS6checkingchanges6Incest, include=FALSE}
+chisq.test(table(df3$InCS,df3$condition),correct = TRUE)
+```
+
+
+```{r}
+
+test <- as.data.frame.matrix((table(df3$InCS,df3$condition)))
+`rownames<-`(test, c("nothing wrong","no reason","reasons"))
+test <- as.matrix((test))
+test1 <- cbind(test[,1],test[,2])
+test2 <- `colnames<-`(test1, c("cognitive load","control"))
+
+tb_count_perc <- function(x){
+  tc <- table(x$InCS,x$condition)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$condition=="cog_load")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$condition=="control")*100),"%"))
+  }
+  
+  tb_count_perc_eng <- function(x){
+  tc <- table(x$InCS,x$engaged)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$engaged=="engaged")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$engaged=="not engaged")*100),"%"))
+  }
+  
+test <- tb_count_perc(df3)
+test <- as.data.frame(test)
+colnames(test) <- c("N","\\%","N","\\%")
+
+  makespanners <- function(){
+  cog_load <- c(2,3)
+  control <- c(4,5)
+  spans <- list(cog_load,control)
+  names(spans) <- c("Cognitive Load","Control")
+  spans
+}
+
+#test <- tb_count_perc(df3)
+#tb_count_perc(df3a)
+
+
+
+```
+
+
+```{r figS6tab1dumb1allIncest,results = 'asis', include=FALSE}
+
+
+apa_table(
+   test
+   , align = c("l", "c", "c", "c", "c")
+   , caption = "Study 6 – Response to the critical slide depending on cognitive load (Julie and Mark)"
+   #, added_stub_head = "Response to critical slide"
+   , col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+
+
+rm(y)
+```
+
+
+```{r figS6ch5S6fig2criticalconditionbIncest, fig.cap="Study 6: Responses to critical slide depending on cognitive load (Julie and Mark)", include=TRUE}
+
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+    size=4.2,
+    aes( label = scales::percent(perc, accuracy = 1),
+         y= perc ),
+    stat= "identity",
+    vjust = -.5,
+    position = position_dodge(.9),
+    fontface='plain'
+  )+
+  geom_text(#family = "Times", 
+    size=4.2,
+    aes(label = format(Freq),
+        y= -3*(..count../100)/(..count..)),
+    stat= "count",
+    position = position_dodge(0.9),
+    #vjust = -.05,
+    fontface='plain'
+  ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+
+
+```
+
+
+
+```{r}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+
+
+```{r figS6tab1dumbIncest,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load (Julie and Mark)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+
+```{r}
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+df3 <- df3[which(df3$scenario=="Jennifer"),]
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+
+```
+
+```{r figS6checkingchanges6aJennifer, include=FALSE}
+
+length(df3$gender)
+table(df3$condition)
+#table(df3$condition,df3$scenario)
+
+```
+
+
+```{r figS6checkingchanges6Jennifer, include=FALSE}
+chisq.test(table(df3$InCS,df3$condition),correct = TRUE)
+```
+
+
+```{r}
+
+test <- as.data.frame.matrix((table(df3$InCS,df3$condition)))
+`rownames<-`(test, c("nothing wrong","no reason","reasons"))
+test <- as.matrix((test))
+test1 <- cbind(test[,1],test[,2])
+test2 <- `colnames<-`(test1, c("cognitive load","control"))
+
+tb_count_perc <- function(x){
+  tc <- table(x$InCS,x$condition)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$condition=="cog_load")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$condition=="control")*100),"%"))
+  }
+  
+  tb_count_perc_eng <- function(x){
+  tc <- table(x$InCS,x$engaged)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$engaged=="engaged")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$engaged=="not engaged")*100),"%"))
+  }
+  
+test <- tb_count_perc(df3)
+test <- as.data.frame(test)
+colnames(test) <- c("N","\\%","N","\\%")
+
+  makespanners <- function(){
+  cog_load <- c(2,3)
+  control <- c(4,5)
+  spans <- list(cog_load,control)
+  names(spans) <- c("Cognitive Load","Control")
+  spans
+}
+
+#test <- tb_count_perc(df3)
+#tb_count_perc(df3a)
+
+
+
+```
+
+
+```{r figS6tab1dumb1allJennifer,results = 'asis', include=FALSE}
+
+
+apa_table(
+   test
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Response to the critical slide depending on cognitive load (Jennifer)"
+   #, added_stub_head = "Response to critical slide"
+   , col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+
+
+rm(y)
+```
+
+
+```{r figS6ch5S6fig2criticalconditionbJennifer, fig.cap="Study 6: Responses to critical slide depending on cognitive load (Jennifer)", include=TRUE}
+
+
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+    size=4.2,
+    aes( label = scales::percent(perc, accuracy = 1),
+         y= perc ),
+    stat= "identity",
+    vjust = -.5,
+    position = position_dodge(.9),
+    fontface='plain'
+  )+
+  geom_text(#family = "Times", 
+    size=4.2,
+    aes(label = format(Freq),
+        y= -3*(..count../100)/(..count..)),
+    stat= "count",
+    position = position_dodge(0.9),
+    #vjust = -.05,
+    fontface='plain'
+  ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+
+
+```
+
+
+
+```{r}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+
+
+```{r figS6tab1dumbJennifer,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load (Julie and Mark)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+```{r}
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+df3 <- df3[which(df3$scenario=="Trolley"),]
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+
+```
+
+```{r figS6checkingchanges6aTrolley, include=FALSE}
+
+length(df3$gender)
+table(df3$condition)
+#table(df3$condition,df3$scenario)
+
+```
+
+
+```{r figcheckingchanges6Trolley, include=FALSE}
+chisq.test(table(df3$InCS,df3$condition),correct = TRUE)
+```
+
+
+```{r}
+
+test <- as.data.frame.matrix((table(df3$InCS,df3$condition)))
+`rownames<-`(test, c("nothing wrong","no reason","reasons"))
+test <- as.matrix((test))
+test1 <- cbind(test[,1],test[,2])
+test2 <- `colnames<-`(test1, c("cognitive load","control"))
+
+tb_count_perc <- function(x){
+  tc <- table(x$InCS,x$condition)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$condition=="cog_load")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$condition=="control")*100),"%"))
+  }
+  
+  tb_count_perc_eng <- function(x){
+  tc <- table(x$InCS,x$engaged)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$engaged=="engaged")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$engaged=="not engaged")*100),"%"))
+  }
+  
+
+test <- tb_count_perc(df3)
+test <- as.data.frame(test)
+colnames(test) <- c("N","\\%","N","\\%")
+
+  makespanners <- function(){
+  cog_load <- c(2,3)
+  control <- c(4,5)
+  spans <- list(cog_load,control)
+  names(spans) <- c("Cognitive Load","Control")
+  spans
+}
+
+#test <- tb_count_perc(df3)
+#tb_count_perc(df3a)
+
+
+
+```
+
+
+```{r figS6tab1dumb1allTrolley,results = 'asis', include=FALSE}
+
+
+apa_table(
+   test
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Response to the critical slide depending on cognitive load (Trolley)"
+   #, added_stub_head = "Response to critical slide"
+   , col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+
+
+rm(y)
+```
+
+
+```{r figS6ch5S6fig2criticalconditionbTrolley, fig.cap="Study 6: Responses to critical slide depending on cognitive load (Trolley)", include=TRUE}
+
+
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+    size=4.2,
+    aes( label = scales::percent(perc, accuracy = 1),
+         y= perc ),
+    stat= "identity",
+    vjust = -.5,
+    position = position_dodge(.9),
+    fontface='plain'
+  )+
+  geom_text(#family = "Times", 
+    size=4.2,
+    aes(label = format(Freq),
+        y= -3*(..count../100)/(..count..)),
+    stat= "count",
+    position = position_dodge(0.9),
+    #vjust = -.05,
+    fontface='plain'
+  ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+
+
+```
+
+
+
+```{r}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+
+
+```{r figS6tab1dumbTrolley,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load (Trolley)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+df3 <- study_6_clean
+#df3$InCS
+df3 <- df3[which(is.na(df3$InCS)==FALSE),]
+df3 <- df3[which(df3$InCS!="null"),]
+
+df3 <- df3[which(df3$scenario=="Heinz"),]
+
+df4 <- df3[which(df3$condition=="cog_load"),]
+df5 <- df3[which(df3$condition=="control"),]
+
+```
+
+```{r figS6checkingchanges6aHeinz, include=FALSE}
+
+length(df3$gender)
+table(df3$condition)
+#table(df3$condition,df3$scenario)
+
+```
+
+
+```{r figS6checkingchanges6Heinz, include=FALSE}
+chisq.test(table(df3$InCS,df3$condition),correct = TRUE)
+```
+
+
+```{r}
+
+test <- as.data.frame.matrix((table(df3$InCS,df3$condition)))
+`rownames<-`(test, c("nothing wrong","no reason","reasons"))
+test <- as.matrix((test))
+test1 <- cbind(test[,1],test[,2])
+test2 <- `colnames<-`(test1, c("cognitive load","control"))
+
+tb_count_perc <- function(x){
+  tc <- table(x$InCS,x$condition)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$condition=="cog_load")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$condition=="control")*100),"%"))
+  }
+  
+  tb_count_perc_eng <- function(x){
+  tc <- table(x$InCS,x$engaged)
+  cbind(tc[,1],paste0(round(tc[,1]/sum(x$engaged=="engaged")*100),"%"),
+        tc[,2],paste0(round(tc[,2]/sum(x$engaged=="not engaged")*100),"%"))
+  }
+  
+test <- tb_count_perc(df3)
+test <- as.data.frame(test)
+colnames(test) <- c("N","\\%","N","\\%")
+  
+  makespanners <- function(){
+  cog_load <- c(2,3)
+  control <- c(4,5)
+  spans <- list(cog_load,control)
+  names(spans) <- c("Cognitive Load","Control")
+  spans
+}
+
+#test <- tb_count_perc(df3)
+#tb_count_perc(df3a)
+
+
+
+```
+
+
+```{r figS6tab1dumb1allHeinz,results = 'asis', include=FALSE}
+
+
+apa_table(
+   test
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Response to the critical slide depending on cognitive load (Heinz)"
+   #, added_stub_head = "Response to critical slide"
+   , col_spanners = makespanners()
+   #, note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+```{r}
+
+
+y <- table(df3$condition,df3$InCS)
+y <- as.data.frame(y)
+colnames(y) <- c("condition","InCS","Freq")
+
+z <- as.data.frame(table(df3$condition,df3$InCS)/length(df3$gender)*2)
+perc <- z$Freq
+test <- cbind(y,perc)
+test$condition
+test
+
+
+#y <- table(df3$condition,df3$Dumb_incl_string)
+#y <- as.data.frame(y)
+#colnames(y) <- c("condition","InCS","Freq")
+
+# z <- as.data.frame(table(df3$condition,df3$Dumb_incl_string)/length(df3$gender)*2)
+# perc <- z$Freq
+# test <- cbind(y,perc)
+# test$condition
+# test
+
+
+ab_graph <- function(){
+  a <- df3[which(df3$condition==levels(as.factor(df3$condition))[1]),]
+  b <- df3[which(df3$condition==levels(as.factor(df3$condition))[2]),]
+  a#levels(as.factor(df3$condition))[1]
+  
+  ay <- as.data.frame(table(a$InCS,as.character(a$condition)))
+  by <- as.data.frame(table(b$InCS,as.character(b$condition)))
+  
+  aperc <- ay$Freq/length(a$gender)
+  ay <- cbind(ay,aperc)
+  colnames(ay) <- c("InCS","condition","Freq","perc")
+  
+  bperc <- by$Freq/length(b$gender)
+  by <- cbind(by,bperc)
+  colnames(by) <- c("InCS","condition","Freq","perc")
+  
+  c <- rbind(ay,by)
+  
+  c
+}
+
+test <- ab_graph()
+
+
+
+rm(y)
+```
+
+
+```{r figS6ch5S6fig2criticalconditionbHeinz, fig.cap="Study 6: Responses to critical slide depending on cognitive load (Heinz)", include=TRUE}
+
+
+ggplot(test, aes(x=InCS, y=perc, fill=factor(condition,labels=c("Cognitive load","Control")))) +
+  scale_y_continuous(limits = c(-.03,1),
+                     labels = percent_format()
+  )+ 
+  geom_col(position = "dodge",
+           color="black",
+           size=.2
+  )+
+  geom_text(#family = "Times",
+    size=4.2,
+    aes( label = scales::percent(perc, accuracy = 1),
+         y= perc ),
+    stat= "identity",
+    vjust = -.5,
+    position = position_dodge(.9),
+    fontface='plain'
+  )+
+  geom_text(#family = "Times", 
+    size=4.2,
+    aes(label = format(Freq),
+        y= -3*(..count../100)/(..count..)),
+    stat= "count",
+    position = position_dodge(0.9),
+    #vjust = -.05,
+    fontface='plain'
+  ) +
+  xlab("Response to Critical Slide") +
+  ylab("Percentage of participants selecting each response")+
+  scale_x_discrete(labels=c("Reasons", "Dumbfounded","Nothing Wrong")) +
+  scale_fill_grey(start = .5, end = .8) +
+  labs(fill="Condition") +
+  #theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+          size=12
+        ),
+        legend.text=element_text(#family="Times",
+          size=8
+        ),
+        legend.title=element_text(#family="Times",
+          size=10
+        ),
+        axis.text=element_text(#family="Times",
+          colour = "black",
+          size=8
+        ),
+        axis.ticks.x = element_blank(),
+        axis.title=element_text(#family="Times",
+          size=12
+        ),
+        strip.text=element_text(#family = "Times",
+          size = 12
+        ),
+        #strip.background = element_rect(fill = "white"),
+        legend.position="right")
+
+
+
+
+```
+
+
+```{r}
+c <- chisq.test(table(df3$InCS,df3$condition))
+rownames(rbind(c$observed,c$expected,c$stdres))
+
+
+
+ps <- function(y){
+  if(as.numeric(sqrt( y*y) ) >3.3) print(paste0(y,"**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) >1.96) print(paste0(y,"*"), quote = FALSE)
+  else print(y)}
+
+
+x <- c$stdres
+x <- round(x, digits = 2)
+
+lapply(x, ps)
+
+#c$stdres <- round(c$stdres,digits=3)
+#c$stdres <- ps(c$stdres)
+
+ps(x[1])
+ps(x[2])
+ps(x[3])
+
+x <- `colnames<-`(
+  cbind.data.frame(c(ps(x[1]),ps(x[2]),ps(x[3])),
+                   c(ps(x[4]),ps(x[5]),ps(x[6]))),
+  c("cog_load","control")
+)
+
+rownames(x) <- row.names(c$observed)  
+
+y <- rbind(round(c$observed), round(c$expected, digits = 2))
+
+c(c$stdres[1])
+
+
+res <- cbind(c("Observed count","","","Expected count","","","Standardised residuals","",""),
+      c("Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong",
+        "Reasons","Dumbfounded","Nothing Wrong"),
+      rbind(y,x)
+      
+      )
+
+row.names(res) <- NULL
+colnames(res) <- c("","","Cognitive Load","Control")
+
+
+
+
+```
+
+
+
+```{r figS6tab1dumbHeinz,results = 'asis', include=FALSE}
+
+
+apa_table(
+   res
+   , align = c("l", "l", "c", "c", "c")
+   , caption = "Study 6 – Observed counts, expected counts, and standardised residuals for each response to the critical slide depending on cognitive load (Heinz)"
+   #, added_stub_head = "Response to critical slide"
+   #, col_spanners = makespanners()
+   , note = "* = sig. at \\emph{p} < .05; ** = sig. at \\emph{p} < .001"
+   , escape = FALSE
+   
+)
+
+```
+
+
+
+
