@@ -1,0 +1,107 @@
+---
+title: "The Moral Dilution Effect"
+authors: "Cillian McHugh & Eric R. Igou"
+institute: "Department of Psychology Seminar Series"
+bibliography: "../resources/bib/MyLibrary_Oct2024.bib"
+csl: "../resources/bib/apa.csl"
+format:
+  revealjs:
+    slide-number: false
+    controls: true
+    logo: "images/ul-psychology-logos.png"
+    footer: "Cillian McHugh - 16/10/24"
+    theme: "../resources/css/mytheme.scss"
+    chalkboard: 
+      buttons: true
+editor: source
+---
+
+## Overview
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(include = FALSE)
+
+```
+
+```{r}
+rm(list = ls())
+
+# library(desnum)
+# library(tidyverse)
+
+#devtools::install_github("crsh/citr")
+#install.packages("car")
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+#devtools::install_github("cillianmiltown/R_desnum")
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#install.packages("papaja")
+#devtools::install_github("crsh/papaja", force=T)
+library(papaja)
+#library("dplyr")
+#install.packages("afex")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("metap")
+#install.packages("metap")
+library(metap)
+#install.packages("pwr")
+library(pwr)
+#install.packages("lsr")
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+#install.packages("DescTools")
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+#install.packages("VGAM")
+library(VGAM)
+library(nnet)
+#install.packages("mlogit")
+library(mlogit)
+library(reshape2)
+library("powerMediation")
+library("ggpubr")
+#install.packages("powerMediation")
+#library("powerMediation")
+#install.packages("magick")
+# install.packages("ltm")
+#source("load_all_data.R")
+#install.packages("magick")
+#tinytex::reinstall_tinytex()
+# install.packages("ltm")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+
+#setwd("manuscript_revisions")
+# getwd()
+# getwd()
+
+```
+
+- What is the (moral) dilution effect
+- The current studies
+  - Study 1 (bad characters)
+  - Study 2 (good characters)
+  - Study 3 (bad *and* good characters)
+  - (other studies 2 pilots, 3 supplementary studies)
+
+## The Dilution Effect
+
+- Diagnostic information about a target is ‘diluted’ by non-diagnostic information [@nisbett_dilution_1981; @kemmelmeier_does_2007; @tetlock_dilution_1996]
+- Shown for
+  - judging products [@igou_conversational_2005; @meyvis_consumers_2002]
+  - probability judgments [@labella_dilution_2004]
+  - and predictions relating to people’s behavior [@nisbett_dilution_1981; @zukier_dilution_1982]
+
+## References
+
