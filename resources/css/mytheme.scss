@@ -11,6 +11,11 @@
 	color: rgba(0,83,53);
 }
 
+.scrollable {
+  overflow-y: auto;
+  height: 100%;
+}
+
 $link-color: #00B140 !default;
 
 $headingColor: #005335 !default;

@@ -320,10 +320,10 @@ We conducted a linear-mixed-effects model to test if condition influenced MPS-4 
 Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions Figure\ \@ref(fig:S1bothconditionplot).
 
 ```{r}
-x <- alex
-x <- sam
-x <- robin
-x <- francis
+# x <- alex
+# x <- sam
+# x <- robin
+# x <- francis
 ```
 
 

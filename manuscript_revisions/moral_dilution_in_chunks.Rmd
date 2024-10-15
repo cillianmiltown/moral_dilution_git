@@ -17,7 +17,7 @@ author_note: >
   All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript. 
 abstract: >
   Across five studies we investigated the moral dilution effect  
-keywords          : "keywords"
+keywords          : "Moral judgment; moral categorization; dilution effect; representativeness heuristic; typicality; MJAC"
 wordcount         : "TBC"
 bibliography: "../resources/bib/My Library.bib"
 csl: "../resources/bib/apa.csl"
