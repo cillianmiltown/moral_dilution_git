@@ -111,7 +111,7 @@ library(tidyverse)
 
 # The Current Studies
 
-# Study 1 (Bat Actors)
+# Study 1 (Bad Actors)
 
 ## Study 1 {.smaller .scrollable}
 
@@ -1764,7 +1764,10 @@ anova(model1)
 - There was a significant main effect for condition *F*(`r aov1$NumDF[1]`, `r round(aov1$DenDF[1],digits=2)`) = `r round(f3a,digits=2)`, *p* `r paste(p_report(p3a))`;
 - and for Valence *F*(`r aov1$NumDF[2]`, `r round(aov1$DenDF[2],digits=2)`) = `r round(f3b,digits=2)`, *p* `r paste(p_report(p3b))`
 - and there was a significant condition $\times$ valence interaction *F*(`r aov1$NumDF[3]`, `r round(aov1$DenDF[3],digits=2)`) = `r round(f3c,digits=2)`, *p* `r paste(p_report(p3c))`
-
+  - Diagnostic: *M* = `r round(mean(x$R_tot_recoded[which(x$condition=="diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$R_tot_recoded[which(x$condition=="diagnostic",)]),digits=1)`
+  - Non-Diagnostic: *M* = `r round(mean(x$R_tot_recoded[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$R_tot_recoded[which(x$condition=="non-diagnostic",)]),digits=1)`
+  - Good: *M* = `r round(mean(x$R_tot_recoded[which(x$valence=="good",)]),digits=1)`, *SD* = `r round(sd(x$R_tot_recoded[which(x$valence=="good",)]),digits=1)`
+  - Bad: *M* = `r round(mean(x$R_tot_recoded[which(x$valence=="bad",)]),digits=1)`, *SD* = `r round(sd(x$R_tot_recoded[which(x$valence=="bad",)]),digits=1)`
 
 ```{r, include=TRUE, results='asis'}
 
@@ -1784,7 +1787,7 @@ x <- df_recoded
 #x <- df_recoded_extra_clean
 
 
-model0 <- lmerTest::lmer(R_tot_recoded ~ 1
+model0 <- lmerTest::lmer(M1_recoded ~ 1
                 #   condition
                  + (1|ResponseId)
                 # + (1|ResponseId:condition)
@@ -1849,6 +1852,10 @@ anova(model1)
 - There was a significant main effect for condition *F*(`r aov1$NumDF[1]`, `r round(aov1$DenDF[1],digits=2)`) = `r round(f3a,digits=2)`, *p* `r paste(p_report(p3a))`;
 - and for Valence *F*(`r aov1$NumDF[2]`, `r round(aov1$DenDF[2],digits=2)`) = `r round(f3b,digits=2)`, *p* `r paste(p_report(p3b))`
 - and there was no significant condition $\times$ valence interaction *F*(`r aov1$NumDF[3]`, `r round(aov1$DenDF[3],digits=2)`) = `r round(f3c,digits=2)`, *p* `r paste(p_report(p3c))`
+  - Diagnostic: *M* = `r round(mean(x$M1_recoded[which(x$condition=="diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$M1_recoded[which(x$condition=="diagnostic",)]),digits=1)`
+  - Non-Diagnostic: *M* = `r round(mean(x$M1_recoded[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$M1_recoded[which(x$condition=="non-diagnostic",)]),digits=1)`
+  - Good: *M* = `r round(mean(x$M1_recoded[which(x$valence=="good",)]),digits=1)`, *SD* = `r round(sd(x$M1_recoded[which(x$valence=="good",)]),digits=1)`
+  - Bad: *M* = `r round(mean(x$M1_recoded[which(x$valence=="bad",)]),digits=1)`, *SD* = `r round(sd(x$M1_recoded[which(x$valence=="bad",)]),digits=1)`
 
 
 ```{r, include=TRUE, results='asis'}
