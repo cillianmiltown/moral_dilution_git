@@ -96,7 +96,8 @@ library(tidyverse)
   - Study 1 (bad characters)
   - Study 2 (good characters)
   - Study 3 (bad *and* good characters)
-  - (other studies 2 pilots, 3 supplementary studies)
+- Reviewer Feedback (previously circulated)
+- Addressing Reviewer Feedback (discussion)
 
 # What is the (Moral) Dilution Effect
 
