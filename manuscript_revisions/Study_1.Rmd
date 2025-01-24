@@ -314,10 +314,87 @@ p2 <- results_coef$`Pr(>|t|)`[2]
 
 #QuantPsyc::lm.beta(results_coef)
 anova(model1)
+
+d <- (mean(x$R_tot[which(x$condition=="diagnostic")])-mean(x$R_tot[which(x$condition=="non-diagnostic")]))/sd(x$R_tot)
+
+tapply(x$R_tot,x$condition,descriptives)
+
+s_pooled <- sqrt(
+  (
+    ((.9657055^2)*1601)+((.9594647^2)*1601)
+  )/
+    (1602+1602-2)
+)
+
+
+s_pooled_fun <- function(){
+  
+  x$dv <- x$R_tot
+  
+  z <- 1.959964
+  
+  df_1 <- x[which(x$condition=="diagnostic"),]
+  df_2 <- x[which(x$condition=="non-diagnostic"),]
+  
+  
+  df_1 <- df_1[order(df_1$ResponseId), ]
+  df_2 <- df_2[order(df_2$ResponseId), ]
+  
+  x1 <- mean(df_1$dv)
+  x2 <- mean(df_2$dv)
+  
+  n1 <- length(df_1$gender)
+  n2 <- length(df_2$gender)
+  
+  s1 <- sd(df_1$dv)
+  s2 <- sd(df_2$dv)
+  
+  s_pooled <- sqrt(
+    (
+      ((s1*s1)*(n1-1))+((s2*s2)*(n2-1))
+    )/
+      (n1+n1-2)
+  )
+  
+  d <- (x1-x2)/s_pooled
+  
+  vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
+  
+  sed <- sqrt(vd)
+  
+  ci_upper <- d+(z*sed)
+  ci_lower <- d-(z*sed)
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  list(study="Study 1",
+       x1=x1
+       ,x2=x2
+       ,s1=s1
+       ,s2=s2
+       ,n1=n1
+       ,n2=n2
+       ,s_pooled=s_pooled
+       ,d=d
+       ,vd=vd
+       ,sed=sed
+       ,ci_upper=ci_upper
+       ,ci_lower=ci_lower
+       ,p=p2
+       ,d_paired=d_paired)
+     
+}
+
+s1_rtot_stats <- s_pooled_fun()
+d <- s1_rtot_stats$d
+
 ```
 
 We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
-Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions Figure\ \@ref(fig:S1bothconditionplot).
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (*d* = `r round(d, digits=2)`), see Figure\ \@ref(fig:S1bothconditionplot).
 
 ```{r}
 # x <- alex
@@ -793,10 +870,86 @@ p2 <- results_coef$`Pr(>|t|)`[2]
 
 #QuantPsyc::lm.beta(results_coef)
 anova(model1)
+
+
+# d <- (mean(x$M1[which(x$condition=="diagnostic")])-mean(x$M1[which(x$condition=="non-diagnostic")]))/sd(x$M1)
+
+df_1 <- x[which(x$condition=="diagnostic"),]
+df_2 <- x[which(x$condition=="non-diagnostic"),]
+
+
+s_pooled_fun <- function(){
+  
+  x$dv <- x$M1
+  
+  z <- 1.959964
+  
+  df_1 <- x[which(x$condition=="diagnostic"),]
+  df_2 <- x[which(x$condition=="non-diagnostic"),]
+  
+  
+  df_1 <- df_1[order(df_1$ResponseId), ]
+  df_2 <- df_2[order(df_2$ResponseId), ]
+  
+  x1 <- mean(df_1$dv)
+  x2 <- mean(df_2$dv)
+  
+  n1 <- length(df_1$gender)
+  n2 <- length(df_2$gender)
+  
+  s1 <- sd(df_1$dv)
+  s2 <- sd(df_2$dv)
+  
+  s_pooled <- sqrt(
+    (
+      ((s1*s1)*(n1-1))+((s2*s2)*(n2-1))
+    )/
+      (n1+n1-2)
+  )
+  
+  d <- (x1-x2)/s_pooled
+  
+  vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
+  
+  sed <- sqrt(vd)
+  
+  ci_upper <- d+(z*sed)
+  ci_lower <- d-(z*sed)
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  list(study="Study 1",
+       x1=x1
+       ,x2=x2
+       ,s1=s1
+       ,s2=s2
+       ,n1=n1
+       ,n2=n2
+       ,s_pooled=s_pooled
+       ,d=d
+       ,vd=vd
+       ,sed=sed
+       ,ci_upper=ci_upper
+       ,ci_lower=ci_lower
+       ,p=p2
+       ,d_paired=d_paired)
+     
+}
+
+s1_M1_stats <- s_pooled_fun()
+d <- s1_M1_stats$d
+d
+
+save(s1_rtot_stats, s1_M1_stats, file = "S1_effect_stats.RData")
+
+
 ```
 
 
-We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly predicted MM-1 responses *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`, and when controlling for scenario was a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions Figure\ \@ref(fig:S1bothconditionplot).
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly predicted MM-1 responses *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`, and when controlling for scenario was a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (*d* = `r round(d, digits=2)`), see Figure\ \@ref(fig:S1bothconditionplot).
 
 In the supplementary analyses we report the effect of condition on moral perception for each description individually.
 

@@ -40,12 +40,9 @@ header-includes:
       {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
       {-1em}%
       {\normalfont\normalsize\bfseries\typesectitle}}
-    
-    \renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
       {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
       {-\z@\relax}%
       {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
-    \makeatother
 editor_options: 
   chunk_output_type: console
 ---

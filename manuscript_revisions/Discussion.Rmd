@@ -1,7 +1,6 @@
 ---
 title             : "Discussion"
 shorttitle        : "Moral Dilution"
-
 author:
   - name          : "Cillian McHugh"
     affiliation   : "1"
@@ -10,34 +9,29 @@ author:
     email         : "cillian.mchugh@ul.ie"
   - name          : "Eric R. Igou"
     affiliation   : "1"
-
 affiliation:
   - id            : "1"
     institution   : "University of Limerick"
-
 author_note: >
   All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
-
 abstract: >
   Six studies etc.
 keywords          : "keywords"
 wordcount         : "TBC"
-
 bibliography: "../resources/bib/My Library.bib"
 csl: "../resources/bib/apa6.csl"
-
 figsintext        : yes
 figurelist        : no
 tablelist         : no
 footnotelist      : no
 lineno            : no
 toc               : no
-
 lang              : "en-US"
 documentclass     : "apa7"
 output:
   papaja::apa6_pdf
-
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r Discussionsetup, include=FALSE}
@@ -72,6 +66,321 @@ getwd()
 #     ,.221 , .140   # Study 5 Bad
 #     ,.002 , .0001  # Study 5 Good
 # )
+
+load("S1_effect_stats.RData")
+load("S2_effect_stats.RData")
+load("S3_effect_stats.RData")
+load("supp_S1_effect_stats.RData")
+load("supp_S2_effect_stats.RData")
+load("supp_S3_effect_stats.RData")
+
+
+
+m_fun <- function(x){deparse(substitute(x))
+  m <- x
+  
+  c(
+    m$study,
+    as.numeric(m$x1)
+    ,as.numeric(m$x2)
+    ,as.numeric(m$s1)
+    ,as.numeric(m$s2)
+    ,as.numeric(m$n1)
+    ,as.numeric(m$n2)
+    ,as.numeric(m$s_pooled)
+    ,as.numeric(m$d)
+    ,as.numeric(m$vd)
+    ,as.numeric(m$sed)
+    ,as.numeric(m$ci_upper)
+    ,as.numeric(m$ci_lower)
+    ,as.numeric(m$p)
+    ,as.numeric(m$d_paired))
+}
+
+# m_fun <- function(x){deparse(substitute(x))}
+
+test_bad_rtot <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_rtot_stats)
+    ,m_fun(s3bad_rtot_stats)
+    # ,m_fun(supp_s2bad_rtot_stats)
+    # ,m_fun(supp_s3bad_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_rtot <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_rtot_stats)
+    ,m_fun(s3good_rtot_stats)
+    # ,m_fun(supp_s1_rtot_stats)
+    # ,m_fun(supp_s2good_rtot_stats)
+    # ,m_fun(supp_s3good_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+
+test_bad_M1 <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_M1_stats)
+    ,m_fun(s3bad_M1_stats)
+    # ,m_fun(supp_s2bad_M1_stats)
+    # ,m_fun(supp_s3bad_M1_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_M1 <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_M1_stats)
+    ,m_fun(s3good_M1_stats)
+    # ,m_fun(supp_s1_M1_stats)
+    # ,m_fun(supp_s2good_M1_stats)
+    # ,m_fun(supp_s3good_M1_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_both <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_M1_stats)
+    ,m_fun(s3good_M1_stats)
+    ,m_fun(supp_s1_M1_stats)
+    ,m_fun(supp_s2good_M1_stats)
+    ,m_fun(supp_s3good_M1_stats)
+    ,m_fun(s2_rtot_stats)
+    ,m_fun(s3good_rtot_stats)
+    ,m_fun(supp_s1_rtot_stats)
+    ,m_fun(supp_s2good_rtot_stats)
+    ,m_fun(supp_s3good_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_both$measure <- c(
+  rep("MM-1",5),
+  rep("MPS-4",5)
+)
+
+
+
+x <- test_good_both
+
+x$studyorder <- c(2,3,4,5,6,2,3,4,5,6)  
+
+x <- x[order(x$studyorder),]
+
+
+paste(x$study,": ",x$measure, sep = "")
+
+x$valence <- rep("good")
+
+x$lab <- paste(x$study,": ",x$measure, " - ", x$valence, sep = "")
+
+
+test_good_both <- x
+
+test_bad_both <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_M1_stats)
+    ,m_fun(s3bad_M1_stats)
+    # ,m_fun(supp_s1_M1_stats)
+    ,m_fun(supp_s2bad_M1_stats)
+    ,m_fun(supp_s3bad_M1_stats)
+    ,m_fun(s1_rtot_stats)
+    ,m_fun(s3bad_rtot_stats)
+    # ,m_fun(supp_s1_rtot_stats)
+    ,m_fun(supp_s2bad_rtot_stats)
+    ,m_fun(supp_s3bad_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+test_bad_both$measure <- c(
+  rep("MM-1",4),
+  rep("MPS-4",4)
+)
+
+
+x <- test_bad_both
+
+x$studyorder <- c(1,3,5,6,1,3,5,6)  
+
+x <- x[order(x$studyorder),]
+
+
+paste(x$study,": ",x$measure, sep = "")
+
+
+x$valence <- rep("bad")
+
+x$lab <- paste(x$study,": ",x$measure, " - ", x$valence, sep = "")
+
+test_bad_both <- x
+
+
+test_both <- rbind.data.frame(test_good_both,test_bad_both)
+sqrt(as.numeric(test_both$d)*as.numeric(test_both$d))
+
+test_both$d_absolute <- sqrt(as.numeric(test_both$d)*as.numeric(test_both$d))
+
+# meta-analysis with continuout outcome
+# comb.fixed/comb.random: indicator whether a fix/random effect mata-analysis to be conducted.
+# sm: Three different types of summary measures to choose,standardized mean difference (SMD),mean difference (MD), ratio of means (ROM)
+meta1 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_rtot, sm = "SMD") 
+meta2 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_M1, sm = "SMD") 
+meta3 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_rtot, sm = "SMD") 
+meta4 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_M1, sm = "SMD") 
+meta5 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_both, sm = "SMD") 
+meta6 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_both, sm = "SMD") 
+
+summary(meta1)
+summary(meta2)
+summary(meta3)
+summary(meta4)
+summary(meta5)
+summary(meta6)
+
+
+
+meta::forest(meta1, leftcols=c("studlab"))
+meta::forest(meta2, leftcols=c("studlab"))
+meta::forest(meta3, leftcols=c("studlab"))
+meta::forest(meta4, leftcols=c("studlab"))
+meta::forest(meta5, leftcols=c("studlab"))
+meta::forest(meta6, leftcols=c("studlab"))
+
+#####
+
+# install.packages("dmetar")
+library(metafor)
+
+x <- test_both
+x <- x[order(x$studyorder),]
+
+x$ntot <- as.numeric(x$n1)+as.numeric(x$n2)
+
+#x <- x[1:8,]
+x <- x[which(x$valence=="good"),]
+
+# escalc(measure="MC"
+#        ,x1i=as.numeric(n1)
+#        ,x2i=as.numeric(n2)
+#        ,m1i=as.numeric(x1)
+#        ,m2i=as.numeric(x2)
+#        ,sd1i=as.numeric(s1)
+#        ,sd2i=as.numeric(s2)
+#        ,data=x)
+
+x$d_paired_absolute <- sqrt(as.numeric(x$d_paired)*as.numeric(x$d_paired))
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired_absolute),
+                  as.numeric(vd),
+                  W=ntot,# (n1+n2),
+                  slab = lab,
+                  random = ~ 1 | study/measure/valence,
+                  method = "ML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+summary(m_multi)
+
+metafor::forest(m_multi)
+
+
+
+x <- test_bad_both
+
+x$ntot <- as.numeric(x$n1)+as.numeric(x$n2)
+
+x <- x[order(x$studyorder),]
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+
+
+summary(m_multi)
+
+
+meta::forest(m_multi)
+
+
+
+x <- test_good_both
+
+x$ntot <- as.numeric(x$n1)+as.numeric(x$n2)
+
+x <- x[order(x$studyorder),]
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+
+summary(m_multi)
+
+
+
+meta::forest(m_multi)
+
+
+m_multi <- metafor::rma.mv(as.numeric(d),
+                  as.numeric(vd),
+                  W = ntot
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  dfs = "contain",
+                  data = test_bad_both) 
+
+summary(m_multi)
+
+metafor::forest(m_multi)
+
+meta::forest(m_multi)
+
+
+full.model <- rma.mv(yi = z, 
+                     V = var.z, 
+                     slab = author,
+                     data = Chernobyl,
+                     random = ~ 1 | author/es.id, 
+                     test = "t", 
+                     method = "REML")
 
 
 

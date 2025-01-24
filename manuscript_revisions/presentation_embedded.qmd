@@ -331,6 +331,9 @@ p2 <- results_coef$`Pr(>|t|)`[2]
 anova(model1)
 results_coef
 
+
+d <- mean(x$R_tot[which(x$condition=="diagnostic")])-mean(x$R_tot[which(x$condition=="non-diagnostic")])/sd(x$R_tot)
+
 ```
 
 
@@ -339,7 +342,7 @@ results_coef
 - and was a significant predictor in the model when controlling for scenario, $b$ = `r round(results_coef$Estimate[2],digits=2)`, *t*(`r round(results_coef$df[2],digits=2)`) = `r round(t1,digits=2)`, *p* `r paste(p_report(p2))`
 - Diagnostic descriptions were rated as more immoral (less moral) than the non-diagnostic descriptions.
   - Diagnostic: *M* = `r round(mean(x$R_tot[which(x$condition=="diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$R_tot[which(x$condition=="diagnostic",)]),digits=1)`
-  - Non-Diagnostic: *M* = `r round(mean(x$R_tot[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$R_tot[which(x$condition=="non-diagnostic",)]),digits=1)`
+  - Non-Diagnostic: *M* = `r round(mean(x$R_tot[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$R_tot[which(x$condition=="non-diagnostic",)]),digits=1)`, *d* = `r round(d, digits=2)`
 
 
 ```{r, include=TRUE, results='asis'}
@@ -402,6 +405,9 @@ p2 <- results_coef$`Pr(>|t|)`[2]
 anova(model1)
 
 round(results_coef, digits=3)
+
+
+d <- mean(x$M1[which(x$condition=="diagnostic")])-mean(x$M1[which(x$condition=="non-diagnostic")])/sd(x$M1)
 ```
 
 
@@ -410,7 +416,7 @@ round(results_coef, digits=3)
 - and was a significant predictor in the model when controlling for scenario, $b$ = `r round(results_coef$Estimate[2],digits=2)`, *t*(`r round(results_coef$df[2],digits=2)`) = `r round(t1,digits=2)`, *p* `r paste(p_report(p2))`
 - Diagnostic descriptions were rated as more immoral (less moral) than the non-diagnostic descriptions.
   - Diagnostic: *M* = `r round(mean(x$M1[which(x$condition=="diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$M1[which(x$condition=="diagnostic",)]),digits=1)`
-  - Non-Diagnostic: *M* = `r round(mean(x$M1[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$M1[which(x$condition=="non-diagnostic",)]),digits=1)`
+  - Non-Diagnostic: *M* = `r round(mean(x$M1[which(x$condition=="non-diagnostic",)]),digits=1)`, *SD* = `r round(sd(x$M1[which(x$condition=="non-diagnostic",)]),digits=1)`, *d* = `r round(d, digits=2)`
 
 
 ```{r, include=TRUE, results='asis'}
