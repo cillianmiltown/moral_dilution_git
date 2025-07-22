@@ -6,7 +6,7 @@ author:
   - name          : "Cillian McHugh"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : "University of Limerick, Limerick, Ireland, V94 T9PX"
+    address       : "Limerick, V94 T9PX"
     email         : "cillian.mchugh@ul.ie"
   - name          : "Eric R. Igou"
     affiliation   : "1"
@@ -19,8 +19,8 @@ authornote: |
 abstract: |
   
   Supplementary analysis to accompany the manuscript The Moral Dilution Effect: Irrelevant Information Influences Judgments of Moral Character.
-keywords          : "keywords"
-wordcount         : "X"
+keywords          : "Moral judgment, moral categorization, dilution effect, representativeness heuristic, typicality, MJAC"
+wordcount         : "11,119"
 bibliography      : "../resources/bib/My Library.bib"
 floatsintext      : yes
 linenumbers       : yes
@@ -38,6 +38,9 @@ output            :
 header-includes:
   - \raggedbottom
   - \usepackage{float}
+  - \renewcommand\thefigure{S\arabic{figure}}
+  - \renewcommand\thetable{S\arabic{table}}
+
 editor_options: 
   chunk_output_type: console
 ---
@@ -115,6 +118,15 @@ knitr::opts_chunk$set(fig.pos = "!p", out.extra = "")
 \pagebreak
 
 ```{r child = 'Study_S_3.Rmd'}
+```
+
+
+
+\pagebreak
+
+
+
+```{r child = 'supp_meta.Rmd'}
 ```
 
 

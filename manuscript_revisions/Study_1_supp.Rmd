@@ -96,6 +96,245 @@ library("ggpubr")
 getwd()
 ```
 
+
+## Study 1: T-tests
+
+
+```{r}
+df1 <- read.csv("../data/study1_data_long.csv")
+df3 <- read.csv("../data/study1_data_long_clean.csv")
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+```{r}
+
+
+x <- df3
+x <- x[order(x$ResponseId),]
+
+diag <- x[which(x$condition=="diagnostic"),]
+non_diag <- x[which(x$condition=="non-diagnostic"),]
+
+test <- cbind.data.frame(
+  diag$ResponseId
+  ,non_diag$ResponseId
+  ,diag$R_tot
+  ,non_diag$R_tot)
+
+test <- 
+  `colnames<-`(test
+               ,c(
+                 "ID1"
+                 ,"ID2"
+                 ,"DV1"
+                 ,"DV2"
+               ))
+
+t1 <- t.test(test$DV1,test$DV2, paired = T)
+d1 <- cohensD(test$DV1,test$DV2)
+
+t1$statistic
+t1$parameter
+t1$p.value
+d1
+t1$conf.int[1]
+t1$conf.int[2]
+
+desnum::t_paired_paragraph(test$DV1,test$DV2, "DV")
+
+```
+
+A paired samples t-test indicated that there were significant differences in MPS-4 responses depending on information type
+*t*(`r t1$parameter`),
+= `r t1$statistic`,
+*p* `r paste(p_report(t1$p.value))`
+*d* = `r d1`,
+95% CI [`r t1$conf.int[1]`, `r t1$conf.int[2]`].
+MPS-4 responses were higher in the non-diagnostic condition
+(*M* = `r mean(test$DV2)`,
+*SD* = `r sd(test$DV2)`)
+compared to the diagnostic condition
+(*M* = `r mean(test$DV1)`,
+*SD* = `r sd(test$DV1)`).
+
+
+
+```{r}
+
+
+x <- df3
+x <- x[order(x$ResponseId),]
+
+diag <- x[which(x$condition=="diagnostic"),]
+non_diag <- x[which(x$condition=="non-diagnostic"),]
+
+test <- cbind.data.frame(
+  diag$ResponseId
+  ,non_diag$ResponseId
+  ,diag$M1
+  ,non_diag$M1)
+
+test <- 
+  `colnames<-`(test
+               ,c(
+                 "ID1"
+                 ,"ID2"
+                 ,"DV1"
+                 ,"DV2"
+               ))
+
+t1 <- t.test(test$DV1,test$DV2, paired = T)
+d1 <- cohensD(test$DV1,test$DV2)
+
+t1$statistic
+t1$parameter
+t1$p.value
+d1
+t1$conf.int[1]
+t1$conf.int[2]
+
+desnum::t_paired_paragraph(test$DV1,test$DV2, "DV")
+
+```
+
+A paired samples t-test indicated that there were significant differences in MM1 responses depending on information type
+*t*(`r t1$parameter`),
+= `r t1$statistic`,
+*p* `r paste(p_report(t1$p.value))`
+*d* = `r d1`,
+95% CI [`r t1$conf.int[1]`, `r t1$conf.int[2]`].
+MM-1 responses were higher in the non-diagnostic condition
+(*M* = `r mean(test$DV2)`,
+*SD* = `r sd(test$DV2)`)
+compared to the diagnostic condition
+(*M* = `r mean(test$DV1)`,
+*SD* = `r sd(test$DV1)`).
+
+
+## Study 1: Descriptives for Each Scenario
+
+
+
+```{r}
+df1 <- read.csv("../data/study1_data_long.csv")
+df3 <- read.csv("../data/study1_data_long_clean.csv")
+table(df3$gender)
+length(df1$gender)/6
+length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+length(df3$gender)/4
+
+att_both <- length(levels(as.factor(df1$ResponseId)))-length(levels(as.factor(df3$ResponseId)))
+```
+
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+
+
+The means and standard deviations for MPS-4 for each scenario are as follows: 
+*Sam*,
+*M*~MPS-4~ = `r mean(sam$R_tot)`, *SD*~MPS-4~ = `r sd(sam$R_tot)`,
+*Francis*,
+*M*~MPS-4~ = `r mean(francis$R_tot)`, *SD*~MPS-4~ = `r sd(francis$R_tot)`,
+*Alex*,
+*M*~MPS-4~ = `r mean(alex$R_tot)`, *SD*~MPS-4~ = `r sd(alex$R_tot)`,
+*Robin*,
+*M*~MPS-4~ = `r mean(robin$R_tot)`, *SD*~MPS-4~ = `r sd(robin$R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. *Francis* appeared to be rated as more moral than each of the other characters (all *p*s < .001), while *Robin* was rated as less moral than each of the other characters (all *p*s < .001), while *Sam* was rated more favorably than *Alex* (*p* < .001). 
+
+
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    M1 ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+lapply(pwc$p.adj, p_report)
+paste(pwc$p.adj[2])
+pwc$p[2]
+# d1 <- lsr::cohensD(M1~condition,x,method="paired")
+# t.test(M1~scenario,x,paired=TRUE)
+# t1 <- t.test(x$M1~x$scenaro,paired=TRUE)
+# d1
+
+```
+
+The means and standard deviations for MM-1 for each scenario are as follows: 
+*Sam*,
+*M*~MM-1~ = `r mean(sam$M1)`, *SD*~MM-1~ = `r sd(sam$M1)`;
+*Francis*,
+*M*~MM-1~ = `r mean(francis$M1)`, *SD*~MM-1~ = `r sd(francis$M1)`;
+*Alex*,
+*M*~MM-1~ = `r mean(alex$M1)`, *SD*~MM-1~ = `r sd(alex$M1)`;
+*Robin*,
+*M*~MM-1~ = `r mean(robin$M1)`, *SD*~MM-1~ = `r sd(robin$M1)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r paste(aov1$ges)`. *Francis* was rated more favorably than all other characters (*p* < .001), *Sam* was the next most favorably rated character, rated significantly more favorably than both *Alex* and *Robin* (*p*s < .001), there was no difference between *Alex* and *Robin* (*p* = `r paste(p_report(pwc$p[2]))`).
+
+
+
 ## Study 1: Combined Measure
 
 We developed a combined moral perception measure by calculating the mean of the combined mean-centered scores for MPS-4 and MM-1, and mean-centering this result. Below we report the analyses for this combined measure.
@@ -292,7 +531,7 @@ g <- ggplot(x,
              , size=.5
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Moral Perception (combined)") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -304,7 +543,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" #guide_legend(title="Valence")
     , shape="none"
   )+
@@ -361,6 +600,325 @@ suppressWarnings(print(g))
 ```
 
 \newpage
+
+## Study 1: Alternative Model
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(R_tot ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 + (1|ResponseId:condition)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+model1 <- lmerTest::lmer(R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                + (1|scenario)
+                , data = x
+                , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+d <- (mean(x$R_tot[which(x$condition=="diagnostic")])-mean(x$R_tot[which(x$condition=="non-diagnostic")]))/sd(x$R_tot)
+
+tapply(x$R_tot,x$condition,descriptives)
+
+s_pooled <- sqrt(
+  (
+    ((.9657055^2)*1601)+((.9594647^2)*1601)
+  )/
+    (1602+1602-2)
+)
+
+
+s_pooled_fun <- function(){
+  
+  x$dv <- x$R_tot
+  
+  z <- 1.959964
+  
+  df_1 <- x[which(x$condition=="diagnostic"),]
+  df_2 <- x[which(x$condition=="non-diagnostic"),]
+  
+  
+  df_1 <- df_1[order(df_1$ResponseId), ]
+  df_2 <- df_2[order(df_2$ResponseId), ]
+  
+  x1 <- mean(df_1$dv)
+  x2 <- mean(df_2$dv)
+  
+  n1 <- length(df_1$gender)/2
+  n2 <- length(df_2$gender)/2
+  
+  s1 <- sd(df_1$dv)
+  s2 <- sd(df_2$dv)
+  
+  s_pooled <- sqrt(
+    (
+      ((s1*s1)*(n1-1))+((s2*s2)*(n2-1))
+    )/
+      (n1+n1-2)
+  )
+  
+  d <- (x1-x2)/s_pooled
+  
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  d <- d_paired
+  
+  vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
+  
+  sed <- sd(df_1$dv-df_2$dv) # sqrt(vd)
+  vd <- sed*sed
+  
+  n <- length(x$gender)/4
+  var <- (1/n)+((d_paired*d_paired)/(2*n))
+  vd <- var
+  sed <- sqrt(vd)
+  
+  ci_upper <- d+(z*sed)
+  ci_lower <- d-(z*sed)
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  
+  ci_upper <- d_paired+(z*sed)
+  ci_lower <- d_paired-(z*sed)
+  
+  list(study="Study 1 supp",
+       x1=x1
+       ,x2=x2
+       ,s1=s1
+       ,s2=s2
+       ,n1=n1
+       ,n2=n2
+       ,s_pooled=s_pooled
+       ,d=d
+       ,vd=vd
+       ,sed=sed
+       ,ci_upper=ci_upper
+       ,ci_lower=ci_lower
+       ,p=p2
+       ,d_paired=d_paired)
+     
+}
+
+s1_rtot_stats_supp <- s_pooled_fun()
+d <- s1_rtot_stats_supp$d
+
+```
+
+In the analyses reported in the main text we included random effects for participant, as well as participant &times; condition random effects (allowing the effect of condition to vary across participants). When we attempted to additionally include random effects for scenario, the model failed to converge. Here we report alternative analyses where we replace the participant &times; condition random effects with random effects for scenario.
+
+First we conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition, and scenario was also included in the model; we allowed intercepts to vary across participants, and across scenarios.
+
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (*d* = `r round(d, digits=2)`).
+
+
+
+```{r}
+x <- df3
+model0 <- lmerTest::lmer(M1 ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 + (1|ResponseId:condition)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+model1 <- lmerTest::lmer(M1 ~
+                  condition*scenario
+                + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                + (1|scenario)
+                , data = x
+                , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+            )
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+d <- (mean(x$M1[which(x$condition=="diagnostic")])-mean(x$M1[which(x$condition=="non-diagnostic")]))/sd(x$M1)
+
+tapply(x$R_tot,x$condition,descriptives)
+
+s_pooled <- sqrt(
+  (
+    ((.9657055^2)*1601)+((.9594647^2)*1601)
+  )/
+    (1602+1602-2)
+)
+
+
+s_pooled_fun <- function(){
+  
+  x$dv <- x$M1
+  
+  z <- 1.959964
+  
+  df_1 <- x[which(x$condition=="diagnostic"),]
+  df_2 <- x[which(x$condition=="non-diagnostic"),]
+  
+  
+  df_1 <- df_1[order(df_1$ResponseId), ]
+  df_2 <- df_2[order(df_2$ResponseId), ]
+  
+  x1 <- mean(df_1$dv)
+  x2 <- mean(df_2$dv)
+  
+  n1 <- length(df_1$gender)/2
+  n2 <- length(df_2$gender)/2
+  
+  s1 <- sd(df_1$dv)
+  s2 <- sd(df_2$dv)
+  
+  s_pooled <- sqrt(
+    (
+      ((s1*s1)*(n1-1))+((s2*s2)*(n2-1))
+    )/
+      (n1+n1-2)
+  )
+  
+  d <- (x1-x2)/s_pooled
+  
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  d <- d_paired
+  
+  vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
+  
+  sed <- sd(df_1$dv-df_2$dv) # sqrt(vd)
+  vd <- sed*sed
+  
+  n <- length(x$gender)/4
+  var <- (1/n)+((d_paired*d_paired)/(2*n))
+  vd <- var
+  sed <- sqrt(vd)
+  
+  ci_upper <- d+(z*sed)
+  ci_lower <- d-(z*sed)
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  
+  ci_upper <- d_paired+(z*sed)
+  ci_lower <- d_paired-(z*sed)
+  
+  list(study="Study 1 supp",
+       x1=x1
+       ,x2=x2
+       ,s1=s1
+       ,s2=s2
+       ,n1=n1
+       ,n2=n2
+       ,s_pooled=s_pooled
+       ,d=d
+       ,vd=vd
+       ,sed=sed
+       ,ci_upper=ci_upper
+       ,ci_lower=ci_lower
+       ,p=p2
+       ,d_paired=d_paired)
+     
+}
+
+s1_M1_stats_supp <- s_pooled_fun()
+d <- s1_M1_stats_supp$d
+
+```
+
+
+Next we conducted the same linear-mixed-effects model, this time to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition, and scenario was also included in the model; we allowed intercepts to vary across participants, and across scenarios.
+
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced responses to the MM-1, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r results_coef$df[2]`) = `r t1`, *p* `r paste(p_report(p2))`, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (*d* = `r round(d, digits=2)`).
 
 ## Study 1: Differences between the Descriptions
 
@@ -456,7 +1014,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -468,7 +1026,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -588,7 +1146,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -600,7 +1158,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -650,7 +1208,7 @@ M1plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MM-1") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +
@@ -770,7 +1328,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -782,7 +1340,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -831,7 +1389,7 @@ mBothPlot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("Combined") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +
@@ -880,7 +1438,7 @@ figure
 ```
 
 
-```{r S1allscenariosPlot, fig.cap="Study 1: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+```{r S1allscenariosPlot, fig.cap="Study 1: Differences in moral perception for each description", include=TRUE, fig.height=8, out.width = "\\textwidth", fig.pos = "!h"}
 
 suppressWarnings(print(figure))
 

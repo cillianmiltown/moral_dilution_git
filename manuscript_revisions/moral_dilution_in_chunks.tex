@@ -185,15 +185,6 @@
 \keywords{Moral judgment; moral categorization; dilution effect; representativeness heuristic; typicality; MJAC\newline\indent Word count: TBC}
 \usepackage{csquotes}
 \raggedbottom
-\makeatletter
-\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
-  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
-  {-1em}%
-  {\normalfont\normalsize\bfseries\typesectitle}}
-  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
-  {-\z@\relax}%
-  {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
-
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -278,28 +269,10 @@ As in the pilot study, data were collected using an online questionnaire present
 
 \subsection{Study 1: Results}\label{study-1-results}
 
-The means and standard deviations for MPS-4 for each scenario are as follows:
-\emph{Sam},
-\emph{M}\textsubscript{MPS-4} = 2.55, \emph{SD}\textsubscript{MPS-4} = 0.86,
-\emph{Francis},
-\emph{M}\textsubscript{MPS-4} = 3.05, \emph{SD}\textsubscript{MPS-4} = 0.97,
-\emph{Alex},
-\emph{M}\textsubscript{MPS-4} = 2.32, \emph{SD}\textsubscript{MPS-4} = 0.88,
-\emph{Robin},
-\emph{M}\textsubscript{MPS-4} = 2.13, \emph{SD}\textsubscript{MPS-4} = 0.91. There was significant variation depending on the description, \emph{F}(3,2280) = 297.82, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.13. \emph{Francis} appeared to be rated as more moral than each of the other characters (all \emph{p}s \textless{} .001), while \emph{Robin} was rated as less moral than each of the other characters (all \emph{p}s \textless{} .001), while \emph{Sam} was rated more favorably than \emph{Alex} (\emph{p} \textless{} .001).
-
-The means and standard deviations for MM-1 for each scenario are as follows:
-\emph{Sam},
-\emph{M}\textsubscript{MM-1} = 23.94, \emph{SD}\textsubscript{MM-1} = 16.18;
-\emph{Francis},
-\emph{M}\textsubscript{MM-1} = 30.12, \emph{SD}\textsubscript{MM-1} = 17.86;
-\emph{Alex},
-\emph{M}\textsubscript{MM-1} = 20.55, \emph{SD}\textsubscript{MM-1} = 16.65;
-\emph{Robin},
-\emph{M}\textsubscript{MM-1} = 20.60, \emph{SD}\textsubscript{MM-1} = 17.06. There was significant variation depending on the description, \emph{F}(3,2253) = 154.08, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.05. \emph{Francis} was rated more favorably than all other characters (\emph{p} \textless{} .001), \emph{Sam} was the next most favorably rated character, rated significantly more favorably than both \emph{Alex} and \emph{Robin} (\emph{p}s \textless{} .001), there was no difference between \emph{Alex} and \emph{Robin} (\emph{p} = = .953).
+Prior to conducting the main analysis, we conducted a preliminary test of the data quality, examining the extent to which participants' ratings of the characters deviated from what would be expected based on the character descriptions. All characters were described as ostensibly \emph{bad} characters, and therefore responses suggesting these characters are \emph{good} (as measured by scoring above the midpoint of either measure) would be surprising, and may indicate measurement error or inattentiveness. All \emph{N} = 801 participants responded to four descriptions resulting in a total of 3204 responses for each measure. For MPS-4, 142 (4.43\%) responses were above the midpoint, and for MM-1, 154 (4.81\%) were above the midpoint. These responses present a potential source of error (e.g., inattentiveness), however the observed proportions are relatively low, and do not justify deviating from our pre-registered exclusion criteria (failing both attention checks), and we proceed with the analyses as planned.
 
 We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
-Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 816.91, \emph{p} \textless{} .001. Condition significantly influenced responses to the MPS-4, \emph{F}(1, 799.42) = 51.47, \emph{p} \textless{} .001; and was a significant predictor in the model when controlling for scenario, \(b\) = -0.08, \emph{t}(799.42) = -7.17, \emph{p} \textless{} .001, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (\emph{d} = -0.17), see Figure~\ref{fig:S1bothconditionplot}.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 816.91, \emph{p} \textless{} .001. Condition significantly influenced responses to the MPS-4, \emph{F}(1, 799.42) = 51.47, \emph{p} \textless{} .001; and was a significant predictor in the model when controlling for scenario, \(b\) = -0.08 (\(b\)\textsubscript{standardized} = -0.09), \emph{t}(799.42) = -7.17, \emph{p} \textless{} .001, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (\emph{d} = -0.16), see Figure~\ref{fig:S1bothconditionplot}.
 
 \begin{figure}
 \centering
@@ -307,7 +280,7 @@ Overall, the model significantly predicted participants responses, and provided 
 \caption{\label{fig:S1bothconditionplot}Study 1: Differences in moral perception depending on condition}
 \end{figure}
 
-We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 475.52, \emph{p} \textless{} .001. Condition significantly predicted MM-1 responses \emph{F}(1, 799.71) = 44.39, \emph{p} \textless{} .001, and when controlling for scenario was a significant predictor in the model \(b\) = -1.22, \emph{t}(799.71) = -6.66, \emph{p} \textless{} .001, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (\emph{d} = -0.14), see Figure~\ref{fig:S1bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 475.52, \emph{p} \textless{} .001. Condition significantly predicted MM-1 responses \emph{F}(1, 799.71) = 44.39, \emph{p} \textless{} .001, and when controlling for scenario was a significant predictor in the model \(b\) = -1.22 (\(b\)\textsubscript{standardized} = -0.07), \emph{t}(799.71) = -6.66, \emph{p} \textless{} .001, with the diagnostic descriptions being rated as more immoral than the non-diagnostic descriptions (\emph{d} = 0.16), see Figure~\ref{fig:S1bothconditionplot}.
 
 In the supplementary analyses we report the effect of condition on moral perception for each description individually.
 
@@ -335,28 +308,10 @@ Again, data were collected using an online questionnaire presented with Qualtric
 
 \subsection{Study 2: Results}\label{study-2-results}
 
-The means and standard deviations for MPS-4 for each scenario are as follows:
-\emph{Sam},
-\emph{M}\textsubscript{MPS-4} = 6.12, \emph{SD}\textsubscript{MPS-4} = 0.97,
-\emph{Francis},
-\emph{M}\textsubscript{MPS-4} = 5.86, \emph{SD}\textsubscript{MPS-4} = 1.07,
-\emph{Alex},
-\emph{M}\textsubscript{MPS-4} = 6.13, \emph{SD}\textsubscript{MPS-4} = 0.99,
-\emph{Robin},
-\emph{M}\textsubscript{MPS-4} = 6.10, \emph{SD}\textsubscript{MPS-4} = 0.99. There was significant variation depending on the description, \emph{F}(3,2356) = 54.47, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.01. \emph{Francis} appeared to be rated as less moral than each of the other characters (all \emph{p}s \textless{} .001).
-
-The means and standard deviations for MM-1 for each scenario are as follows:
-\emph{Sam} (diagnostic/moral),
-\emph{M}\textsubscript{MM-1} = 84.60, \emph{SD}\textsubscript{MM-1} = 14.47;
-\emph{Francis} (diagnostic/moral),
-\emph{M}\textsubscript{MM-1} = 82.05, \emph{SD}\textsubscript{MM-1} = 15.24;
-\emph{Alex} (diagnostic/moral),
-\emph{M}\textsubscript{MM-1} = 85.02, \emph{SD}\textsubscript{MM-1} = 15.01;
-\emph{Robin} (diagnostic/moral),
-\emph{M}\textsubscript{MM-1} = 84.95, \emph{SD}\textsubscript{MM-1} = 13.94. There was significant variation depending on the description, \emph{F}(3,2387) = 24.20, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.007. \emph{Francis} was rated less favorably than all other characters (all \emph{p}s \textless{} .001).
+Similar to Study 1 we conducted a preliminary test of the quality of the data, examining the extent to which participants rated these ostensibly \emph{good} characters as \emph{bad} (or as measured by responses falling below the midpoint of either measure). All \emph{N} = 820 participants responded to four descriptions resulting in a total of 3280 responses for each measure. For MPS-4, 128 (3.90\%) responses were below the midpoint, and for MM-1, 59 (1.80\%) were below the midpoint. Again, while this is a potential source of error, based on the low proportions we chose not to introduce any additional exclusions.
 
 We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
-Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 160.00, \emph{p} \textless{} .001. Condition did not influence responses to the MPS-4, \emph{F}(1, 838.12) = 0.24, \emph{p} = .624; and was not a significant predictor in the model when controlling for scenario, \(b\) = 0.00, \emph{t}(838) = 0.49, \emph{p} = .624, (\emph{d} = 0), see Figure~\ref{fig:S2bothconditionplot}.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 160.00, \emph{p} \textless{} .001. Condition did not influence responses to the MPS-4, \emph{F}(1, 838.12) = 0.24, \emph{p} = .624; and was not a significant predictor in the model when controlling for scenario, \(b\) = 0.00 (\(b\)\textsubscript{standardized} = 0.00), \emph{t}(838.12) = 0.49, \emph{p} = .624, (\emph{d} = 0), see Figure~\ref{fig:S2bothconditionplot}.
 
 \begin{figure}
 \centering
@@ -364,7 +319,7 @@ Overall, the model significantly predicted participants responses, and provided 
 \caption{\label{fig:S2bothconditionplot}Study 2: Differences in moral perception depending on condition}
 \end{figure}
 
-We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 75.69, \emph{p} \textless{} .001. Condition did not influence MM-1 responses \emph{F}(1, 2453) = 1.23, \emph{p} = .267, and was not a significant predictor in the model \(b\) = 0.16, \emph{t}(2453) = 1.11, \emph{p} = .267, (\emph{d} = 0.01), see Figure~\ref{fig:S2bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(8) = 75.69, \emph{p} \textless{} .001. Condition did not influence MM-1 responses \emph{F}(1, 2453) = 1.23, \emph{p} = .267, and was not a significant predictor in the model \(b\) = 0.16 (\(b\)\textsubscript{standardized} = 0.01), \emph{t}(2453) = 1.11, \emph{p} = .267, (\emph{d} = 0.02), see Figure~\ref{fig:S2bothconditionplot}.
 
 In the supplementary analyses we report the effect of condition on moral perception for each description individually.
 
@@ -388,57 +343,140 @@ Again, data were collected using an online questionnaire presented with Qualtric
 
 \subsection{Study 3: Results}\label{study-3-results}
 
-The means and standard deviations for MPS-4 for each scenario are as follows:
-\emph{Sam} (good),
-\emph{M}\textsubscript{MPS-4} = 6.20, \emph{SD}\textsubscript{MPS-4} = 0.82,
-\emph{Francis} (bad),
-\emph{M}\textsubscript{MPS-4} = 2.15, \emph{SD}\textsubscript{MPS-4} = 0.79,
-\emph{Alex} (bad),
-\emph{M}\textsubscript{MPS-4} = 2.32, \emph{SD}\textsubscript{MPS-4} = 0.88,
-\emph{Robin} (good),
-\emph{M}\textsubscript{MPS-4} = 6.32, \emph{SD}\textsubscript{MPS-4} = 0.76. There was significant variation depending on the description, \emph{F}(2,1515) = 6,251.52, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.86. Both the \emph{good} characters (\emph{Robin} and \emph{Sam}) were rated significantly more favorably than both the \emph{bad} characters (\emph{Alex} and \emph{Francis}; all \emph{p}s \textless{} .001). There were no differences between \emph{Robin} and \emph{Sam} (\emph{good}: \emph{p} = .003) or between \emph{Alex} and \emph{Francis} (\emph{bad}; \emph{p} \textless{} .001).
+As in Studies 1 and 2 we assessed the quality of the data by examining the extent to which responses fell above / below the midpoint for the \emph{bad} / \emph{good} descriptions respectively. All \emph{N} = 814 participants responded to two \emph{bad} descriptions and 2 \emph{good} descriptions, resulting in a total of 1628 responses for each measure for both \emph{bad} and \emph{good} descriptions.
+Taking the \emph{bad} descriptions first, for MPS-4, 33 (2.03\%) responses were above the midpoint, and for MM-1, 114 (7.00\%) were above the midpoint.
 
-The means and standard deviations for MM-1 for each scenario are as follows:
-\emph{Sam} (good),
-\emph{M}\textsubscript{MM-1} = 86.36, \emph{SD}\textsubscript{MM-1} = 13.71;
-\emph{Francis} (bad),
-\emph{M}\textsubscript{MM-1} = 20.13, \emph{SD}\textsubscript{MM-1} = 16.87;
-\emph{Alex} (bad),
-\emph{M}\textsubscript{MM-1} = 22.83, \emph{SD}\textsubscript{MM-1} = 17.29;
-\emph{Robin} (good),
-\emph{M}\textsubscript{MM-1} = 88.41, \emph{SD}\textsubscript{MM-1} = 12.07. There was significant variation depending on the description, \emph{F}(2,1380) = 5,282.47, \emph{p} \textless{} .001, partial \(\eta\)\textsuperscript{2} = 0.826. Again, the \emph{good} characters (\emph{Robin} and \emph{Sam}) were rated significantly more favorably than the \emph{bad} characters (\emph{Alex} and \emph{Francis}; all \emph{p}s \textless{} .001). There were no differences between \emph{Robin} and \emph{Sam} (\emph{good}: \emph{p} = .001) or between \emph{Alex} and \emph{Francis} (\emph{bad}; \emph{p} \textless{} .001).
+Regarding the \emph{good} descriptions, for MPS-4, 22 (1.35\%) responses were below the midpoint, and for MM-1, 17 (1.04\%) were below the midpoint.
 
-We conducted a linear-mixed-effects model to test if our predictors influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants.
+In order to test for the information type × valence interaction effect in a single model recoded both MPS-4 and MM-1 into two new variables MPS-4R, and MM-1R. These recoded variables were the same as the original variables but the responses to the good characters were reverse coded. This allowed us to examine whether the dilution effect was different depending on whether participants were judging good characters or bad characters without this analysis being confounded by valence.
+
+First we conducted a within-subjects factorial ANOVA to test for differences in responses to MPS-4R depending on information type and valence.
+There was a main effect for condition,
+\emph{F}(1, 813)
+= 48.53,
+\emph{p} \textless{} .001,
+partial \(\eta\)\textsuperscript{2} = 0.06,
+95\% CI {[}0.03, 0.09{]},
+and a main effect for valence,
+\emph{F}(1, 813)
+= 3,383.29,
+\emph{p} \textless{} .001,
+partial \(\eta\)\textsuperscript{2} = 0.81,
+95\% CI {[}0.79, 0.82{]}.
+There was a significant \(\times\) valence interaction effect,
+\emph{F}(1, 813)
+= 6.35,
+\emph{p} = .012,
+partial \(\eta\)\textsuperscript{2} = 0.01,
+95\% CI {[}0.00, 0.02{]}.
+
+Follow-up pairwise t-tests indicated that for the \emph{bad} characters there were significant differences in MPS-4 responses depending on information type
+\emph{t}(813),
+= 6.59,
+\emph{p} \textless{} .001
+(\emph{p}\textsubscript{adjusted} \textless{} .001),
+\emph{d} = 0.23,
+95\% CI {[}0.13, 0.25{]}.
+MPS-4 responses were higher in the non-diagnostic condition
+(\emph{M} = 2.33,
+\emph{SD} = 0.86)
+compared to the diagnostic condition
+(\emph{M} = 2.14,
+\emph{SD} = 0.81).
+
+Similarly, for \emph{good} characters, were significant differences in MPS-4 responses depending on information type
+\emph{t}(813),
+= -3.43,
+\emph{p} \textless{} .001
+(\emph{p}\textsubscript{adjusted} = .003),
+\emph{d} 0.12,
+95\% CI {[}-0.15, -0.04{]}.
+MPS-4 responses were lower in the non-diagnostic condition
+(\emph{M} = 6.21,
+\emph{SD} = 0.84)
+compared to the diagnostic condition
+(\emph{M} = 6.31,
+\emph{SD} = 0.74).
+
+Next we conducted a within-subjects factorial ANOVA to test for differences in responses to MM-1R depending on information type and valence.
+There was a main effect for condition,
+\emph{F}(1, 813)
+= 29.92,
+\emph{p} \textless{} .001,
+partial \(\eta\)\textsuperscript{2} = 0.04,
+95\% CI {[}0.01, 0.06{]},
+and a main effect for valence,
+\emph{F}(1, 813)
+= 258.78,
+\emph{p} \textless{} .001,
+partial \(\eta\)\textsuperscript{2} = 0.24,
+95\% CI {[}0.19, 0.29{]}.
+There was no condition \(\times\) valence interaction effect,
+\emph{F}(1, 813)
+= 1.78,
+\emph{p} = .183,
+partial \(\eta\)\textsuperscript{2} = 0.00,
+95\% CI {[}0, 0.01{]}.
+
+Follow-up pairwise t-tests indicated that for the \emph{bad} characters there were significant differences in MM-1 responses depending on information type
+\emph{t}(813),
+= 4.27,
+\emph{p} = \textless{} .001
+(\emph{p}\textsubscript{adjusted} = \textless{} .001),
+\emph{d} = 0.15,
+95\% CI {[}1.22, 3.29{]}.
+MPS-4 responses were higher in the non-diagnostic condition
+(\emph{M} = 22.60,
+\emph{SD} = 17.06)
+compared to the diagnostic condition
+(\emph{M} = 20.35,
+\emph{SD} = 17.13).
+
+Similarly, for \emph{good} characters, were significant differences in MPS-4 responses depending on information type
+\emph{t}(813),
+= -3.60,
+\emph{p} \textless{} .001
+(\emph{p}\textsubscript{adjusted} = .001),
+\emph{d} = 0.13,
+95\% CI {[}-2.16, -0.64{]}.
+MPS-4 responses were lower in the non-diagnostic condition
+(\emph{M} = 86.68,
+\emph{SD} = 13.86)
+compared to the diagnostic condition
+(\emph{M} = 88.08,
+\emph{SD} = 11.94).
+
+We conducted a linear-mixed-effects model to test if our predictors influenced MPS-4R responses. Our outcome measure was MPS-4R, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants, and we included random effects for scenario.
 Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
-\(\chi\)\textsuperscript{2}(5) = 2,733.13, \emph{p} \textless{} .001.
+\(\chi\)\textsuperscript{2}(5) = 2,695.60, \emph{p} \textless{} .001.
 Overall, there was a significant main effect for condition,
-\emph{F}(1, 825) = 47.54, \emph{p} \textless{} .001;
+\emph{F}(1, 813) = 48.53, \emph{p} \textless{} .001;
 valence significantly predicted responses,
-\emph{F}(1, 823) = 3,423.33, \emph{p} \textless{} .001;
+\emph{F}(1, 813) = 3,383.29, \emph{p} \textless{} .001;
 and there was a significant condition \(\times\) valence interaction,
-\emph{F}(1, 819) = 6.56, \emph{p} = .011.
+\emph{F}(1, 813) = 6.35, \emph{p} = .012.
 
-We conducted a linear-mixed-effects model to test if our predictors influenced MM-1 responses. The model was the same as the previous model, with a change to the outcome measure, our outcome measure for this model was MM-1. As above, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants.
+We conducted a linear-mixed-effects model to test if our predictors influenced MM-1R responses. The model was the same as the previous model, with a change to the outcome measure, our outcome measure for this model was MM-1R. As above, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants, and we included random effects for scenario.
 Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
-\(\chi\)\textsuperscript{2}(5) = 6,652.62, \emph{p} \textless{} .001.
+\(\chi\)\textsuperscript{2}(5) = 749.17, \emph{p} \textless{} .001.
 Overall there was a main effect for condition,
-\emph{F}(1, 829) = 30.29, \emph{p} \textless{} .001;
+\emph{F}(1, 813) = 29.92, \emph{p} \textless{} .001;
 valence significantly predicted responses,
-\emph{F}(1, 824) = 273.59, \emph{p} \textless{} .001;
+\emph{F}(1, 813) = 258.78, \emph{p} \textless{} .001;
 and there was no significant condition \(\times\) valence interaction,
-\emph{F}(1, 825) = 1.57, \emph{p} = .211.
+\emph{F}(1, 813) = 1.78, \emph{p} = .183.
 
-For both MP-4 and MM-1 we found a main effect for condition and valence, and there was a condition \(\times\) valence interaction for MP-4 but not for MM-1. We conducted follow-up analyses to test the if the main effect for condition holds for both good and bad descriptions separately.
+Interestingly, there was a consistent effect for both condition and valence, as well as a condition \(\times\) valence interaction effect. To further examine this interaction effect, we report separate analyses for the good and bad descriptions below.
 
 \subsection{\texorpdfstring{Differences in the \emph{Bad} Descriptions}{Differences in the Bad Descriptions}}\label{differences-in-the-bad-descriptions}
 
-We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 76.88, \emph{p} \textless{} .001. Condition significantly influenced MPS-4 responses \emph{F}(1, 812.00) = 46.02, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = -0.10, \emph{t}(812.00) = -6.78, \emph{p} \textless{} .001, (\emph{d} = -0.23), see Figure~\ref{fig:S3bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 76.88, \emph{p} \textless{} .001. Condition significantly influenced MPS-4 responses \emph{F}(1, 812.00) = 46.02, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = -0.10 (\(b\)\textsubscript{standardized} = -0.11), \emph{t}(812.00) = -6.78, \emph{p} \textless{} .001, (\emph{d} = -0.23), see Figure~\ref{fig:S3bothconditionplot}.
 
-We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 46.32, \emph{p} \textless{} .001. Condition significantly influenced MM-1 responses \emph{F}(1, 812.00) = 19.25, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = -1.14, \emph{t}(812.00) = -4.39, \emph{p} \textless{} .001, (\emph{d} = -0.13), see Figure~\ref{fig:S3bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 46.32, \emph{p} \textless{} .001. Condition significantly influenced MM-1 responses \emph{F}(1, 812.00) = 19.25, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = -1.14 (\(b\)\textsubscript{standardized} = -0.06), \emph{t}(812.00) = -4.39, \emph{p} \textless{} .001, (\emph{d} = -0.15), see Figure~\ref{fig:S3bothconditionplot}.
 
 \subsection{\texorpdfstring{Differences in the \emph{Good} Descriptions}{Differences in the Good Descriptions}}\label{differences-in-the-good-descriptions}
 
-We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 30.01, \emph{p} \textless{} .001. Condition significantly influenced MPS-4 responses \emph{F}(1, 812.00) = 11.87, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = 0.05, \emph{t}(812.00) = 3.45, \emph{p} \textless{} .001, (\emph{d} = 0.12), see Figure~\ref{fig:S3bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 30.01, \emph{p} \textless{} .001. Condition significantly influenced MPS-4 responses \emph{F}(1, 812.00) = 11.87, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = 0.05 (\(b\)\textsubscript{standardized} = 0.06), \emph{t}(812.00) = 3.45, \emph{p} \textless{} .001, (\emph{d} = 0.12), see Figure~\ref{fig:S3bothconditionplot}.
 
 \begin{figure}
 \centering
@@ -446,19 +484,86 @@ We conducted a linear-mixed-effects model to test if condition influenced MPS-4 
 \caption{\label{fig:S3bothconditionplot}Study 3: Differences in moral perception depending on condition}
 \end{figure}
 
-We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 41.07, \emph{p} \textless{} .001. Condition significantly influenced MM-1 responses \emph{F}(1, 812) = 13.21, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = 0.69, \emph{t}(812) = 3.63, \emph{p} \textless{} .001, (\emph{d} = 0.11), see Figure~\ref{fig:S3bothconditionplot}.
+We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, \(\chi\)\textsuperscript{2}(3) = 41.07, \emph{p} \textless{} .001. Condition significantly influenced MM-1 responses \emph{F}(1, 812) = 13.21, \emph{p} \textless{} .001, and was a significant predictor in the model \(b\) = 0.69 (\(b\)\textsubscript{standardized} = 0.05), \emph{t}(812) = 3.63, \emph{p} \textless{} .001, (\emph{d} = 0.13), see Figure~\ref{fig:S3bothconditionplot}.
 
-\newpage
+\section{Internal Meta Analyses}\label{internal-meta-analyses}
 
-\section{Aggregate Results}\label{aggregate-results}
+In order to examine whether the observed effects held across studies, we conducted a series of internal meta-analyses. The first set of meta-analyses includes only the studies reported in the main text of this manuscript, while the second set of meta-analyses additionally includes the studies only reported in the supplementary materials. In both cases, we report one overall meta-analysis, investigating the presence of the dilution effect for both bad characters and good characters together. Following this, we also report two additional meta-analyses testing for the presence of the dilution effect for bad characters and good characters separately.
 
-A mini meta-analysis and found a significant dilution effect across both good and bad character descriptions across all studies \(\chi\)\textsuperscript{2}(16) = 114.11, \emph{p} \textless{} .001 (Fisher's method); or when weighting for sample size, \emph{z} = 7.995, \emph{p} \textless{} .001 (Stouffer's Z-score method).
+\subsection{Studies 1-3: Meta Analysis}\label{studies-1-3-meta-analysis}
 
-A mini meta-analysis and found a significant dilution effect for bad character descriptions across all studies \(\chi\)\textsuperscript{2}(8) = 73.68, \emph{p} \textless{} .001 (Fisher's method); or when weighting for sample size, \emph{z} = 7.438, \emph{p} \textless{} .001 (Stouffer's Z-score method).
+\subsubsection{Both}\label{both}
 
-A mini meta-analysis and found a significant dilution effect for good character descriptions across all studies \(\chi\)\textsuperscript{2}(8) = 40.43, \emph{p} \textless{} .001 (Fisher's method); or when weighting for sample size, \emph{z} = 3.871, \emph{p} \textless{} .001 (Stouffer's Z-score method).
+Our first meta-analysis examined Studies 1, 2, and 3. Testing for an overall dilution effect across both bad characters and good characters, and across both measures (MPS-4 and MM-1). We computed the absolute value for all effect sizes. In order to account for the nested structure of our data (i.e., multiple effect sizes being reported from each included study), we included random effects for Study (Study 1/2/3), Valence (good/bad), and Measure (MPS-4/MM-1). Overall, there was a significant dilution effect across studies, for both good and bad characters, and for both measures,
+\emph{d\textsubscript{pooled}} = 0.12,
+\emph{SE} = 0.05,
+\emph{z} = 2.38,
+\emph{p} = .017,
+95\% CI {[}0.02, 0.22{]}.
+
+\begin{figure}
+\centering
+\includegraphics{meta1.png}
+\caption{Forest plot showing effects for Studies 1-3 and pooled effect.}
+\end{figure}
+
+\subsubsection{Bad}\label{bad}
+
+Next examined the presence of an overall dilution effect for bad characters across both measures for Studies 1 and 3. Again we included random effects for each study, as well as for measure. Overall, there was a significant dilution for bad characters, across both studies for both measures,
+\emph{d\textsubscript{pooled}} = -0.17,
+\emph{SE} = 0.02,
+\emph{z} = -7.97,
+\emph{p} \textless{} .001,
+95\% CI {[}-0.22, -0.13{]}.
+
+\subsubsection{Good}\label{good}
+
+We then examined the presence of an overall dilution effect for good characters across both measures for Studies 1 and 3. Again we included random effects for each study, as well as for measure. Overall, there was no significant dilution for good characters, across both studies for either measures,
+\emph{d\textsubscript{pooled}} = 0.06,
+\emph{SE} = 0.06,
+\emph{z} = 1.12,
+\emph{p} = .263,
+95\% CI {[}-0.05, 0.18{]}.
+
+\subsection{All Studies}\label{all-studies}
+
+\subsubsection{Both}\label{both-1}
+
+We then proceeded to re-run the above meta-analyses but to additionally include the supplementary studies. Other than the inclusion of additional studies, the meta-analyses described below are the same as those already reported. We first included effect sizes for both bad characters and good characters, for both measures (MPS-4 and MM-1), with absolute values for all effect sizes and random effects for Study (Study 1/2/3/S1/S2/S3), Valence (good/bad), and Measure (MPS-4/MM-1). Second we test the effect for bad characters only, and third we test for the effect for good characters only.
+Overall, there was a significant dilution effect across all studies, for both good and bad characters, and for both measures,
+\emph{d\textsubscript{pooled}} = 0.11,
+\emph{SE} = 0.03,
+\emph{z} = 3.80,
+\emph{p} \textless{} .001,
+95\% CI {[}0.05, 0.16{]}.
+
+\begin{figure}
+\centering
+\includegraphics{meta2.png}
+\caption{Forest plot showing effects for all studies and pooled effect.}
+\end{figure}
+
+\subsubsection{Bad}\label{bad-1}
+
+Overall, there was a significant dilution for bad characters across all studies for both measures,
+\emph{d\textsubscript{pooled}} = -0.12,
+\emph{SE} = 0.02,
+\emph{z} = -4.91,
+\emph{p} \textless{} .001,
+95\% CI {[}-0.17, -0.07{]}.
+
+\subsubsection{Good}\label{good-1}
+
+Overall, there was a significant dilution for good characters, across all studies and for both measures,
+\emph{d\textsubscript{pooled}} = 0.09,
+\emph{SE} = 0.04,
+\emph{z} = 2.55,
+\emph{p} = .011,
+95\% CI {[}0.02, 0.17{]}.
 
 \section{Discussion}\label{discussion}
+
+\newpage
 
 \section{Accessibility Statement}\label{accessibility-statement}
 

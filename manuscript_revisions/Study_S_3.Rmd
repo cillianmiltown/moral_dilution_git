@@ -540,7 +540,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -552,7 +552,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -611,7 +611,7 @@ mps4plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MPS-4") +
 #   facet_grid(cols = vars(Valence)) +
 #   theme_bw() +
@@ -720,7 +720,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -732,7 +732,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -793,7 +793,7 @@ M1plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MM-1")+
 #   facet_grid(cols = vars(Valence)) +
 #   theme_bw() +
@@ -906,7 +906,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -918,7 +918,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1069,6 +1069,8 @@ s_pooled_fun <- function(){
       sd(df_1$dv-df_2$dv)
   )
   
+  n1 <- n1+n2
+  
   list(study="Study S3",
        x1=x1
        ,x2=x2
@@ -1091,6 +1093,38 @@ supp_s3bad_rtot_stats <- s_pooled_fun()
 d <- supp_s3bad_rtot_stats$d
 
 ```
+
+
+
+```{r}
+
+y <- supp_s3bad_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+#c("","",t1$parameter, t1$statistic, t1$p.value ) #results_coef[2,]
+class(results_coef_for_table)
+
+supp_s3bad_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d, y$ci_upper, y$ci_lower
+                     , y$vd, "")
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
 
 For the *bad* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$R_tot)`, *SD* = `r sd(dg1$R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$R_tot)`, *SD* = `r sd(dg2$R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d`.
 
@@ -1158,6 +1192,7 @@ s_pooled_fun <- function(){
     mean(df_1$dv-df_2$dv)/
       sd(df_1$dv-df_2$dv)
   )
+  n1 <- n1+n2
   
   list(study="Study S3",
        x1=x1
@@ -1182,6 +1217,35 @@ d <- supp_s3bad_M1_stats$d
 d
 
 ```
+
+
+```{r}
+
+y <- supp_s3bad_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+
+supp_s3bad_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower
+                     , y$vd, "")
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s3bad_rtot_for_table, supp_s3bad_M1_for_table, file = "supp_s3bad_table_data.RData")
+
+
+```
+
 
 For the *bad* characters, there was no significant difference in responses to MM-1 between the diagnostic condition (*M* = `r mean(dg1$M1)`, *SD* = `r sd(dg1$M1)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1)`, *SD* = `r sd(dg2$M1)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
 
@@ -1254,6 +1318,8 @@ s_pooled_fun <- function(){
       sd(df_1$dv-df_2$dv)
   )
   
+  n1 <- n1+n2
+  
   list(study="Study S3",
        x1=x1
        ,x2=x2
@@ -1276,6 +1342,34 @@ supp_s3good_rtot_stats <- s_pooled_fun()
 d <- supp_s3good_rtot_stats$d
 
 ```
+
+
+```{r}
+
+y <- supp_s3good_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+class(results_coef_for_table)
+
+supp_s3good_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower
+                     , y$vd, "")
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
 
 For the *good* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$R_tot)`, *SD* = `r sd(dg1$R_tot)`) and the non-diagnostic condition (*M* = `r mean(dg2$R_tot)`, *SD* = `r sd(dg2$R_tot)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d`.
 
@@ -1345,6 +1439,11 @@ s_pooled_fun <- function(){
       sd(df_1$dv-df_2$dv)
   )
   
+  
+  n1 <- n1+n2
+  
+  d_paired <- d
+  
   list(study="Study S3",
        x1=x1
        ,x2=x2
@@ -1375,6 +1474,37 @@ save(supp_s3good_rtot_stats
 
 ```
 
+
+```{r}
+
+y <- supp_s3good_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+class(results_coef_for_table)
+
+supp_s3good_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower
+                     , y$vd, "")
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s3good_rtot_for_table, supp_s3good_M1_for_table, file = "supp_s3good_table_data.RData")
+
+
+```
+
+
 For the *good* characters, there was no significant difference in responses to MPS-4 between the diagnostic condition (*M* = `r mean(dg1$M1)`, *SD* = `r sd(dg1$M1)`) and the non-diagnostic condition (*M* = `r mean(dg2$M1)`, *SD* = `r sd(dg2$M1)`) depending on condition, *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`.
 
 
@@ -1403,7 +1533,7 @@ x$Valence <- dplyr::recode(x$valence
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MPS-4") +
 #   facet_grid(cols = vars(Valence)) +
 #   theme_bw() +
@@ -1454,7 +1584,7 @@ x$Valence <- dplyr::recode(x$valence
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MM-1")+
 #   facet_grid(cols = vars(Valence)) +
 #   theme_bw() +
@@ -1589,7 +1719,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1601,7 +1731,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
    # , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1661,7 +1791,7 @@ mps4plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MPS-4") +
 #   theme_bw() +
 #   facet_grid(cols = vars(Scenario)) +
@@ -1772,7 +1902,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1784,7 +1914,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1845,7 +1975,7 @@ M1plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MM-1") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +
@@ -1963,7 +2093,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1975,7 +2105,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -2023,7 +2153,7 @@ mBothPlot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("Combined") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +

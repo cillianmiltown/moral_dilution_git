@@ -143,8 +143,13 @@ Please rate ____ along the following dimensions:
 ![Screenshot of the MPS-4 items as presented to participants](../resources/images/mps4.png)
 
 
+\newpage
+
 ### Single-item Moral Perception Measure (MM-1)
+
 Please rate ____ according to immoral or moral you view them:
 
 ![Screenshot of MM-1 as presented to participants](../resources/images/mm1.png)
+
+
 \newpage

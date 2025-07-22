@@ -34,18 +34,26 @@ output:
   papaja::apa6_pdf
 header-includes:
 - \raggedbottom
-- |
-    \makeatletter
-    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
-      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
-      {-1em}%
-      {\normalfont\normalsize\bfseries\typesectitle}}
-      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
-      {-\z@\relax}%
-      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
 editor_options: 
   chunk_output_type: console
 ---
+
+
+
+```{r include=F}
+# code below removed from header includes because of error, however it was creating hanging indent for references
+
+# - |
+#     \makeatletter
+#     \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+#       {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+#       {-1em}%
+#       {\normalfont\normalsize\bfseries\typesectitle}}
+#       {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+#       {-\z@\relax}%
+#       {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+
+```
 
 
 
@@ -125,8 +133,11 @@ getwd()
 ```
 
 
+
 ```{r child = 'Introduction.Rmd'}
 ```
+
+
 
 
 ```{r child = 'Study_1.Rmd'}
@@ -142,11 +153,14 @@ getwd()
 
 
 
+```{r child = 'Discussion.Rmd'}
+```
+
+
+
 
 \newpage
 
-```{r child = 'Discussion.Rmd'}
-```
 
 # Accessibility Statement
 All data and analysis code are publicly available on this project's OSF page at \color{blue}[https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67](https://osf.io/mdnpv/?view_only=77883e3fbc3d45f1a35fe92d5318cb67)\color{black}.

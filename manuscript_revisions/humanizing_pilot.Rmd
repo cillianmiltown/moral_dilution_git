@@ -1,0 +1,786 @@
+---
+title             : "Humanizing Pilot"
+shorttitle        : "Moral Dilution"
+author:
+    
+  - name          : "Blinded"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "blinded"
+    email         : "blinded"
+  - name          : "Blinded"
+    affiliation   : "1"
+affiliation:
+  - id            : "1"
+    institution   : "Blinded"
+authornote: |
+  Department of Psychology, University of BLINDED.
+  All procedures performed in studies involving human participants were approved by institutional research ethics committee and conducted in accordance with the Code of Professional Ethics of the Psychological Society of Ireland, and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Informed consent was obtained from all individual participants included in the study. The authors declare that there are no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. All authors consented to the submission of this manuscript.
+abstract: |
+  
+  Supplementary analysis to accompany the manuscript The Moral Dilution Effect: Irrelevant Information Influences Judgments of Moral Character.
+keywords          : "keywords"
+wordcount         : "X"
+bibliography      : "../resources/bib/My Library.bib"
+floatsintext      : yes
+linenumbers       : yes
+draft             : no
+mask              : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+toc               : no
+toc-depth         : 1
+classoption       : "man"
+output            : 
+  papaja::apa6_pdf:
+    extra_dependencies: ["float"]
+header-includes:
+  - \raggedbottom
+  - \usepackage{float}
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r studyS4setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE)
+# knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+#knitr::opts_chunk$set(include = FALSE)
+```
+
+
+```{r studyS4load_libraries_cogload}
+rm(list = ls())
+library(citr)
+#install.packages("sjstats")
+library(plyr)
+library(foreign)
+library(car)
+#install.packages("devtools")
+#devtools::install_github("cillianmiltown/R_desnum")
+library(desnum)
+library(ggplot2)
+library(extrafont)
+#devtools::install_github("crsh/papaja")
+#devtools::install_github("crsh/citr")
+library(papaja)
+#library("dplyr")
+library("afex")
+library("tibble")
+library(scales)
+#install.packages("BiocManager")
+#BiocManager::install("multtest")
+#install.packages("multtest")
+#install.packages("metap")
+library(metap)
+library(pwr)
+library(lsr)
+#install.packages("sjstats")
+library(sjstats)
+library(DescTools)
+#inatall.packages("ggstatsplot")
+#library(ggstatsplot)
+library(VGAM)
+library(nnet)
+library(mlogit)
+library(reshape2)
+#install.packages("powerMediation")
+library("powerMediation")
+library("ggpubr")
+
+
+library(tidyverse)
+library(desnum)
+
+# library(rstatix)
+
+
+#source("load_all_data.R")
+
+#devtools::install_github("benmarwick/wordcountaddin")
+#library(wordcountaddin)
+#wordcountaddin::text_stats("cogload_1to5_25Sept19.Rmd")
+#setwd("manuscript_prep")
+getwd()
+```
+
+
+
+```{r studyS4LoadData}
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/read_and_sort_raw_data.R")
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
+rm(list = ls())
+
+df3 <- read.csv("../data/humanizing_pilot.csv")
+df3
+df3 <- df3[-c(1:3),]
+
+
+df3$age <- as.numeric(df3$age)
+df3$S_G_M_M_1 <- as.numeric(df3$S_G_M_M_1)
+df3$S_G_H_1 <- as.numeric(df3$S_G_H_1)
+df3$S_G_R_1 <- as.numeric(df3$S_G_R_1)
+df3$R_G_M_M_1 <- as.numeric(df3$R_G_M_M_1)
+df3$R_G_H_1 <- as.numeric(df3$R_G_H_1)
+df3$R_G_R_1 <- as.numeric(df3$R_G_R_1)              
+df3$F_B_M_M_1 <- as.numeric(df3$F_B_M_M_1)
+df3$F_B_H_1 <- as.numeric(df3$F_B_H_1) 
+df3$F_B_R_1 <- as.numeric(df3$F_B_R_1)
+df3$A_B_M_M_1 <- as.numeric(df3$A_B_M_M_1)            
+df3$A_B_H_1 <- as.numeric(df3$A_B_H_1)
+df3$A_B_R_1 <- as.numeric(df3$A_B_R_1)
+df3$J_N_M_M_1 <- as.numeric(df3$J_N_M_M_1)
+df3$J_N_H_1 <- as.numeric(df3$J_N_H_1)              
+df3$J_N_R_1 <- as.numeric(df3$J_N_R_1)
+df3$C_N_M_M_1 <- as.numeric(df3$C_N_M_M_1)
+df3$C_N_H_1 <- as.numeric(df3$C_N_H_1)
+df3$C_N_R_1 <- as.numeric(df3$C_N_R_1)
+
+mean(df3$S_G_M_M_1)
+
+
+mean(df3$S_G_M_M_1)
+mean(df3$S_G_H_1)
+mean(df3$S_G_R_1)
+mean(df3$R_G_M_M_1)
+mean(df3$R_G_H_1)
+mean(df3$R_G_R_1)
+mean(df3$F_B_M_M_1)
+mean(df3$F_B_H_1)
+mean(df3$F_B_R_1)
+mean(df3$A_B_M_M_1)
+mean(df3$A_B_H_1)
+mean(df3$A_B_R_1)
+mean(df3$J_N_M_M_1)
+mean(df3$J_N_H_1)
+mean(df3$J_N_R_1)
+mean(df3$C_N_M_M_1)
+mean(df3$C_N_H_1)
+mean(df3$C_N_R_1)
+
+
+# S_G_M_M_1
+# S_G_H_1
+# S_G_R_1
+# R_G_M_M_1
+# R_G_H_1
+# R_G_R_1
+# F_B_M_M_1
+# F_B_H_1
+# F_B_R_1
+# A_B_M_M_1
+# A_B_H_1
+# A_B_R_1
+# J_N_M_M_1
+# J_N_H_1
+# J_N_R_1
+# C_N_M_M_1
+# C_N_H_1
+# C_N_R_1
+
+
+x <- df3 
+
+
+y <- x %>% select( S_G_M_M_1
+                  ,S_G_H_1
+                  ,S_G_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("sam")
+y$valence <- rep("good")
+y$type <- rep("diagnostic")
+sam <- y
+  
+
+y <- x %>% select( R_G_M_M_1
+                  ,R_G_H_1
+                  ,R_G_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("robin")
+y$valence <- rep("good")
+y$type <- rep("diagnostic")
+robin <- y
+
+
+
+y <- x %>% select( F_B_M_M_1
+                  ,F_B_H_1
+                  ,F_B_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("francis")
+y$valence <- rep("bad")
+y$type <- rep("diagnostic")
+francis <- y
+
+
+y <- x %>% select( A_B_M_M_1
+                  ,A_B_H_1
+                  ,A_B_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("alex")
+y$valence <- rep("bad")
+y$type <- rep("diagnostic")
+alex <- y
+
+
+y <- x %>% select( J_N_M_M_1
+                  ,J_N_H_1
+                  ,J_N_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("jordan")
+y$valence <- rep("neutral")
+y$type <- rep("non-diagnostic")
+jordan <- y
+
+
+y <- x %>% select( C_N_M_M_1
+                  ,C_N_H_1
+                  ,C_N_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("charlie")
+y$valence <- rep("neutral")
+y$type <- rep("non-diagnostic")
+charlie <- y
+
+
+df_full <- rbind.data.frame(
+  sam
+  , robin
+  , francis
+  , alex
+  , jordan
+  , charlie
+)
+
+
+variable.names(df_full)
+
+head(df_full)
+
+
+head(df3)
+
+```
+
+
+# Study S4 - Humanizing vs Dilution Pilot Study
+
+To examine the possibility that the observed dilution effect may have been confounded by a humanizing effect of the non-diagnostic information rather than as a result of dilution, we conducted a follow-up pilot study with additional measures of both humanness and relatableness. The assumption is that if the non-diagnostic information is having a humanizing effect, the humanness and relatableness ratings for the non-diagnostic descriptions should be higher than for diagnostic descriptions (for both *bad* and *good* actors).
+
+## Study S4: Method
+### Study S4: Participants and Design
+Study S4 was a within-subjects design. The independent variable was information type with three levels 
+*good*, *bad*, and *neutral* (non-diagnostic). There were three dependent variables: morality ratings, humanness ratings, and relatableness ratings.
+
+For morality ratings, we predicted that morality ratings would be highest for the *good* descriptions, and lowest for the *bad* descriptions, with the *neutral* descriptions being rated lower than *good* and higher than *bad*.
+
+If the dilution effect is being driven by a humanizing effect of non-diagnostic information, this would predict a different pattern for humanness and relatableness ratings. Specifically, humanness and relatableness ratings would be expected to be highest for the *neutral* (non-diagnostic) conditions compared to the *bad* and *good* conditions For the humanness and relatableness ratings. If this pattern is not observed, it suggests that our findings may be evidence of a dilution effect rather than a humanizing effect.
+
+
+A total sample of
+`r length(levels(as.factor(df3$ResponseId)))`
+(`r sum(df3$gender=="2",na.rm=T)` female,
+`r sum(df3$gender=="1", na.rm=T)` male,
+`r round(sum(df3$gender=="3", na.rm=T)/1)` non-binary,
+`r round(sum(df3$gender=="4", na.rm=T))` other;
+`r sum(df3$gender=="5", na.rm=T)` prefer not to say,
+*M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`,
+min = `r min(df3$age, na.rm=T)`,
+max = `r max(df3$age, na.rm=T)`,
+*SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) completed the survey.  Participants were recruited from Prolific and paid £0.40 for their participation.
+
+### Study S4: Procedure and Materials
+The materials were the similar to those used in Study 3. Participants read six descriptions, two *good*, two *bad*, and two *neutral* (non-diagnostic). The content of these descriptions was taken directly from Study 3. For each description participants rated the character's morality, the humanness, and the relatableness. The morality rating was the same as the MM-1 rating used in previous studies. The humanness and relatableness ratings were adapted from @Martin_What_2022. Participants read the following instructions "The following scale represents humanness levels. Please rate the humanness of X", 0 = *Not at all Human*, 100 = *Very Human*; "The following scale represents relatableness levels. Please rate the relatableness of X", 0 = *Not at all Relatable*, 100 = *Very Relatable*.
+
+*Sam*
+
+Imagine a person named Sam.
+Throughout their life they have been known to always help and care for others, treat everyone fairly and equally, and show a strong sense of loyalty to others.
+
+*Robin*
+
+Imagine a person named Robin.
+Throughout their life they have been known to protect and provide shelter to the weak and vulnerable, uphold the rights of others, and show respect for authority.
+
+*Francis*
+
+Imagine a person named Francis.
+Throughout their life they have been known to cause others to suffer emotionally, to deny others their rights, and to cause chaos or disorder.
+
+*Alex*
+
+Imagine a person named Alex.
+Throughout their life they have been known to be cruel, act unfairly, and to betray their own group.
+
+*Jordan*
+
+Imagine a person named Jordan.
+They have red hair, play tennis four times a month, and have one older sibling and one younger sibling.
+
+*Charlie*
+
+Imagine a person named Charlie.
+They are left-handed, drink tea in the morning, and have two older siblings and one younger sibling.
+
+
+
+```{r}
+
+
+x <- df_full
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=moralit
+  , wid = ID
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    moralit ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+tapply(x$moralit, x$scenario, descriptives)
+tapply(x$humanity, x$scenario, descriptives)
+tapply(x$relatable, x$scenario, descriptives)
+
+
+tapply(x$moralit, x$valence, descriptives)
+tapply(x$humanity, x$valence, descriptives)
+tapply(x$relatable, x$valence, descriptives)
+
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+
+
+
+```
+
+
+
+
+## Study S4: Results
+
+### Morality
+
+```{r}
+x <- df_full
+
+model0 <- lmerTest::lmer(moralit ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(moralit ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+
+
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+
+
+model1_std <- lmerTest::lmer(scale(moralit, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$moralit
+x$iv <- x$valence
+
+```
+
+We conducted a linear-mixed-effects model to test if information type influenced morality ratings. Our outcome measure was morality rating, our predictor variable was valence/information-type; we allowed intercepts to vary across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced morality ratings,
+*F*(`r aov1$NumDF[1]`,
+`r aov1$DenDF[1]`) = `r f3`,
+*p* `r paste(p_report(p3))`.
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r mean(x$dv[which(x$iv=="good")])`,
+*SD* = `r sd(x$dv[which(x$iv=="good")])`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r mean(x$dv[which(x$iv=="bad")])`,
+*SD* = `r sd(x$dv[which(x$iv=="bad")])`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r mean(x$dv[which(x$iv=="neutral")])`,
+*SD* = `r sd(x$dv[which(x$iv=="neutral")])`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+This pattern aligns with how the materials were designed (bad character viewed as least moral, good character viewed as most moral) and is consistent with the results of Studies 1-3. Interestingly, the morality of the neutral descriptions is rated closer to the good descriptions than to the bad descriptions. It is possible that this may partially explain the asymmetry observed in the occurrence of the dilution effect.
+
+
+### Humanness
+
+
+
+```{r}
+x <- df_full
+
+model0 <- lmerTest::lmer(humanity ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(humanity ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+
+
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+
+
+model1_std <- lmerTest::lmer(scale(humanity, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$humanity
+x$iv <- x$valence
+
+```
+
+We conducted a linear-mixed-effects model to test if information type influenced humanness ratings. Our outcome measure was humanness rating, our predictor variable was valence/information-type; we allowed intercepts to vary across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced humanness ratings,
+*F*(`r aov1$NumDF[1]`,
+`r aov1$DenDF[1]`) = `r f3`,
+*p* `r paste(p_report(p3))`.
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r mean(x$dv[which(x$iv=="good")])`,
+*SD* = `r sd(x$dv[which(x$iv=="good")])`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r mean(x$dv[which(x$iv=="bad")])`,
+*SD* = `r sd(x$dv[which(x$iv=="bad")])`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r mean(x$dv[which(x$iv=="neutral")])`,
+*SD* = `r sd(x$dv[which(x$iv=="neutral")])`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+
+### Relatableness
+
+
+
+```{r}
+x <- df_full
+
+model0 <- lmerTest::lmer(relatable ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(relatable ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+
+
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+
+
+model1_std <- lmerTest::lmer(scale(relatable, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$relatable
+x$iv <- x$valence
+
+```
+
+We conducted a linear-mixed-effects model to test if information type influenced relatableness ratings. Our outcome measure was relatableness rating, our predictor variable was valence/information-type; we allowed intercepts across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced relatability ratings,
+*F*(`r aov1$NumDF[1]`,
+`r aov1$DenDF[1]`) = `r f3`,
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r mean(x$dv[which(x$iv=="good")])`,
+*SD* = `r sd(x$dv[which(x$iv=="good")])`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r mean(x$dv[which(x$iv=="bad")])`,
+*SD* = `r sd(x$dv[which(x$iv=="bad")])`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r mean(x$dv[which(x$iv=="neutral")])`,
+*SD* = `r sd(x$dv[which(x$iv=="neutral")])`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+

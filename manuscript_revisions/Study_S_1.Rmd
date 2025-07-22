@@ -345,6 +345,14 @@ s_pooled_fun <- function(){
   
   d <- (x1-x2)/s_pooled
   
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  d <- d_paired
+  
   vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
   
   sed <- sqrt(vd)
@@ -356,6 +364,16 @@ s_pooled_fun <- function(){
     mean(df_1$dv-df_2$dv)/
       sd(df_1$dv-df_2$dv)
   )
+  
+  
+  n <- length(x$gender)/4
+  var <- (1/n)+((d_paired*d_paired)/(2*n))
+  vd <- var
+  sed <- sqrt(vd)
+  
+  
+  ci_upper <- d_paired+(z*sed)
+  ci_lower <- d_paired-(z*sed)
   
   list(study="Study S1",
        x1=x1
@@ -381,6 +399,36 @@ d <- supp_s1_rtot_stats$d
 
 
 ```
+
+
+```{r}
+
+y <- supp_s1_rtot_stats
+
+icc <- performance::icc(model1)
+icc$ICC_unadjusted
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s1_rtot_for_table <- 
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower
+                     , y$vd, icc$ICC_unadjusted)
+    ,names_for_table)
+
+rm(y)
+
+supp_s1_rtot_vars <- as.data.frame(VarCorr(model1))
+
+```
+
 
 We conducted a linear-mixed-effects model to test if condition influenced MPS-4 responses. Our outcome measure was MPS-4, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants, and scenario was also included in the model.
 Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition did not influence responses to the MPS-4, *F*(`r aov1$NumDF[1]`, `r aov1$DenDF[1]`) = `r f3`, *p* `r paste(p_report(p3))`; and was not a significant predictor in the model when controlling for scenario, $b$ = `r results_coef$Estimate[2]`, *t*(`r round(results_coef$df[2])`) = `r t1`, *p* `r paste(p_report(p2))`, (*d* = `r round(d, digits=2)`), see Figure\ \@ref(fig:S4bothconditionplot).
@@ -458,7 +506,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -470,7 +518,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -529,7 +577,7 @@ mps4plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("Moral Perception Scale (MPS-4)") +
 #   theme_bw() +
 #   theme(panel.border = element_blank(),
@@ -638,7 +686,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -650,7 +698,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -710,7 +758,7 @@ M1plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("Moral Perception Measure (MM-1)")+
 #   theme_bw() +
 #   theme(panel.border = element_blank(),
@@ -829,7 +877,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -841,7 +889,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" #guide_legend(title="Valence")
     , shape="none"
   )+
@@ -900,7 +948,7 @@ figure <- ggarrange(mps4plot
                     , nrow = 2
                     #, widths = c(0.485, 0.5)
                     )
-figure
+#figure
 ```
 
 
@@ -993,6 +1041,14 @@ s_pooled_fun <- function(){
   
   d <- (x1-x2)/s_pooled
   
+  
+  d_paired <- (
+    mean(df_1$dv-df_2$dv)/
+      sd(df_1$dv-df_2$dv)
+  )
+  
+  d <- d_paired
+  
   vd <- ((n1+n2)/(n1*n2))+((d*d)/(2*(n1+n2)))
   
   sed <- sqrt(vd)
@@ -1004,6 +1060,16 @@ s_pooled_fun <- function(){
     mean(df_1$dv-df_2$dv)/
       sd(df_1$dv-df_2$dv)
   )
+  
+  
+  n <- length(x$gender)/4
+  var <- (1/n)+((d_paired*d_paired)/(2*n))
+  vd <- var
+  sed <- sqrt(vd)
+  
+  
+  ci_upper <- d_paired+(z*sed)
+  ci_lower <- d_paired-(z*sed)
   
   list(study="Study S1",
        x1=x1
@@ -1031,6 +1097,38 @@ save(supp_s1_rtot_stats, supp_s1_M1_stats, file = "supp_S1_effect_stats.RData")
 
 ```
 
+
+```{r}
+
+y <- supp_s1_M1_stats
+
+icc <- performance::icc(model1)
+icc$ICC_unadjusted
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower","variance","ICC")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s1_M1_for_table <- 
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower
+                     , y$vd, icc$ICC_unadjusted)
+    ,names_for_table)
+
+rm(y)
+
+supp_s1_M1_vars <- as.data.frame(VarCorr(model1))
+
+
+save(supp_s1_rtot_for_table, supp_s1_M1_for_table, supp_s1_M1_vars, supp_s1_rtot_vars, file = "supp_S1_table_data.RData")
+
+
+```
 
 We conducted a linear-mixed-effects model to test if condition influenced MM-1 responses. Our outcome measure was MM-1, our predictor variable was condition; we allowed intercepts and the effect of condition to vary across participants. Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model, $\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. Condition significantly influenced MM-1 responses *F*(`r round(aov1$NumDF[1])`, `r round(aov1$DenDF[1])`) = `r f3`, *p* `r paste(p_report(p3))`, and was a significant predictor in the model $b$ = `r results_coef$Estimate[2]`, *t*(`r round(results_coef$df[2])`) = `r t1`, *p* `r paste(p_report(p2))`, (*d* = `r round(d, digits=2)`), see Figure\ \@ref(fig:S4bothconditionplot).
 
@@ -1226,7 +1324,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1238,7 +1336,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1287,7 +1385,7 @@ mps4plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MPS-4") +
 #   theme_bw() +
 #   facet_grid(cols = vars(Scenario)) +
@@ -1404,7 +1502,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1416,7 +1514,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1466,7 +1564,7 @@ M1plot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("MM-1") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +
@@ -1581,7 +1679,7 @@ g <- ggplot(x,
              , size=.05
     )+
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined") +
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1593,7 +1691,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color="none" # guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1643,7 +1741,7 @@ mBothPlot <- g
 #               , position=position_jitter(0.15)
 #               , size=.1
 #               , color="dark grey") +
-#   xlab("Condition") +
+#   xlab("Information Type") +
 #   ylab("Combined") +
 #   facet_grid(cols = vars(Scenario)) +
 #   theme_bw() +

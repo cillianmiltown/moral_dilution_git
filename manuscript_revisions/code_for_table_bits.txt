@@ -1,0 +1,544 @@
+
+Study 1
+
+
+
+
+
+```{r}
+
+y <- s1_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s1_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+
+
+
+```
+
+
+
+
+```{r}
+
+y <- s1_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s1_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(s1_rtot_for_table, s1_M1_for_table, file = "S1_table_data.RData")
+
+
+```
+
+
+
+
+Study 2
+
+
+
+```{r}
+
+y <- s2_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s2_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+
+
+```{r}
+
+y <- s2_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s2_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(s2_rtot_for_table, s2_M1_for_table, file = "S2_table_data.RData")
+
+
+```
+
+
+
+
+Study 3 Bad
+
+
+
+```{r}
+
+y <- s3bad_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s3bad_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+```{r}
+
+y <- s3bad_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s3bad_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(s3bad_rtot_for_table, s3bad_M1_for_table, file = "s3bad_table_data.RData")
+
+
+```
+
+Study 3 good
+
+
+```{r}
+
+y <- s3good_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s3good_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+```{r}
+
+y <- s3good_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+s3good_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(s3good_rtot_for_table, s3good_M1_for_table, file = "s3good_table_data.RData")
+
+
+```
+
+Study S1
+
+
+
+
+```{r}
+
+y <- supp_s1_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s1_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+
+```{r}
+
+y <- supp_s1_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s1_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s1_rtot_for_table, supp_s1_M1_for_table, file = "supp_S1_table_data.RData")
+
+
+```
+
+
+
+Study S2 Bad
+
+
+
+```{r}
+
+y <- supp_s2bad_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s2bad_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+```{r}
+
+y <- supp_s2bad_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s2bad_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s2bad_rtot_for_table, supp_s2bad_M1_for_table, file = "supp_s2bad_table_data.RData")
+
+
+```
+
+Study S2 good
+
+
+```{r}
+
+y <- supp_s2good_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s2good_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+```{r}
+
+y <- supp_s2good_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- results_coef[2,]
+class(results_coef_for_table)
+
+supp_s2good_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s2good_rtot_for_table, supp_s2good_M1_for_table, file = "supp_s2good_table_data.RData")
+
+
+```
+
+
+
+
+Study S 3
+
+
+
+Study S3 Bad
+
+
+
+```{r}
+
+y <- supp_s3bad_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+#c("","",t1$parameter, t1$statistic, t1$p.value ) #results_coef[2,]
+class(results_coef_for_table)
+
+supp_s3bad_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+
+```
+
+
+
+```{r}
+
+y <- supp_s3bad_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+
+supp_s3bad_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s3bad_rtot_for_table, supp_s3bad_M1_for_table, file = "supp_s3bad_table_data.RData")
+
+
+```
+
+Study S3 good
+
+
+```{r}
+
+y <- supp_s3good_rtot_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+class(results_coef_for_table)
+
+supp_s3good_rtot_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+```
+
+
+
+```{r}
+
+y <- supp_s3good_M1_stats
+
+names_for_table <- c("b", "SE", "df", "t", "p"
+  , "Mdiag", "SDdiag", "Mnond", "SDnond"
+  , "d", "upper","lower")
+
+
+results_coef_for_table <- rbind.data.frame(c("","",t1$parameter, t1$statistic, t1$p.value ))
+
+class(results_coef_for_table)
+
+supp_s3good_M1_for_table <-
+  `colnames<-`(
+    cbind.data.frame(results_coef_for_table
+                     , y$x1, y$s1, y$x2, y$s2
+                     , y$d_paired, y$ci_upper, y$ci_lower)
+    ,names_for_table)
+
+rm(y)
+
+
+save(supp_s3good_rtot_for_table, supp_s3good_M1_for_table, file = "supp_s3good_table_data.RData")
+
+
+```
+
+----
+
+make table
+
+
+
+save(s1_rtot_for_table, s1_M1_for_table, file = "S1_table_data.RData")
+save(s2_rtot_for_table, s2_M1_for_table, file = "S2_table_data.RData")
+save(s3bad_rtot_for_table, s3bad_M1_for_table, file = "s3bad_table_data.RData")
+save(s3good_rtot_for_table, s3good_M1_for_table, file = "s3good_table_data.RData")
+
+
+
+
+
+
+

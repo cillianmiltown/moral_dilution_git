@@ -210,6 +210,151 @@ df_recoded_extra_clean <-x
 x <- df_recoded_extra_clean
 ```
 
+## Study 3: Descriptives for Each Scenario
+
+
+
+```{r}
+x <- df3
+sam <- x[which(x$scenario=="sam"),]
+francis <- x[which(x$scenario=="francis"),]
+alex <- x[which(x$scenario=="alex"),]
+robin <- x[which(x$scenario=="robin"),]
+
+```
+
+```{r}
+x <- df3
+
+table(x$scenario,x$ResponseId)
+table(x$ResponseId)
+
+duplicated(x$ResponseId)
+levels(as.factor(x$ResponseId))[2]
+
+
+pid_len_fun <- function(y){
+    sum(x$ResponseId==levels(as.factor(x$ResponseId))[y])<4}
+
+
+
+sum(x$ResponseId==levels(as.factor(x$ResponseId))[1])<4
+
+pid_len_fun(1)
+
+lapply(c(1:10), pid_len_fun)
+
+
+test <- cbind.data.frame(levels(as.factor(x$ResponseId)), 
+                 unlist(
+                   lapply(c(1:length(levels(as.factor(x$ResponseId))))
+                          , pid_len_fun)))
+
+#x = 
+to_keep <- test[1][which(test[2]==FALSE),]
+
+
+#x %>% filter(ResponseId==c(test[1][which(test[2]==FALSE),]))
+
+test <- `colnames<-`(test, c("ResponseId","full"))
+
+full_responses <- left_join(x, test, by = "ResponseId")
+
+full_responses <- full_responses[which(full_responses$full==FALSE),]
+
+x <- full_responses
+
+tapply(x$R_tot, x$scenario, descriptives)
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+x$valence
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=R_tot
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    R_tot ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+
+# d1 <- lsr::cohensD(R_tot~condition,x,method="paired")
+# t.test(R_tot~condition,x,paired=TRUE)
+# t1 <- t.test(x$R_tot~x$scenario,paired=TRUE)
+# d1
+lapply(pwc$p.adj,p_report)
+```
+
+
+
+
+The means and standard deviations for MPS-4 for each scenario are as follows: 
+*Sam* (good),
+*M*~MPS-4~ = `r mean(sam$R_tot)`, *SD*~MPS-4~ = `r sd(sam$R_tot)`,
+*Francis* (bad),
+*M*~MPS-4~ = `r mean(francis$R_tot)`, *SD*~MPS-4~ = `r sd(francis$R_tot)`,
+*Alex* (bad),
+*M*~MPS-4~ = `r mean(alex$R_tot)`, *SD*~MPS-4~ = `r sd(alex$R_tot)`,
+*Robin* (good),
+*M*~MPS-4~ = `r mean(robin$R_tot)`, *SD*~MPS-4~ = `r sd(robin$R_tot)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r aov1$ges`. Both the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than both the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(pwc$p[6]))`) or between *Alex* and *Francis* (*bad*; *p* `r paste(p_report(pwc$p[1]))`). 
+
+
+
+```{r}
+x <- df3
+# bad <- x[which(x$condition=="diagnostic"),]
+# good <- x[which(x$condition=="non-diagnostic"),]
+#good$scenario_abb <- droplevels(good$scenario_abb)
+
+x <- full_responses
+
+#x <- bad
+aov_full <- rstatix::anova_test(
+  data=x
+  , dv=M1
+  , wid = ResponseId
+  , within = scenario)
+aov1 <- rstatix::get_anova_table(aov_full)
+aov1
+aov1$DFd
+
+pwc <- x %>%
+  rstatix::pairwise_t_test(
+    M1 ~ scenario, paired = TRUE,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+p_report(pwc$p[2])
+lapply(pwc$p.adj, p_report)
+paste(pwc$p.adj[2])
+pwc$p[2]
+# d1 <- lsr::cohensD(M1~condition,x,method="paired")
+# t.test(M1~scenario,x,paired=TRUE)
+# t1 <- t.test(x$M1~x$scenaro,paired=TRUE)
+# d1
+
+```
+
+The means and standard deviations for MM-1 for each scenario are as follows: 
+*Sam* (good),
+*M*~MM-1~ = `r mean(sam$M1)`, *SD*~MM-1~ = `r sd(sam$M1)`;
+*Francis* (bad),
+*M*~MM-1~ = `r mean(francis$M1)`, *SD*~MM-1~ = `r sd(francis$M1)`;
+*Alex* (bad),
+*M*~MM-1~ = `r mean(alex$M1)`, *SD*~MM-1~ = `r sd(alex$M1)`;
+*Robin* (good),
+*M*~MM-1~ = `r mean(robin$M1)`, *SD*~MM-1~ = `r sd(robin$M1)`. There was significant variation depending on the description, *F*(`r round(aov1$DFn)`,`r round(aov1$DFd)`) = `r aov1$F`, *p* `r paste(p_report(aov1$p))`, partial $\eta$^2^ = `r paste(aov1$ges)`. Again, the *good* characters (*Robin* and *Sam*) were rated significantly more favorably than the *bad* characters (*Alex* and *Francis*; all *p*s < .001). There were no differences between *Robin* and *Sam* (*good*: *p* `r paste(p_report(pwc$p[6]))`) or between *Alex* and *Francis* (*bad*; *p* `r paste(p_report(pwc$p[1]))`). 
+
+
 
 
 ## Study 3: Combined Measure
@@ -578,7 +723,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Moral Perception (combined)")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -590,7 +735,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -658,7 +803,7 @@ ggplot(x,aes(x=condition,y=M1R_tot))+
               , position=position_jitter(0.15)
               , size=.1
               , color="dark grey") +
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined Moral Perception Measure") +
   facet_grid(cols = vars(Valence)) +
   theme_bw() +
@@ -695,6 +840,206 @@ ggplot(x,aes(x=condition,y=M1R_tot))+
 ```
 
 
+\newpage
+
+## Study 3: Alternative Model
+
+
+```{r}
+x <- df3
+x <- df_recoded
+
+#x <- df_recoded_extra_clean
+
+
+model0 <- lmerTest::lmer(R_tot_recoded ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(R_tot ~
+                  condition*scenario
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                , data = x
+                , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+            )
+
+
+
+model1 <- lmerTest::lmer(R_tot_recoded ~
+                  condition*valence
+                + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                + (1|ResponseId:valence)
+                + (1|scenario)
+                , data = x
+                , contrasts = list(condition = contr.sum, valence = contr.sum )#, valence = contr.sum)
+            )
+summary(model1)
+anova(model1)
+
+
+model1_std <- lmerTest::lmer(scale(R_tot_recoded, scale = TRUE) ~
+                  condition*valence
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                + (1|ResponseId:valence)
+                + (1|scenario)
+                , data = x
+                , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+results_coef
+
+aov1 <- anova(model1)
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+s3both_rtot_icc <- performance::icc(model1)
+
+s3both_rtot_vars <- as.data.frame(VarCorr(model1))
+
+```
+
+As with Studies 1 and 2 we report here a follow-up analysis with scenario additionally included as a random effect. We conducted a linear-mixed-effects model to test if our predictors influenced MPS-4R responses. Our outcome measure was MPS-4R, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants, and we additionally included random effects for scenario.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. 
+Overall, there was a significant main effect for condition,
+*F*(`r aov1$NumDF[1]`, `r round(aov1$DenDF[1])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$NumDF[2]`, `r round(aov1$DenDF[2])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was a significant condition $\times$ valence interaction,
+*F*(`r aov1$NumDF[3]`, `r round(aov1$DenDF[3])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+
+
+```{r}
+x <- df3
+x <- df_recoded
+model0 <- lmerTest::lmer(M1_recoded ~ 1
+                #   condition
+                 + (1|ResponseId)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+# model1 <- lmerTest::lmer(M1 ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 + (1|ResponseId:condition)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  )#, valence = contr.sum)
+#             )
+
+
+
+model1 <- lmerTest::lmer(M1_recoded ~
+                  condition*valence
+                + (1|ResponseId)
+                + (1|ResponseId:condition)
+                + (1|ResponseId:valence)
+                + (1|scenario)
+                , data = x
+                , contrasts = list(condition = contr.sum, valence = contr.sum )#, valence = contr.sum)
+            )
+summary(model1)
+anova(model1)
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+results_coef <- as.data.frame(summary_model1$coefficients)
+results_coef
+
+aov1 <- anova(model1)
+f3a <- aov1$`F value`[1]
+f3b <- aov1$`F value`[2]
+f3c <- aov1$`F value`[3]
+p3a <- aov1$`Pr(>F)`[1]
+p3b <- aov1$`Pr(>F)`[2]
+p3c <- aov1$`Pr(>F)`[3]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+
+s3both_M1_vars <- as.data.frame(VarCorr(model1))
+
+
+s3both_rtot_icc <- performance::icc(model1)
+
+s3both_M1_icc <- performance::icc(model1)
+
+
+# save(s3both_M1_vars, s3both_rtot_vars, s3both_rtot_icc, s3both_M1_icc, file = "s3both_table_data.RData")
+
+
+```
+
+
+We conducted a linear-mixed-effects model to test if our predictors influenced MM-1R responses. The model was the same as the previous model, with a change to the outcome measure, our outcome measure for this model was MM-1R. As above, our predictor variables were condition and valence; we allowed intercepts and the effects of condition and valence to vary across participants, and we included random effects for scenario.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r results_anova$Chisq[2]`, *p* `r paste(p_report(p1))`. 
+Overall there was a main effect for condition,
+*F*(`r aov1$NumDF[1]`, `r round(aov1$DenDF[1])`) = `r f3a`, *p* `r paste(p_report(p3a))`;
+valence significantly predicted responses,
+*F*(`r aov1$NumDF[2]`, `r round(aov1$DenDF[2])`) = `r f3b`, *p* `r paste(p_report(p3b))`;
+and there was no significant condition $\times$ valence interaction,
+*F*(`r aov1$NumDF[3]`, `r round(aov1$DenDF[3])`) = `r f3c`, *p* `r paste(p_report(p3c))`.
+
+Interestingly, there was a consistent effect for both condition and valence, as well as a condition $\times$ valence interaction effect. To further examine this interaction effect, we report separate analyses for the good and bad descriptions below.
+
+
+## Study 3: Differences between the descriptions
+
+Again, we conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S3allscenariosPlot).
+
+
 
 ```{r}
 
@@ -716,11 +1061,6 @@ xd <- x[which(x$condition=="diagnostic"),]
 xnond <- x[which(x$condition=="non-diagnostic"),]
 ```
 
-\newpage
-
-## Study 3: Differences between the descriptions
-
-Again, we conducted separate analyses to investigate of condition on responses to each scenario individually. The responses for each scenario across each measure depending on condition are displayed in Figure\ \@ref(fig:S3allscenariosPlot).
 
 
 For *Sam*, MPS-4 scores were not significantly lower in the non-diagnostic condition (*M* = `r mean(xnond$R_tot)`, *SD* = `r sd(xnond$R_tot)`), than in the diagnostic condition (*M* = `r mean(xd$R_tot)`, *SD* = `r sd(xd$R_tot)`), *t*(`r t1$parameter`) = `r t1$statistic`, *p* `r paste(p_report(t1$p.value))`, *d* = `r d1`; Similarly, MM-1 ratings were similar in the non-diagnostic condition (*M* = `r mean(xnond$M1)`, *SD* = `r sd(xnond$M1)`), in the diagnostic condition (*M* = `r mean(xd$M1)`, *SD* = `r sd(xd$M1)`), *t*(`r t2$parameter`) = `r t2$statistic`, *p* `r paste(p_report(t2$p.value))`, *d* = `r d2`. For the combined measure ratings was also no significant difference between the non-diagnostic condition (*M* = `r mean(xnond$M1R_tot)`, *SD* = `r sd(xnond$M1R_tot)`), and the diagnostic condition (*M* = `r mean(xd$M1R_tot)`, *SD* = `r sd(xd$M1R_tot)`), *t*(`r t3$parameter`) = `r t3$statistic`, *p* `r paste(p_report(t3$p.value))`, *d* = `r d3`.
@@ -878,7 +1218,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MPS-4")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -890,7 +1230,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
    # , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1061,7 +1401,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("MM-1")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1073,7 +1413,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1252,7 +1592,7 @@ g <- ggplot(x,
   , position = position_dodge(width=6.12)
   ) +
   #facet_grid(cols = vars(means))+
-  xlab("Condition") +
+  xlab("Information Type") +
   ylab("Combined")+
   scale_x_discrete(
     labels=c("Diagnostic","Non-Diagnostic")
@@ -1264,7 +1604,7 @@ g <- ggplot(x,
   scale_fill_grey(start = .3, end = .6) +
   scale_color_grey(start = .3, end = .6) +
   guides(
-    fill=guide_legend(title = "Condition")
+    fill=guide_legend(title = "Information Type")
     , color=guide_legend(title="Valence")
     , shape="none"
   )+
@@ -1361,7 +1701,7 @@ figure
 ```
 
 
-```{r S3allscenariosPlot, fig.cap="Study 3: Differences in moral perception for each description", include=TRUE, fig.height=12, fig.width=8}
+```{r S3allscenariosPlot, fig.cap="Study 3: Differences in moral perception for each description", include=TRUE, fig.height=8, out.width = "\\textwidth", fig.pos = "!h"}
 
 suppressWarnings(print(figure))
 
