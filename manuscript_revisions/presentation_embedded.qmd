@@ -1,7 +1,7 @@
 ---
 title: "The Moral Dilution Effect"
 authors: "Cillian McHugh & Eric R. Igou"
-institute: "Work in Progress"
+institute: "Jounal of Behavioral Decision Making"
 bibliography: "../resources/bib/MyLibrary_Oct2024.bib"
 csl: "../resources/bib/apa.csl"
 format:
@@ -9,7 +9,7 @@ format:
     slide-number: false
     controls: true
     logo: "images/ul-psychology-logos.png"
-    footer: "Cillian McHugh - 20/11/24"
+    footer: "Cillian McHugh - 17/11/25"
     theme: "../resources/css/mytheme.scss"
     chalkboard: 
       buttons: true
@@ -3067,10 +3067,13 @@ suppressWarnings(print(figure))
 :::
 
 
+
 ## Meta-Analysis {.scrollable .smaller}
 
 
-```{r}
+
+```{r include=FALSE}
+
 #### Overall dilution effect ####
 
 # all_ps <-
@@ -3084,325 +3087,2012 @@ suppressWarnings(print(figure))
 #     ,.002 , .0001  # Study 5 Good
 # )
 
+rm(list = ls())
 
+load("S1_effect_stats.RData")
+load("S2_effect_stats.RData")
+load("S3_effect_stats.RData")
 
-all_ps <-
-  c(# MPS-4  MM-1
-     .0001, .0001  # Study 1
-    ,.624 , .267   # Study 2
-    ,.0001 , .0001   # Study 3 Bad
-    ,.0001 , .0001  # Study 3 Good
-)
+load("S1_table_data.RData")
+load("S2_table_data.RData")
+load("s3both_table_data.RData")
+load("s3bad_table_data.RData")
+load("s3good_table_data.RData")
 
-# all_ps_mm1 <-
-#   c(# MPS-4  MM-1
-#     # .0001
-#              .0001  # Study 1
-#     #,.624 
-#             , .267   # Study 2
-#     #,.060 
-#             , .008   # Study 3 Bad
-#     #,.009 
-#             , .0001  # Study 3 Good
-#     #,.095 
-#             , .029   # Study 4
-#     #,.221 
-#             , .140   # Study 5 Bad
-#     #,.002 
-#             , .0001  # Study 5 Good
-# )
+load("supp_S1_effect_stats.RData")
+load("supp_S2_effect_stats.RData")
+load("supp_S3_effect_stats.RData")
 
 
 
-all_ps_mm1 <-
-  c(# MPS-4  MM-1
-    # .0001
-             .0001  # Study 1
-    #,.624 
-            , .267   # Study 2
-    #,.060 
-            , .0001   # Study 3 Bad
-    #,.009 
-            , .0001  # Study 3 Good
-)
-
-
-all_ps_m4 <-
-  c(# MPS-4  MM-1
-     .0001#, .0001  # Study 1
-    ,.624 #, .267   # Study 2
-    ,.0001 #, .008   # Study 3 Bad
-    ,.0001 #, .0001  # Study 3 Good
-)
-
-all_ns <- 
+m_fun <- function(x){deparse(substitute(x))
+  m <- x
+  
   c(
-    # MPS-4  MM-1
-     801 #, 801   # Study 1
-    ,820 #, 820   # Study 2
-    ,814 #, 874   # Study 3 Bad
-    ,814 #, 874   # Study 3 Good
-    # ,856 #, 856   # Study 4
-    # ,860 #, 860   # Study 5 Bad
-    # ,890 #, 890   # Study 5 Good
-  )
+    m$study,
+    as.numeric(m$x1)
+    ,as.numeric(m$x2)
+    ,as.numeric(m$s1)
+    ,as.numeric(m$s2)
+    ,as.numeric(m$n1)
+    ,as.numeric(m$n2)
+    ,as.numeric(m$s_pooled)
+    ,as.numeric(m$d)
+    ,as.numeric(m$vd)
+    ,as.numeric(m$sed)
+    ,as.numeric(m$ci_upper)
+    ,as.numeric(m$ci_lower)
+    ,as.numeric(m$p)
+    ,as.numeric(m$d_paired))
+}
 
-meta3 <- sumlog(all_ps)
-meta3
+# m_fun <- function(x){deparse(substitute(x))}
 
-all_ps_mm1
-meta3 <- sumlog(all_ps_mm1)
-meta3
-
-all_ps_m4
-meta3 <- sumlog(all_ps_m4)
-meta3
-
-
-
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-
-meta4 <- sumz(psch5,wtsch5)
-meta4
-
-psch5 <- all_ps_mm1
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
-
-psch5 <- all_ps_m4
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
+test_bad_rtot <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_rtot_stats)
+    ,m_fun(s3bad_rtot_stats)
+    # ,m_fun(supp_s2bad_rtot_stats)
+    # ,m_fun(supp_s3bad_rtot_stats)
+  ),
+  names(s1_rtot_stats))
 
 
-###### for reporting #####
+test_good_rtot <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_rtot_stats)
+    ,m_fun(s3good_rtot_stats)
+    # ,m_fun(supp_s1_rtot_stats)
+    # ,m_fun(supp_s2good_rtot_stats)
+    # ,m_fun(supp_s3good_rtot_stats)
+  ),
+  names(s1_rtot_stats))
 
-meta3 <- sumlog(all_ps)
-meta3
 
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
+
+test_bad_M1 <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_M1_stats)
+    ,m_fun(s3bad_M1_stats)
+    # ,m_fun(supp_s2bad_M1_stats)
+    # ,m_fun(supp_s3bad_M1_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_M1 <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_M1_stats)
+    ,m_fun(s3good_M1_stats)
+    # ,m_fun(supp_s1_M1_stats)
+    # ,m_fun(supp_s2good_M1_stats)
+    # ,m_fun(supp_s3good_M1_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_both <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s2_M1_stats)
+    ,m_fun(s3good_M1_stats)
+    ,m_fun(supp_s1_M1_stats)
+    ,m_fun(supp_s2good_M1_stats)
+    ,m_fun(supp_s3good_M1_stats)
+    ,m_fun(s2_rtot_stats)
+    ,m_fun(s3good_rtot_stats)
+    ,m_fun(supp_s1_rtot_stats)
+    ,m_fun(supp_s2good_rtot_stats)
+    ,m_fun(supp_s3good_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+
+test_good_both$measure <- c(
+  rep("MM-1",5),
+  rep("MPS-4",5)
+)
+
+
+
+x <- test_good_both
+
+x$studyorder <- c(2,3,4,5,6,2,3,4,5,6)  
+
+x <- x[order(x$studyorder),]
+
+
+paste(x$study,": ",x$measure, sep = "")
+
+x$valence <- rep("good")
+
+x$lab <- paste(x$study,": ",x$measure, " - ", x$valence, sep = "")
+
+
+test_good_both <- x
+
+test_bad_both <- `colnames<-`(
+  rbind.data.frame(
+    m_fun(s1_M1_stats)
+    ,m_fun(s3bad_M1_stats)
+    # ,m_fun(supp_s1_M1_stats)
+    ,m_fun(supp_s2bad_M1_stats)
+    ,m_fun(supp_s3bad_M1_stats)
+    ,m_fun(s1_rtot_stats)
+    ,m_fun(s3bad_rtot_stats)
+    # ,m_fun(supp_s1_rtot_stats)
+    ,m_fun(supp_s2bad_rtot_stats)
+    ,m_fun(supp_s3bad_rtot_stats)
+  ),
+  names(s1_rtot_stats))
+
+test_bad_both$measure <- c(
+  rep("MM-1",4),
+  rep("MPS-4",4)
+)
+
+
+x <- test_bad_both
+
+x$studyorder <- c(1,3,5,6,1,3,5,6)  
+
+x <- x[order(x$studyorder),]
+
+
+paste(x$study,": ",x$measure, sep = "")
+
+
+x$valence <- rep("bad")
+
+x$lab <- paste(x$study,": ",x$measure, " - ", x$valence, sep = "")
+
+test_bad_both <- x
+
+
+test_both <- rbind.data.frame(test_good_both,test_bad_both)
+sqrt(as.numeric(test_both$d)*as.numeric(test_both$d))
+
+test_both$d_absolute <- sqrt(as.numeric(test_both$d)*as.numeric(test_both$d))
+
+# meta-analysis with continuout outcome
+# comb.fixed/comb.random: indicator whether a fix/random effect mata-analysis to be conducted.
+# sm: Three different types of summary measures to choose,standardized mean difference (SMD),mean difference (MD), ratio of means (ROM)
+meta1 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_rtot, sm = "SMD") 
+meta2 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_M1, sm = "SMD") 
+meta3 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_rtot, sm = "SMD") 
+meta4 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_M1, sm = "SMD") 
+meta5 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_good_both, sm = "SMD") 
+meta6 =  meta::metacont(as.numeric(n1), as.numeric(x1), as.numeric(s1), 
+                        as.numeric(n2), as.numeric(x2), as.numeric(s2),
+                        common = T , random = T, studlab = study,
+                        data = test_bad_both, sm = "SMD") 
+
+summary(meta1)
+summary(meta2)
+summary(meta3)
+summary(meta4)
+summary(meta5)
+summary(meta6)
+
+
+
+meta::forest(meta1, leftcols=c("studlab"))
+meta::forest(meta2, leftcols=c("studlab"))
+meta::forest(meta3, leftcols=c("studlab"))
+meta::forest(meta4, leftcols=c("studlab"))
+meta::forest(meta5, leftcols=c("studlab"))
+meta::forest(meta6, leftcols=c("studlab"))
+
+#####
+
+# install.packages("dmetar")
+library(metafor)
+
+x <- test_both
+
+# x <- x[which(x$study %in% c("Study 1", "Study 2","Study 3"))]
+# x <- x %>% dplyr::filter(, study %in% c("Study 1", "Study 2","Study 3"))
+
+x
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$valence,decreasing = F),]
+x <- x[order(x$studyorder),]
+x
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+#x <- x[1:8,]
+#x <- x[which(x$valence=="good"),]
+
+# escalc(measure="MC"
+#        ,x1i=as.numeric(n1)
+#        ,x2i=as.numeric(n2)
+#        ,m1i=as.numeric(x1)
+#        ,m2i=as.numeric(x2)
+#        ,sd1i=as.numeric(s1)
+#        ,sd2i=as.numeric(s2)
+#        ,data=x)
+
+
+
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+
+
+x
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta_absolute),
+                  as.numeric(vd),
+                  W=ntot,# (n1+n2),
+                  slab = lab,
+                  random = ~ 1 | study/measure/valence,
+                  method = "ML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+summary(m_multi)
+
+metafor::forest(m_multi)
+
+
+
+x <- test_bad_both
+
+
+
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+
+
+summary(m_multi)
+
+
+meta::forest(m_multi)
+
+
+
+x <- test_good_both
+
+
+
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  dfs = "contain",
+                  data = x) 
+
+
+summary(m_multi)
+
+
+
+meta::forest(m_multi)
+
+
+
+
+
 
 ```
 
-- A mini meta-analysis found a significant dilution effect across both good and bad character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+
+
+::: panel-tabset
+
+
+### Both
+
+```{r}
+
+x <- test_both
+
+# x <- x[which(x$study %in% c("Study 1", "Study 2","Study 3"))]
+# x <- x %>% dplyr::filter(, study %in% c("Study 1", "Study 2","Study 3"))
+
+x
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$valence,decreasing = F),]
+x <- x[order(x$studyorder),]
+x
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+#x <- x[1:8,]
+#x <- x[which(x$valence=="good"),]
+
+# escalc(measure="MC"
+#        ,x1i=as.numeric(n1)
+#        ,x2i=as.numeric(n2)
+#        ,m1i=as.numeric(x1)
+#        ,m2i=as.numeric(x2)
+#        ,sd1i=as.numeric(s1)
+#        ,sd2i=as.numeric(s2)
+#        ,data=x)
+
+
+
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+
+x
+x <- x[1:8,]
+
+
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta_absolute),
+                  as.numeric(vd),
+                  W=ntot,
+                  slab = lab,
+                  random = ~ 1 | study/valence/measure,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta_absolute),
+                  as.numeric(vd),
+                  W=ntot,
+                  slab = lab,
+                  random = ~ 1 | study/valence/measure,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+summary(m_multi)
+
+metafor::forest(m_multi)
+
+png(file='meta1.png'
+    ,width = 880, height = 680, units = "px", pointsize = 22) # Open PNG device with specific file name
+metafor::forest(m_multi) # Plot the forest
+dev.off()
+
+figure_meta1 <- metafor::forest(m_multi)
+
+
+z <- summary(m_multi)
+
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
+
+
+```
+
+Our first meta-analysis examined Studies 1, 2, and 3. Testing for an overall dilution effect across both bad characters and good characters, and across both measures (MPS-4 and MM-1). We computed the absolute value for all effect sizes. In order to account for the nested structure of our data (i.e., multiple effect sizes being reported from each included study), we included random effects for Study (Study 1/2/3), Valence (good/bad), and Measure (MPS-4/MM-1). Overall, there was a significant dilution effect across studies, for both good and bad characters, and for both measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+![Forest plot showing effects for Studies 1-3 and pooled effect.](meta1.png)
+
+
+### Bad
+
+```{r}
+
+
+x <- test_bad_both
+
+
+
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
+
+x <- x[1:4,]
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+
+
+summary(m_multi)
+
+
+meta::forest(m_multi)
+
+
+
+z <- summary(m_multi)
+
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
+
+
+```
+
+Next examined the presence of an overall dilution effect for bad characters across both measures for Studies 1 and 3. Again we included random effects for each study, as well as for measure. Overall, there was a significant dilution for bad characters, across both studies for both measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+### Good
+
+```{r}
+
+x <- test_good_both
+
+
+
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
+x
+x <- x[1:4,]
+
+
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+
+summary(m_multi)
+
+
+
+meta::forest(m_multi)
+
+
+z <- summary(m_multi)
+
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
+
+
+
+```
+
+
+We then examined the presence of an overall dilution effect for good characters across both measures for Studies 1 and 3. Again we included random effects for each study, as well as for measure. Overall, there was no significant dilution for good characters, across both studies for either measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+:::
+
+## All Studies{.scrollable .smaller}
+
+
+
+::: panel-tabset
+
+
+### Both
+
+```{r}
+
+x <- test_both
+
+# x <- x[which(x$study %in% c("Study 1", "Study 2","Study 3"))]
+# x <- x %>% dplyr::filter(, study %in% c("Study 1", "Study 2","Study 3"))
+
+x
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$valence,decreasing = F),]
+x <- x[order(x$studyorder),]
+x
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+#x <- x[1:8,]
+#x <- x[which(x$valence=="good"),]
+
+# escalc(measure="MC"
+#        ,x1i=as.numeric(n1)
+#        ,x2i=as.numeric(n2)
+#        ,m1i=as.numeric(x1)
+#        ,m2i=as.numeric(x2)
+#        ,sd1i=as.numeric(s1)
+#        ,sd2i=as.numeric(s2)
+#        ,data=x)
+
+
+
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+x$d_for_meta_absolute <- sqrt(as.numeric(x$d_for_meta)*as.numeric(x$d_for_meta))
+
+
+x
+
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta_absolute),
+                  as.numeric(vd),
+                  W=ntot,# (n1+n2),
+                  slab = lab,
+                  random = ~ 1 | study/measure/valence,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+summary(m_multi)
+
+metafor::forest(m_multi)
+
+
+
+png(file='meta2.png'
+    ,width = 880, height = 1080, units = "px", pointsize = 22) # Open PNG device with specific file name
+metafor::forest(m_multi) # Plot the forest
+dev.off()
+
+figure_meta1 <- metafor::forest(m_multi)
+
+
+z <- summary(m_multi)
+
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
+
+
+```
+
+
+We then proceeded to re-run the above meta-analyses but to additionally include the supplementary studies. Other than the inclusion of additional studies, the meta-analyses described below are the same as those already reported. We first included effect sizes for both bad characters and good characters, for both measures (MPS-4 and MM-1), with absolute values for all effect sizes and random effects for Study (Study 1/2/3/S1/S2/S3), Valence (good/bad), and Measure (MPS-4/MM-1). Second we test the effect for bad characters only, and third we test for the effect for good characters only.
+Overall, there was a significant dilution effect across all studies, for both good and bad characters, and for both measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+![Forest plot showing effects for all studies and pooled effect.](meta2.png)
+
+### Bad
 
 
 
 ```{r}
-#### Bad dilution effect ####
 
-all_ps <-
-  c(# MPS-4  MM-1
-     .0001, .0001  # Study 1
-  # ,.624 , .267   # Study 2
-    ,.0001 , .0001   # Study 3 Bad
-  # ,.009 , .0001  # Study 3 Good
-  # ,.095 , .029   # Study 4
-  #  ,.221 , .140   # Study 5 Bad
-  # ,.002 , .0001  # Study 5 Good
-)
+
+x <- test_bad_both
 
 
 
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
 
-all_ps_mm1 <-
-  c(# MPS-4  MM-1
-   # .0001
-             .0001  # Study 1
-  ##,.624 
-          #, .267   # Study 2
-   #,.060 
-          , .0001   # Study 3 Bad
-  ##,.009 
-          #, .0001  # Study 3 Good
-  ##,.095 
-          #, .029   # Study 4
-   #,.221 
-#           , .140   # Study 5 Bad
-  ##,.002 
-          #, .0001  # Study 5 Good
-)
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
 
 
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
 
-all_ps_m4 <-
-  c(# MPS-4  MM-1
-     .0001#, .0001  # Study 1
-  # ,.624 #, .267   # Study 2
-    ,.0001 #, .008   # Study 3 Bad
-  # ,.009 #, .0001  # Study 3 Good
-  # ,.095 #, .029   # Study 4
-    # ,.221 #, .140   # Study 5 Bad
-  # ,.002 #, .0001  # Study 5 Good
-)
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
 
-
-all_ns <- 
-  c(
-    # MPS-4  MM-1
-     801 #, 801   # Study 1
-  # ,820 #, 820   # Study 2
-    ,814 #, 874   # Study 3 Bad
-  # ,874 #, 874   # Study 3 Good
-  # ,856 #, 856   # Study 4
-  #  ,860 #, 860   # Study 5 Bad
-  # ,890 #, 890   # Study 5 Good
-  )
+m_multi <- metafor::rma.mv(as.numeric(d_for_meta),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "ML",
+                  test = "z",
+                  data = x) 
 
 
-all_ps_m4
 
-meta3 <- sumlog(all_ps)
-meta3
-
-meta3 <- sumlog(all_ps_mm1)
-meta3
-
-meta3 <- sumlog(all_ps_m4)
-meta3
+summary(m_multi)
 
 
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-
-meta4 <- sumz(psch5,wtsch5)
-meta4
+meta::forest(m_multi)
 
 
-psch5 <- all_ps_mm1
-wtsch5 <- sqrt(all_ns)
-
-meta4 <- sumz(psch5,wtsch5)
-meta4
 
 
-psch5 <- all_ps_m4
-wtsch5 <- sqrt(all_ns)
+z <- summary(m_multi)
 
-meta4 <- sumz(psch5,wtsch5)
-meta4
-
-
-###### for reporting #####
-
-meta3 <- sumlog(all_ps)
-meta3
-
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
 
 
 ```
 
-- A mini meta-analysis and found a significant dilution effect for bad character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+Overall, there was a significant dilution for bad characters across all studies for both measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+
+
+### Good
+
+```{r}
+
+x <- test_good_both
+
+
+
+x_within <- x[which(x$study!="Study S3"),]
+x_between <- x[which(x$study=="Study S3"),]
+
+x_within$d_for_meta <- x_within$d_paired
+x_between$d_for_meta <- x_between$d
+x <- rbind.data.frame(x_within,x_between)
+
+
+x$ntot <- as.numeric(x$n1)#+as.numeric(x$n2)
+
+x <- x[order(x$measure,decreasing = T),]
+x <- x[order(x$studyorder),]
+
+m_multi <- metafor::rma.mv(as.numeric(d_paired),
+                  as.numeric(vd),
+                  W = ntot,
+                  slab = lab,
+                  random = ~ 1 | study/measure,
+                  method = "REML",
+                  test = "z",
+                  data = x) 
+
+
+summary(m_multi)
+
+
+
+meta::forest(m_multi)
+
+
+
+
+z <- summary(m_multi)
+
+meta_estimate <- round(z$beta, digits=2)
+meta_se <- round(z$se, digits=2)
+meta_z <- round(z$zval, digits=2)
+meta_p <- z$pval
+meta_cilower <- round(z$ci.lb, digits=2)
+meta_ciupper <- round(z$ci.ub, digits=2)
+
+
+```
+
+Overall, there was a significant dilution for good characters, across all studies and for both measures,
+*d~pooled~* = `r meta_estimate`,
+*SE* = `r meta_se`,
+*z* = `r meta_z`,
+*p* `r paste(p_report(meta_p))`,
+95% CI [`r meta_cilower`, `r meta_ciupper`].
+
+
+```{r include=FALSE}
+
+
+load("S1_table_data.RData")
+load("S2_table_data.RData")
+load("s3bad_table_data.RData")
+load("s3good_table_data.RData")
+
+
+table_for_manuscript <- rbind.data.frame(
+  s1_rtot_for_table, s1_M1_for_table
+  , s2_rtot_for_table, s2_M1_for_table
+  , s3bad_rtot_for_table, s3bad_M1_for_table
+  , s3good_rtot_for_table, s3good_M1_for_table
+)
+
+
+ps <- function(y){
+  y <- round(y, digits = 3)
+  if(as.numeric(sqrt( y*y) ) <.001) print(paste0("<", " ", ".001","**"), quote = FALSE)
+  else if(as.numeric(sqrt( y*y) ) <.05) print(paste0(sub("^(-?)0.", "\\1.", sprintf("%.3f", y
+                                                         #                           , quote = FALSE
+                                                         )
+                                                         ),"*"))
+  else if(as.numeric(sqrt( y*y) ) >1) print(paste("-"))
+  else print(sub("^(-?)0.", "\\1.", sprintf("%.3f", y)))}
+
+
+table_for_manuscript
+table_for_manuscript$b <- round(table_for_manuscript$b, digits = 3)
+table_for_manuscript$SE <- round(table_for_manuscript$SE, digits = 3)
+table_for_manuscript$df <- round(table_for_manuscript$df, digits = 3)
+table_for_manuscript$t <- round(table_for_manuscript$t, digits = 3)
+table_for_manuscript$p <- unlist(
+  lapply(table_for_manuscript$p, ps))
+#round(table_for_manuscript$p, digits = 3)
+table_for_manuscript$p
+
+table_for_manuscript$Mdiag <- round(table_for_manuscript$Mdiag, digits = 1)
+table_for_manuscript$SDdiag <- round(table_for_manuscript$SDdiag, digits = 1)
+table_for_manuscript$Mnond <- round(table_for_manuscript$Mnond, digits = 1)
+table_for_manuscript$SDnond <- round(table_for_manuscript$SDnond, digits = 1)
+table_for_manuscript$d <- round(table_for_manuscript$d, digits = 2)
+table_for_manuscript$upper <- round(table_for_manuscript$upper, digits = 2)
+table_for_manuscript$lower <- round(table_for_manuscript$lower, digits = 2)
+table_for_manuscript$variance <- round(table_for_manuscript$variance, digits = 4)
+table_for_manuscript$ICC <- round(table_for_manuscript$ICC, digits = 2)
+
+table_for_manuscript <- 
+  `rownames<-`(
+    table_for_manuscript
+    ,
+    c("S1Rtot"
+      ,"S1M1"
+      ,"S2Rtot"
+      ,"S2M1"
+      ,"S3Rtotbad"
+      ,"S3M1bad"
+      ,"S3Rtotgood"
+      ,"S3M1good"))
+
+table_for_manuscript
+
+write.csv(table_for_manuscript, "table_for_manuscript.csv")
+
+```
+
+:::
+
+## Study 4
+
+```{r studyS4LoadData}
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/read_and_sort_raw_data.R")
+#source("~/Dropbox/College/research/Research_general/cog_load/moral_dumbfounding_and_cognitive_load/load_study6_data.R")
+rm(list = ls())
+
+df3 <- read.csv("../data/humanizing_pilot.csv")
+df3
+df3 <- df3[-c(1:3),]
+
+
+df3$age <- as.numeric(df3$age)
+df3$S_G_M_M_1 <- as.numeric(df3$S_G_M_M_1)
+df3$S_G_H_1 <- as.numeric(df3$S_G_H_1)
+df3$S_G_R_1 <- as.numeric(df3$S_G_R_1)
+df3$R_G_M_M_1 <- as.numeric(df3$R_G_M_M_1)
+df3$R_G_H_1 <- as.numeric(df3$R_G_H_1)
+df3$R_G_R_1 <- as.numeric(df3$R_G_R_1)              
+df3$F_B_M_M_1 <- as.numeric(df3$F_B_M_M_1)
+df3$F_B_H_1 <- as.numeric(df3$F_B_H_1) 
+df3$F_B_R_1 <- as.numeric(df3$F_B_R_1)
+df3$A_B_M_M_1 <- as.numeric(df3$A_B_M_M_1)            
+df3$A_B_H_1 <- as.numeric(df3$A_B_H_1)
+df3$A_B_R_1 <- as.numeric(df3$A_B_R_1)
+df3$J_N_M_M_1 <- as.numeric(df3$J_N_M_M_1)
+df3$J_N_H_1 <- as.numeric(df3$J_N_H_1)              
+df3$J_N_R_1 <- as.numeric(df3$J_N_R_1)
+df3$C_N_M_M_1 <- as.numeric(df3$C_N_M_M_1)
+df3$C_N_H_1 <- as.numeric(df3$C_N_H_1)
+df3$C_N_R_1 <- as.numeric(df3$C_N_R_1)
+
+mean(df3$S_G_M_M_1)
+
+
+mean(df3$S_G_M_M_1)
+mean(df3$S_G_H_1)
+mean(df3$S_G_R_1)
+mean(df3$R_G_M_M_1)
+mean(df3$R_G_H_1)
+mean(df3$R_G_R_1)
+mean(df3$F_B_M_M_1)
+mean(df3$F_B_H_1)
+mean(df3$F_B_R_1)
+mean(df3$A_B_M_M_1)
+mean(df3$A_B_H_1)
+mean(df3$A_B_R_1)
+mean(df3$J_N_M_M_1)
+mean(df3$J_N_H_1)
+mean(df3$J_N_R_1)
+mean(df3$C_N_M_M_1)
+mean(df3$C_N_H_1)
+mean(df3$C_N_R_1)
+
+
+# S_G_M_M_1
+# S_G_H_1
+# S_G_R_1
+# R_G_M_M_1
+# R_G_H_1
+# R_G_R_1
+# F_B_M_M_1
+# F_B_H_1
+# F_B_R_1
+# A_B_M_M_1
+# A_B_H_1
+# A_B_R_1
+# J_N_M_M_1
+# J_N_H_1
+# J_N_R_1
+# C_N_M_M_1
+# C_N_H_1
+# C_N_R_1
+
+
+x <- df3 
+
+
+y <- x %>% select( S_G_M_M_1
+                  ,S_G_H_1
+                  ,S_G_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("sam")
+y$valence <- rep("good")
+y$type <- rep("diagnostic")
+sam <- y
+  
+
+y <- x %>% select( R_G_M_M_1
+                  ,R_G_H_1
+                  ,R_G_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("robin")
+y$valence <- rep("good")
+y$type <- rep("diagnostic")
+robin <- y
+
+
+
+y <- x %>% select( F_B_M_M_1
+                  ,F_B_H_1
+                  ,F_B_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("francis")
+y$valence <- rep("bad")
+y$type <- rep("diagnostic")
+francis <- y
+
+
+y <- x %>% select( A_B_M_M_1
+                  ,A_B_H_1
+                  ,A_B_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("alex")
+y$valence <- rep("bad")
+y$type <- rep("diagnostic")
+alex <- y
+
+
+y <- x %>% select( J_N_M_M_1
+                  ,J_N_H_1
+                  ,J_N_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("jordan")
+y$valence <- rep("neutral")
+y$type <- rep("non-diagnostic")
+jordan <- y
+
+
+y <- x %>% select( C_N_M_M_1
+                  ,C_N_H_1
+                  ,C_N_R_1
+                    ,age
+                    ,gender
+                  ,random_ID)
+y <- `colnames<-`(y,
+             c(
+               "moralit"
+               ,"humanity"
+               ,"relatable"
+               ,"age"
+               ,"gender"
+               ,"ID"
+             ))
+y$scenario <- rep("charlie")
+y$valence <- rep("neutral")
+y$type <- rep("non-diagnostic")
+charlie <- y
+
+
+df_full <- rbind.data.frame(
+  sam
+  , robin
+  , francis
+  , alex
+  , jordan
+  , charlie
+)
+
+
+variable.names(df_full)
+
+head(df_full)
+
+
+head(df3)
+
+```
+
+
+
+### Design
+
+- within-subjects design
+- IV: information type with three levels
+  - *good*, *bad*, and *neutral* (non-diagnostic).
+  
+- 3 DVs:
+  - morality ratings, humanness ratings, and relatableness ratings.
+
+## Hypotheses {.scrollable .smaller}
+
+For morality ratings, we predicted that morality ratings would be highest for the *good* descriptions, and lowest for the *bad* descriptions, with the *neutral* descriptions being rated lower than *good* and higher than *bad*.
+
+If the dilution effect is being driven by a humanizing effect of non-diagnostic information, this would predict a different pattern for humanness and relatableness ratings. Specifically, humanness and relatableness ratings would be expected to be highest for the *neutral* (non-diagnostic) conditions compared to the *bad* and *good* conditions. If this pattern is not observed, it suggests that our findings may be evidence of a dilution effect rather than a humanizing effect.
+
+
+## Participants
+
+
+A total sample of
+`r length(levels(as.factor(df3$ResponseId)))`
+(`r sum(df3$gender=="2",na.rm=T)` female,
+`r sum(df3$gender=="1", na.rm=T)` male,
+`r round(sum(df3$gender=="3", na.rm=T)/1)` non-binary,
+`r round(sum(df3$gender=="4", na.rm=T))` other;
+`r sum(df3$gender=="5", na.rm=T)` prefer not to say,
+*M*~age~ = `r round(mean(df3$age, na.rm=T),digits=2)`,
+min = `r min(df3$age, na.rm=T)`,
+max = `r max(df3$age, na.rm=T)`,
+*SD* = `r round(sd(df3$age, na.rm=T),digits=2)`) completed the survey.  Participants were recruited from Prolific and paid £0.40 for their participation.
+
+## Measures
+
+- Morality: MM-1 rating (used in previous studies)
+- Humanness:
+  - "The following scale represents humanness levels. Please rate the humanness of X", 0 = *Not at all Human*, 100 = *Very Human*
+- Relatableness:
+  - "The following scale represents relatableness levels. Please rate the relatableness of X", 0 = *Not at all Relatable*, 100 = *Very Relatable*.
+
+## Materials {.scrollable .smaller}
+
+Participants read six descriptions, two *good*, two *bad*, and two *neutral* (non-diagnostic).
+
+*Sam*
+
+Imagine a person named Sam.
+Throughout their life they have been known to always help and care for others, treat everyone fairly and equally, and show a strong sense of loyalty to others.
+
+*Robin*
+
+Imagine a person named Robin.
+Throughout their life they have been known to protect and provide shelter to the weak and vulnerable, uphold the rights of others, and show respect for authority.
+
+*Francis*
+
+Imagine a person named Francis.
+Throughout their life they have been known to cause others to suffer emotionally, to deny others their rights, and to cause chaos or disorder.
+
+*Alex*
+
+Imagine a person named Alex.
+Throughout their life they have been known to be cruel, act unfairly, and to betray their own group.
+
+*Jordan*
+
+Imagine a person named Jordan.
+They have red hair, play tennis four times a month, and have one older sibling and one younger sibling.
+
+*Charlie*
+
+Imagine a person named Charlie.
+They are left-handed, drink tea in the morning, and have two older siblings and one younger sibling.
+
+
+## Results: Morality{.scrollable .smaller}
+
+
+::: panel-tabset
+
 
 
 ```{r}
-#### Good dilution effect ####
+x <- df_full
 
-all_ps <-
-  c(# MPS-4  MM-1
-  #  .0001, .0001  # Study 1
-     .624 , .267   # Study 2
-  # ,.060 , .008   # Study 3 Bad
-    ,.0001 , .0001  # Study 3 Good
-  #   ,.095 , .029   # Study 4
-  # # ,.221 , .140   # Study 5 Bad
-  #   ,.002 , .0001  # Study 5 Good
-)
+model0 <- lmerTest::lmer(moralit ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
 
-
-all_ps_mm1 <-
-  c(# MPS-4  MM-1
-  # # .0001
-          #, .0001  # Study 1
-    # .624 
-           .267   # Study 2
-  # #,.060 
-          #, .008   # Study 3 Bad
-    #,.009 
-          , .0001  # Study 3 Good
-  #   #,.095 
-  #         , .029   # Study 4
-  # # #,.221 
-  #         #, .140   # Study 5 Bad
-  #   #,.002 
-  #         , .0001  # Study 5 Good
-)
-
-all_ps_m4 <-
-  c(# MPS-4  MM-1
-  #  .0001#, .0001  # Study 1
-     .624 #, .267   # Study 2
-  # ,.060 #, .008   # Study 3 Bad
-    ,.0001 #, .0001  # Study 3 Good
-  #   ,.095 #, .029   # Study 4
-  # # ,.221 #, .140   # Study 5 Bad
-  #   ,.002 #, .0001  # Study 5 Good
-)
+summary(model0)
+model1 <- lmerTest::lmer(moralit ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
 
 
-all_ns <- 
-  c(
-    # MPS-4  MM-1
-  #  801 #, 801   # Study 1
-     820 #, 820   # Study 2
-  # ,874 #, 874   # Study 3 Bad
-    ,814 #, 874   # Study 3 Good
-  #   ,856 #, 856   # Study 4
-  # # ,860 #, 860   # Study 5 Bad
-  #   ,890 #, 890   # Study 5 Good
-  )
 
-#meta3 <- sumlog(c(.023,.021,.039,.359,.215,.000002925))
-meta3 <- sumlog(all_ps)
-meta3
-
-meta3 <- sumlog(all_ps_mm1)
-meta3
-
-meta3 <- sumlog(all_ps_m4)
-meta3
-
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
-
-psch5 <- all_ps_mm1
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
-
-psch5 <- all_ps_m4
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
 
 
-###### for reporting #####
 
-meta3 <- sumlog(all_ps)
-meta3
+model1_std <- lmerTest::lmer(scale(moralit, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
 
-psch5 <- all_ps
-wtsch5 <- sqrt(all_ns)
-meta4 <- sumz(psch5,wtsch5)
-meta4
 
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$moralit
+x$iv <- x$valence
 
 ```
 
-- A mini meta-analysis and found a significant dilution effect for good character descriptions across all studies  $\chi$^2^(`r meta3$df`) = `r round(meta3$chisq, digits=3)`, *p* `r paste(p_report(meta3$p))` (Fisher’s method); or when weighting for sample size, *z* `r paste(p_report(meta4$z))`, *p* `r paste(p_report(meta4$p))` (Stouffer's Z-score method).
+
+### Overview
+
+We conducted a linear-mixed-effects model to test if information type influenced morality ratings. Our outcome measure was morality rating, our predictor variable was valence/information-type; we allowed intercepts to vary across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r round(results_anova$Chisq[2])`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced morality ratings,
+*F*(`r aov1$NumDF[1]`,
+`r round(aov1$DenDF[1])`) = `r round(f3)`,
+*p* `r paste(p_report(p3))`.
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r round(mean(x$dv[which(x$iv=="good")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="good")]))`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="bad")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="bad")]))`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="neutral")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="neutral")]))`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+This pattern aligns with how the materials were designed (bad character viewed as least moral, good character viewed as most moral) and is consistent with the results of Studies 1-3. Interestingly, the morality of the neutral descriptions is rated closer to the good descriptions than to the bad descriptions. It is possible that this may partially explain the asymmetry observed in the occurrence of the dilution effect.
+
+### Plot
 
 
+```{r}
+x <- df_full
+
+#install.packages("ggplot2")
+#library(ggplot2)
+
+#table(x$condition,x$Valence)
+
+#x <- na.omit(x) 
+
+variable.names(x)
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="moralit", groupvars=c("valence"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = valence, y = moralit
+                , fill=factor(valence
+                             # ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(valence
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=moralit-se
+                                        , ymax=moralit+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Morality Rating") +
+  # scale_x_discrete(
+  #   labels=c("Diagnostic","Non-Diagnostic")
+  # ) +
+  # scale_y_continuous(limits = c(-.0,7)
+  #                    , breaks = seq(0,7, by = 1)  #  c(0:)
+  #                    #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  # ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mps4plot <- g
+
+```
+
+
+
+
+```{r S4moralityplot, fig.cap="Study 4: Differences in moral ratings depending on condition", include=TRUE}
+#| lightbox: true
+
+suppressWarnings(print(g))
+
+```
+
+:::
+
+## Results: Humanness{.scrollable .smaller}
+
+
+::: panel-tabset
+
+
+### Overview
+
+```{r}
+x <- df_full
+
+model0 <- lmerTest::lmer(humanity ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(humanity ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+
+
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+
+
+model1_std <- lmerTest::lmer(scale(humanity, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$humanity
+x$iv <- x$valence
+
+```
+
+We conducted a linear-mixed-effects model to test if information type influenced humanness ratings. Our outcome measure was humanness rating, our predictor variable was valence/information-type; we allowed intercepts to vary across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r round(results_anova$Chisq[2])`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced humanness ratings,
+*F*(`r aov1$NumDF[1]`,
+`r round(aov1$DenDF[1])`) = `r round(f3)`,
+*p* `r paste(p_report(p3))`.
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r round(mean(x$dv[which(x$iv=="good")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="good")]))`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="bad")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="bad")]))`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="neutral")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="neutral")]))`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+### Plot
+
+
+
+```{r}
+x <- df_full
+
+#install.packages("ggplot2")
+#library(ggplot2)
+
+#table(x$condition,x$Valence)
+
+#x <- na.omit(x) 
+
+variable.names(x)
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="humanity", groupvars=c("valence"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = valence, y = humanity
+                , fill=factor(valence
+                             # ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(valence
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=humanity-se
+                                        , ymax=humanity+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Humanness Rating") +
+  # scale_x_discrete(
+  #   labels=c("Diagnostic","Non-Diagnostic")
+  # ) +
+  # scale_y_continuous(limits = c(-.0,7)
+  #                    , breaks = seq(0,7, by = 1)  #  c(0:)
+  #                    #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  # ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mps4plot <- g
+
+```
+
+
+
+
+```{r S4humannessyplot, fig.cap="Study 4: Differences in humanness ratings depending on condition", include=TRUE}
+#| lightbox: true
+
+suppressWarnings(print(g))
+
+```
+
+:::
+
+
+
+## Results: Relatableness{.scrollable .smaller}
+
+
+::: panel-tabset
+
+
+### Overview
+
+
+
+```{r}
+x <- df_full
+
+model0 <- lmerTest::lmer(relatable ~ 1
+                #   condition
+                 + (1|ID)
+                # + (1|ResponseId:condition)
+                , data = x
+          #      , contrasts = list(condition = contr.sum  , valence = contr.sum)
+            )
+
+summary(model0)
+model1 <- lmerTest::lmer(relatable ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+
+
+
+# model1 <- lmerTest::lmer(R_tot ~
+#                   condition*scenario
+#                 + (1|ResponseId)
+#                 # + (1|ResponseId:condition)
+#                 + (1|scenario)
+#                 , data = x
+#                 , contrasts = list(condition = contr.sum  , scenario = contr.sum)
+#             )
+
+
+
+model1_std <- lmerTest::lmer(scale(relatable, scale = TRUE) ~
+                  valence
+                + (1|ID)
+                , data = x
+                , contrasts = list(valence = contr.sum)
+            )
+summary(model1_std)
+b_std <- as.data.frame(summary(model1_std)$coefficients)$Estimate[2]
+
+
+summary(model1)
+
+lmerTest::difflsmeans(model1, test.effs = "valence",ddf="Kenward-Roger")
+
+emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- emmeans::emmeans(model1, list(pairwise ~ valence), adjust = "tukey")
+pc <- as.data.frame(pc$`pairwise differences of valence`)
+pc$p.value
+pc
+
+
+results_anova <- as.data.frame(anova(model0,model1))
+results_anova
+results_anova$Chisq[2]
+results_anova$Df
+p1 <- results_anova$`Pr(>Chisq)`[2]
+p_report(p1)
+#p_report(results_anova$`Pr(>Chisq)`)[2]
+results_anova$AIC
+summary_model1 <- summary(model1)
+summary_model1
+summary_model1$varcor
+results_coef <- as.data.frame(summary_model1$coefficients)
+
+
+
+aov1 <- anova(model1)
+f3 <- aov1$`F value`[1]
+p3 <- aov1$`Pr(>F)`[1]
+
+results_coef$Estimate[2]
+results_coef$`Std. Error`[2]
+results_coef$df[2]
+t1 <- results_coef$`t value`[2]
+p2 <- results_coef$`Pr(>|t|)`[2]
+
+#QuantPsyc::lm.beta(results_coef)
+anova(model1)
+
+x$dv <- x$relatable
+x$iv <- x$valence
+
+```
+
+We conducted a linear-mixed-effects model to test if information type influenced relatableness ratings. Our outcome measure was relatableness rating, our predictor variable was valence/information-type; we allowed intercepts across participants.
+Overall, the model significantly predicted participants responses, and provided a better fit for the data than the baseline model,
+$\chi$^2^(`r results_anova$Df[2]`) = `r round(results_anova$Chisq[2])`,
+*p* `r paste(p_report(p1))`.
+Information type significantly influenced relatability ratings,
+*F*(`r aov1$NumDF[1]`,
+`r round(aov1$DenDF[1])`) = `r round(f3)`,
+Tukey's post-hoc pairwise comparisons indicated that the highest rated descriptions were the good descriptions,
+(*M* = `r round(mean(x$dv[which(x$iv=="good")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="good")]))`),
+and these were significantly higher
+(*p* `r paste(p_report(pc$p.value[1]))`)
+than the bad descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="bad")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="bad")]))`)
+and significantly higher
+(*p* `r paste(p_report(pc$p.value[3]))`)
+than the neutral/non-diagnostic descriptions
+(*M* = `r round(mean(x$dv[which(x$iv=="neutral")]))`,
+*SD* = `r round(sd(x$dv[which(x$iv=="neutral")]))`).
+The neutral/non-diagnostic descriptions were also significantly higher
+(*p* `r paste(p_report(pc$p.value[2]))`)
+than the bad descriptions.
+
+### Plot
+
+
+```{r}
+x <- df_full
+
+#install.packages("ggplot2")
+#library(ggplot2)
+
+#table(x$condition,x$Valence)
+
+#x <- na.omit(x) 
+
+variable.names(x)
+
+x_error_bars <- Rmisc::summarySE(x, measurevar="relatable", groupvars=c("valence"
+                                                                    #, "Valence"
+                                                                    ))
+x_error_bars
+
+g <- ggplot(x,
+            aes(x = valence, y = relatable
+                , fill=factor(valence
+                             # ,labels=c("Diagnostic","Non-Diagnostic")
+                )
+               # , color=factor(Valence)
+            )) + 
+  
+  #scale_y_continuous(limits = c(-0, 140))+
+  #, labels = percent_format()
+  # )+ 
+  ggdist::stat_halfeye(
+    adjust = .9, 
+    width = .15, 
+    .width = 0, 
+    justification = -.7, 
+    point_colour = NA,
+    position = position_dodge(width=0.9)
+  ) + 
+  geom_boxplot(
+    width = .13, 
+    outlier.shape = NA
+    , position = position_dodge(width=.8)
+    , show_guide = FALSE
+  ) +
+  ## add justified jitter from the {gghalves} package
+  gghalves::geom_half_point(
+    aes(color=factor(valence
+                     #                   ,labels=c("Means","Side-Effect")
+    )
+    ),
+    position = position_dodge(width=4.3),
+    ## draw jitter on the left
+    side = "l", 
+    ## control range of jitter
+    range_scale = .4, 
+    ## add some transparency
+    alpha = .42,
+    size = .1,
+    show_guide = FALSE
+  )+
+  stat_summary(
+    aes(color=factor(Condition
+                                          #,labels=c("Gratitude","No Gratitude")
+    )
+    ),
+    geom = "point",
+    fun = "mean",
+    col = "black",
+    size = 1,
+    shape = 16, #24,
+    position = position_dodge(width=.2)
+   # , justification = -.2
+    , fill = "black"
+    ,show_guide = FALSE
+  )+
+  geom_errorbar(data = x_error_bars,aes(ymin=relatable-se
+                                        , ymax=relatable+se
+                                        , width=.05#, position=pd
+                                        # , fill= "black" #factor(condition
+                                        #     ,labels=c("Means","Side-Effect")
+                                        #)
+  )
+  , position = position_dodge(width=6.12)
+  ) +
+  #facet_grid(cols = vars(means))+
+  xlab("Condition") +
+  ylab("Relatableness Rating") +
+  # scale_x_discrete(
+  #   labels=c("Diagnostic","Non-Diagnostic")
+  # ) +
+  # scale_y_continuous(limits = c(-.0,7)
+  #                    , breaks = seq(0,7, by = 1)  #  c(0:)
+  #                    #                    , labels=c(" ", "1", "2", "3","4","5","6","7")
+  # ) +
+  scale_fill_grey(start = .3, end = .6) +
+  scale_color_grey(start = .3, end = .6) +
+  guides(
+    fill=guide_legend(title = "Condition")
+    , color="none" # guide_legend(title="Valence")
+    , shape="none"
+  )+
+  #facet_grid(cols = vars(Valence))+
+  #labs(fill="Means/Side-Effect") +
+  # 
+  # geom_text(#family = "Times",
+  #           size=4.2,
+  #           aes( label = scales::percent(test$perc),
+  #                y= test$perc ),
+  #           stat= "identity",
+  #           vjust = -.5,
+  #           position = position_dodge(.9),
+  #           fontface='plain'
+  #           )+
+#theme_apa() +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        axis.line = element_line(size = .2),
+        strip.background  = element_blank(),
+        #panel.grid = element_blank(),
+        plot.title=element_text(#family="Times",
+                                size=12
+                                ),
+        legend.text=element_text(#family="Times",
+                                 size=8
+                                 ),
+          legend.title=element_text(#family="Times",
+                                    size=10
+                                    ),
+          axis.text=element_text(#family="Times",
+                                 colour = "black",
+                                 size=8
+                                 ),
+          axis.ticks.x = element_blank(),
+          axis.title=element_text(#family="Times",
+                                  size=12
+                                  ),
+          strip.text=element_text(#family = "Times",
+                                  size = 12
+                                  ),
+         # strip.background = element_rect(fill = "white"),
+          legend.position="none")
+g
+mps4plot <- g
+
+```
+
+
+
+
+```{r S4relatablenessplot, fig.cap="Study 4: Differences in relatableness ratings depending on condition", include=TRUE}
+#| lightbox: true
+
+suppressWarnings(print(g))
+
+```
+
+
+:::
 
 ## References
 
