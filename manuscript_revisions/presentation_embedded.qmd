@@ -8,8 +8,8 @@ format:
   revealjs:
     slide-number: false
     controls: true
-    logo: "images/ul-psychology-logos.png"
-    footer: "Cillian McHugh - 17/11/25"
+    # logo: "images/ul-psychology-logos.png"
+    # footer: "Cillian McHugh - 17/11/25"
     theme: "../resources/css/mytheme.scss"
     chalkboard: 
       buttons: true
@@ -96,8 +96,8 @@ library(tidyverse)
   - Study 1 (bad characters)
   - Study 2 (good characters)
   - Study 3 (bad *and* good characters)
-- Reviewer Feedback (previously circulated)
-- Addressing Reviewer Feedback (discussion)
+- Meta Analyses
+- Study 4
 
 # What is the (Moral) Dilution Effect
 
