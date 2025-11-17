@@ -12,7 +12,7 @@ format:
     # footer: "Cillian McHugh - 17/11/25"
     theme: "../resources/css/mytheme.scss"
     chalkboard: 
-      buttons: true
+      buttons: false
 editor: source
 editor_options: 
   chunk_output_type: console
